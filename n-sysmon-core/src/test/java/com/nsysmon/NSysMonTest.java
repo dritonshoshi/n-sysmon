@@ -398,7 +398,7 @@ public class NSysMonTest {
 
         assertEquals(100, dataSink.started);
         assertEquals(99, dataSink.finished);
-        assertEquals(103, CountingLoggerFactory.logger.numError);
+        assertEquals(0, CountingLoggerFactory.logger.numError);
     }
 
     @Test
