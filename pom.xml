@@ -9,20 +9,17 @@
         <version>7</version>
     </parent>
 
-    <groupId>com.ajjpj.a-sysmon</groupId>
-    <artifactId>a-sysmon-parent</artifactId>
-    <version>1.0-pre27-SNAPSHOT</version>
+    <groupId>com.n-sysmon</groupId>
+    <artifactId>n-sysmon-parent</artifactId>
+    <version>1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>${project.artifactId}-${project.version}</name>
 
-    <description>a-sysmon is a toolset for monitoring and exploring performance aspects of Java enterprise applications</description>
+    <description>n-sysmon is a  fork of a-sysmon -> a-sysmon is toolset for monitoring and exploring performance aspects of Java enterprise applications</description>
 
     <modules>
-        <module>a-sysmon-core</module>
-        <!--<module>a-sysmon-server</module>-->
-        <!--<module>a-sysmon-server-webclient</module>-->
-        <!--<module>a-sysmon-server-war</module>-->
+        <module>n-sysmon-core</module>
     </modules>
 
     <licenses>
@@ -33,10 +30,10 @@
         </license>
     </licenses>
     <scm>
-        <connection>scm:git:git@github.com:arnohaase/a-sysmon.git</connection>
-        <developerConnection>scm:git:git@github.com:arnohaase/a-sysmon.git</developerConnection>
-        <url>git@github.com:arnohaase/a-sysmon.git</url>
-      <tag>a-sysmon-parent-1.0-pre27</tag>
+        <connection>scm:git:git@github.com:dritonshoshi/n-sysmon.git</connection>
+        <developerConnection>scm:git:git@github.com:dritonshoshi/n-sysmon.git</developerConnection>
+        <url>git@github.com:dritonshoshi/n-sysmon.git</url>
+      <tag>n-sysmon-parent-1.0</tag>
   </scm>
     <developers>
         <developer>

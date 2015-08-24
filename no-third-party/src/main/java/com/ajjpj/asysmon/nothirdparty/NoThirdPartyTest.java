@@ -1,7 +1,7 @@
-package com.ajjpj.asysmon.nothirdparty;
+package com.nsysmon.nothirdparty;
 
-import com.ajjpj.asysmon.config.ADefaultConfigFactory;
-import com.ajjpj.asysmon.config.log.AStdOutLoggerFactory;
+import com.nsysmon.config.ADefaultConfigFactory;
+import com.nsysmon.config.log.AStdOutLoggerFactory;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
