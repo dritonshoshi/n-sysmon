@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app version="2.5" xmlns="http://java.sun.com/xml/ns/javaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
+
+    <listener>
+        <listener-class>com.nsysmon.AShutdownServletContextListener</listener-class>
+    </listener>
+
+    <servlet>
+        <servlet-name>nsysmon</servlet-name>
+        <servlet-class>com.nsysmon.servlet.NSysMonServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>nsysmon</servlet-name>
+        <url-pattern>/nsysmon/*</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>content</servlet-name>
+        <servlet-class>com.nsysmon.demo.AppServlet</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>content</servlet-name>
+        <url-pattern>content/*</url-pattern>
+    </servlet-mapping>
+
+    <filter>
+        <filter-name>nsysmon-filter</filter-name>
+        <filter-class>com.nsysmon.measure.http.AHttpRequestMeasuringFilter</filter-class>
+        <init-param>
+            <param-name>nsysmon.http-analyzer</param-name>
+            <param-value>com.nsysmon.demo.NullHttpRequestAnalyzer</param-value>
+        </init-param>
+    </filter>
+
+    <filter-mapping>
+        <filter-name>nsysmon-filter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+</web-app>

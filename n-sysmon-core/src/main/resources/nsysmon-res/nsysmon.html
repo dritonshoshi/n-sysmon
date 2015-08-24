@@ -1,0 +1,84 @@
+<!doctype html>
+<html ng-app="NSysMonApp" ng-controller="NSysMonCtrl">
+<head>
+    <title ng-bind="title"></title>
+    <meta http-equiv="Content-type" content="text/html;charset=UTF-8" />
+    <link rel="stylesheet" type="text/css" href="_$_nsysmon_$_/static/css/nsysmon.css">
+    <link rel="stylesheet" type="text/css" href="_$_nsysmon_$_/static/css/bootstrap-3.0.2.min.css">
+    <link rel="stylesheet" type="text/css" href="_$_nsysmon_$_/static/css/bootstrap-theme-3.0.2.min.css">
+    <script src="_$_nsysmon_$_/static/lib/jquery-1.10.2.min.js"></script>
+    <script src="_$_nsysmon_$_/static/lib/angular-1.2.3.js"></script>
+    <script src="_$_nsysmon_$_/static/lib/angular-route-1.2.3.js"></script>
+    <script src="_$_nsysmon_$_/static/lib/FileSaver.js"></script>
+    <script src="_$_nsysmon_$_/static/lib/bootstrap-3.0.2.min.js"></script>
+
+    <script src="_$_nsysmon_$_/static/lib/jquery.flot-0.8.2.js"></script>
+    <script src="_$_nsysmon_$_/static/lib/jquery.flot.resize-0.8.2.js"></script>
+    <script src="_$_nsysmon_$_/static/lib/jquery.flot.stack-0.8.2.js"></script>
+    <script src="_$_nsysmon_$_/static/lib/jquery.flot.time-0.8.2.js"></script>
+    <script src="_$_nsysmon_$_/static/lib/jquery.flot.axislabels-0.8.2.js"></script>
+    <script src="_$_nsysmon_$_/static/lib/jquery.flot.navigate-0.8.2.js"></script>
+
+    <script src="_$_nsysmon_$_/static/js/nsysmon-app.js"></script>
+    <script src="_$_nsysmon_$_/static/js/ctrl-aggregated.js"></script>
+    <script src="_$_nsysmon_$_/static/js/ctrl-scalars.js"></script>
+    <script src="_$_nsysmon_$_/static/js/ctrl-envvar.js"></script>
+    <script src="_$_nsysmon_$_/static/js/ctrl-memgc.js"></script>
+    <script src="_$_nsysmon_$_/static/js/ctrl-threaddump.js"></script>
+
+    <script src="_$_nsysmon_$_/config.js"></script>
+    <script src="_$_nsysmon_$_/static/js/nsysmon-module.js"></script>
+</head>
+<body>
+
+<div id="blocker" class="container-liquid">
+    <div class="navbar-header">
+        <button class="navbar-toggle" type="button" data-toggle="collapse" data-target=".bs-navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+        </button>
+        <a href="#" class="navbar-brand">N-SysMon Live Monitoring</a>
+    </div>
+    <nav class="collapse navbar-collapse bs-navbar-collapse navbar-inverse" role="navigation" >
+        <ul class="nav navbar-nav">
+            <li class="dropdown" ng-repeat="menuItem in configRaw.menuEntries">
+                <ul class="dropdown-menu">
+                    <li ng-repeat="pageDef in menuItem.entries"><a href="#/{{pageDef.id}}">{{pageDef.shortLabel}}</a></li>
+                </ul>
+                <a class="dropdown-toggle" data-toggle="dropdown">{{menuItem.label}} <b class="caret"></b></a>
+            </li>
+        </ul>
+        <!--<ul class="nav navbar-nav navbar-right">-->
+            <!--<li>-->
+                <!--<a href="../about">About</a>-->
+            <!--</li>-->
+        <!--</ul>-->
+    </nav>
+
+    <div class="nsysmon-content">
+        <span style="float: right; padding: 5px; margin-top: -10px; border-bottom: 3px solid {{applicationColor()}};">{{applicationIdentifier()}}</span>
+        <h1>{{curTitle()}}</h1>
+
+        <div ng-view></div>
+    </div>
+</div>
+
+<div class="modal fade" id="the-modal" tabindex="-1">
+    <div class="modal-dialog" style="width: 70%">
+        <div class="modal-content" >
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <span id="modal-icon" style="float: left; font-size: 130%; "></span><h4 class="modal-title" id="modal-title" style="padding-left: 10px;">Modal title</h4>
+            </div>
+            <div class="modal-body" id="modal-body" style="overflow: auto">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">OK</button>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
