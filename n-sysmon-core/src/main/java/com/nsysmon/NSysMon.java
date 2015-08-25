@@ -8,13 +8,13 @@ import com.ajjpj.afoundation.util.AUnchecker;
 
 
 /**
- * This class is the point of contact for an application to ASysMon. There are basically two ways to use it:
+ * This class is the point of contact for an application to NSysMon. There are basically two ways to use it:
  *
  * <ul>
  *     <li> Use the static get() method to access it as a singleton. That is simple and convenient, and it is
  *          sufficient for many applications. If it is used that way, all configuration must be done through
  *          the static methods of ADefaultSysMonConfig. </li>
- *     <li> Create and manage your own instance (or instances) by calling the ASysMonImpl constructor, passing in your
+ *     <li> Create and manage your own instance (or instances) by calling the NSysMonImpl constructor, passing in your
  *          configuration. This is for maximum flexibility, but you lose some convenience. </li>
  * </ul>
  *

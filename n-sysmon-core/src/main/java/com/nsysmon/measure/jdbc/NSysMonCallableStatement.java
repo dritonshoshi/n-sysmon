@@ -254,7 +254,7 @@ public class NSysMonCallableStatement extends NSysMonPreparedStatement implement
         inner.setNClob(parameterName, reader);
     }
 
-    //--------------------- ignored by ASysMon
+    //--------------------- ignored by NSysMon
 
     @Override
     public void registerOutParameter(int parameterIndex, int sqlType) throws SQLException {

@@ -7,8 +7,8 @@ import com.nsysmon.measure.environment.AEnvironmentMeasurer;
 import com.nsysmon.measure.scalar.AScalarMeasurer;
 
 /**
- * This class can change the configuration of an existing ASysMon instance. This is done to avoid race conditions
- *  during application startup, e.g. if ASysMon is used during Spring startup, and servlets need to contribute
+ * This class can change the configuration of an existing NSysMon instance. This is done to avoid race conditions
+ *  during application startup, e.g. if NSysMon is used during Spring startup, and servlets need to contribute
  *  configuration later.<p>
  *
  * These methods are not part of NSysMon itself to keep that API lean and clean: These methods are for use during system

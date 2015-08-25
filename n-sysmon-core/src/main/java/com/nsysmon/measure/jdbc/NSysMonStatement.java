@@ -175,7 +175,7 @@ public class NSysMonStatement implements Statement {
     }
 
 
-    //------------------------- ignored by ASysMon
+    //------------------------- ignored by NSysMon
 
     @Override
     public void close() throws SQLException {

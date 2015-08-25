@@ -7,7 +7,7 @@ import java.util.List;
 
 
 /**
- * This interface represents the entire definition of one "view" in ASysMon's HTML interface. Everything else is
+ * This interface represents the entire definition of one "view" in NSysMon's HTML interface. Everything else is
  *  done dynamically based on instances of this interface.
  *
  * @author arno

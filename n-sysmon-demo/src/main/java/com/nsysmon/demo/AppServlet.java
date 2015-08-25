@@ -170,7 +170,7 @@ public class AppServlet extends HttpServlet {
 
     private static Connection getConnection() throws SQLException {
         return dataSource.getConnection();
-//        final Connection result = DriverManager.getConnection("asysmon:qualifier=123:jdbc:h2:memgc:demo", "sa", "");
+//        final Connection result = DriverManager.getConnection("nsysmon:qualifier=123:jdbc:h2:memgc:demo", "sa", "");
 //        result.setAutoCommit(false);
 //        return result;
     }

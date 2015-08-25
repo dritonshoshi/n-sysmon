@@ -353,7 +353,7 @@ public class NSysMonPreparedStatement extends NSysMonStatement implements Prepar
         inner.setNClob(parameterIndex, reader);
     }
 
-    //----------------------- ignored by ASysMon
+    //----------------------- ignored by NSysMon
 
     @Override public void clearParameters() throws SQLException {
         inner.clearParameters();

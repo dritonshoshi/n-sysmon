@@ -92,7 +92,7 @@ public class NSysMonDataSource implements DataSource {
                     }
                 });
                 // Silently ignore - this means that the fetching and closing of the connection did not happen at the same level in the call hierarchy. While such
-                //  a symmetry is common and often desirable, it is by no means the only valid mode of using JDBC - so ASysMon needs to deal with it in a robust fashion.
+                //  a symmetry is common and often desirable, it is by no means the only valid mode of using JDBC - so NSysMon needs to deal with it in a robust fashion.
             }
             inner.onCloseConnection (qualifier);
         }

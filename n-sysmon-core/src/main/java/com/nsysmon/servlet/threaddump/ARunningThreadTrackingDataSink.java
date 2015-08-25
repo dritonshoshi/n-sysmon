@@ -25,7 +25,7 @@ class ARunningThreadTrackingDataSink implements ADataSink {
     private final Map<String, Long> startTimestamps = new ConcurrentHashMap<String, Long>();
 
     private void ensureAgainstMemoryLeaks() {
-        // Using ASysMon without closing measurements could cause a memory leak here. This method acts as a safeguard
+        // Using NSysMon without closing measurements could cause a memory leak here. This method acts as a safeguard
         //  against that. Using a WeakHashMap plus synchronization might appear more elegant, would however introduce
         //  a global lock for which application code would have to wait.
         if(startTimestamps.size() > MAX_NUM_THREADS) {

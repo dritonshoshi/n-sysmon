@@ -210,7 +210,7 @@ public class NSysMonConnection implements Connection {
         }
     }
 
-    //------------------- misc / ignored by ASysMon
+    //------------------- misc / ignored by NSysMon
 
     @Override
     public void close() throws SQLException {

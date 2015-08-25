@@ -202,7 +202,7 @@ public class AMeasurementHierarchyImpl implements AMeasurementHierarchy {
 
         if(unfinished.isEmpty()) {
             // A collection measurement can never be top-level. To be on the safe side, we just ignore this, losing measurement data rather than risking non-robust code.
-            // Declarative transactions can cause this if the start and especially the end of a transaction are not surrounded by an ASysMon measurement
+            // Declarative transactions can cause this if the start and especially the end of a transaction are not surrounded by an NSysMon measurement
             log.debug (new AFunction0NoThrow<String> () {
                 @Override public String apply () {
                     return "Trying to start a collectiong mesaurement outside of a measurement hierarchy: " + identifier;

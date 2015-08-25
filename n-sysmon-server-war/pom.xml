@@ -5,12 +5,12 @@
     <parent>
         <artifactId>n-sysmon-parent</artifactId>
         <groupId>com.n-sysmon</groupId>
-        <version>1.0-SNAPSHOT</version>
+        <version>1.1-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>n-sysmon-server-war</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.1-SNAPSHOT</version>
     <packaging>war</packaging>
 
     <dependencies>

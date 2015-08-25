@@ -17,9 +17,9 @@ public class NsysmonDemoMain {
     public static void main(String[] args) throws Exception {
         new DeadlockThread().start();
 
-//        System.setProperty("com.ajjpj.asysmon.globallydisabled", "true");
+//        System.setProperty("com.nsysmon.globallydisabled", "true");
 
-//        ASysMonConfigurer.addDataSink(ASysMon.get(), new AHttpJsonOffloadingDataSink(ASysMon.get(), "http://localhost:8899/upload", "demo", "the-instance", 100, 1000, 1, 10*1000));
+//        NSysMonConfigurer.addDataSink(NSysMon.get(), new AHttpJsonOffloadingDataSink(NSysMon.get(), "http://localhost:8899/upload", "demo", "the-instance", 100, 1000, 1, 10*1000));
 
         final Server server = new Server(8181);
 

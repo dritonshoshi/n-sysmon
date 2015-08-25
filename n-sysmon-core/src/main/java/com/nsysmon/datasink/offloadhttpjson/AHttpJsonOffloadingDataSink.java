@@ -66,7 +66,7 @@ public class AHttpJsonOffloadingDataSink implements ADataSink {
         scalarMeasurementPool.scheduleAtFixedRate(new Runnable() {
             @Override public void run() {
                 //TODO introduce 'AScalarProvider' interface for callbacks like this
-                for(AScalarDataPoint scalar: sysMon.getScalarMeasurements().values()) { //TODO ensure that this ASysMon call will never throw exceptions
+                for(AScalarDataPoint scalar: sysMon.getScalarMeasurements().values()) { //TODO ensure that this NSysMon call will never throw exceptions
                     scalarQueue.add(scalar);
                 }
             }

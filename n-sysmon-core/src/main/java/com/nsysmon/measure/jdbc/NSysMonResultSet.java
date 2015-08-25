@@ -129,7 +129,7 @@ public class NSysMonResultSet implements ResultSet {
         }
     }
 
-    //----------------- ignored by ASysMon
+    //----------------- ignored by NSysMon
 
     @Override
     public void close() throws SQLException {
