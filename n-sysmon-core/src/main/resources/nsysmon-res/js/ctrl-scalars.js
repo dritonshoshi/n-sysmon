@@ -303,6 +303,7 @@ angular.module('NSysMonApp').controller('CtrlScalars', function($scope, $log, Re
             var committed = $scope.scalars['mem:' + memKind + ':committed'];
             var max       = $scope.scalars['mem:' + memKind + ':max'];
 
+            if (!max) max = 1; // prevent errors if max == undefined
             var percent = used.value / max.value * 100;
 
             result += '<tr>' +
