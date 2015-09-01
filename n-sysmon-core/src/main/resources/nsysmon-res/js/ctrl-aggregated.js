@@ -22,6 +22,7 @@ angular.module('NSysMonApp').controller('CtrlAggregated', function($scope, $log,
 
     $scope.expansionModel = {};
     $scope.rootLevel = 0;
+    $scope.hideTitleRows = 1;
 
     var nodesByFqn = {};
 
