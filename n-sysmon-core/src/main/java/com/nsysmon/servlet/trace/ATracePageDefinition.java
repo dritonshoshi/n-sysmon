@@ -103,12 +103,12 @@ public class ATracePageDefinition extends AAbstractNsysmonPerformancePageDef {
         if(selfNanos > node.getDurationNanos()) selfNanos = node.getDurationNanos();
 
         if(selfNanos != 0 && children.size() > 0) {
-            children.add(0, new TreeNode("<self>", true, new long[] {selfNanos * 1000 / node.getDurationNanos(), selfNanos / 1000, selfNanos / 1000, node.getStartTimeMillis() - childNow}, Collections.<TreeNode>emptyList()));
+            children.add(0, new TreeNode("<self>", true, new long[]{selfNanos * 1000 / node.getDurationNanos(), selfNanos / 1000, selfNanos / 1000, node.getStartTimeMillis() - childNow}, Collections.<TreeNode>emptyList()));
         }
 
 
         final long[] colDataRaw = new long[] {
-                node.getDurationNanos() * 100 * 10 / parentNanos, // 100 for '%', 10 for 1 frac digit
+                node.getDurationNanos() * 100 * 10 / (parentNanos == 0 ? 1 : parentNanos), // 100 for '%', 10 for 1 frac digit
                 node.getDurationNanos() / 1000,
                 selfNanos / 1000,
                 node.getStartTimeMillis() - now
