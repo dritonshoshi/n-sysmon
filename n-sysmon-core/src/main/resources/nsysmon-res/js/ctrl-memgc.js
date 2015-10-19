@@ -154,10 +154,19 @@ angular.module('NSysMonApp').controller('CtrlMemGc', function($scope, $log, Rest
     }
 
     var memKindSortOrder = {
-        'PS Perm Gen': 1,
-        'PS Old Gen': 2,
-        'PS Survivor Space': 3,
-        'PS Eden Space': 4,
+        //'Metaspace' : 1,
+        //'Compressed Class Space' : 2,
+        //'G1 Old Gen': 3,
+        //'G1 Survivor Space': 4,
+        //'G1 Eden Space': 5,
+        'Compressed Class Space' : 1,
+        'Metaspace' : 2,
+        'G1 Old Gen': 3,
+        'PS Old Gen': 4,
+        'G1 Survivor Space': 5,
+        'PS Survivor Space': 6,
+        'G1 Eden Space': 7,
+        'PS Eden Space': 8,
         '_full_': 10
     };
 
