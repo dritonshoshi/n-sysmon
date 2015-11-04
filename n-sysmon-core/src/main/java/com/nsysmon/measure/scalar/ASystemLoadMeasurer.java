@@ -18,12 +18,21 @@ public class ASystemLoadMeasurer implements AScalarMeasurer {
     public static final String IDENT_LOAD_15_MIN = "load-15-minutes";
 
     private final File procFile = new File("/proc/loadavg");
+    private final boolean isWindows;
+
+    public ASystemLoadMeasurer(){
+        isWindows = System.getProperty("os.name").toLowerCase().contains("win");
+    }
 
     @Override public void prepareMeasurements(Map<String, Object> mementos) {
     }
 
     @Override
     public void contributeMeasurements(Map<String, AScalarDataPoint> result, long timestamp, Map<String, Object> mementos) throws IOException {
+        //this measurement isn't working on windows
+        if (isWindows){
+            return;
+        }
         final BufferedReader in = new BufferedReader(new FileReader(procFile));
         final String[] raw = in.readLine().split(" ");
 

@@ -26,9 +26,11 @@ public class NSysMonConfigBuilder {
 
     private int maxNestedMeasurements = 100;
     private int maxNumMeasurementsPerHierarchy = 100_000;
+    private int maxNumMeasurementsPerTimedScalar = 500;
 
     private long measurementTimeoutNanos = 20_000_000;
     private int maxNumMeasurementTimeouts = 3;
+    private int durationOfOneTimedScalar = 300;
 
     private long dataSinkTimeoutNanos = 100_000;
     private int maxNumDataSinkTimeouts = 3;
@@ -36,11 +38,12 @@ public class NSysMonConfigBuilder {
     private ATimer timer = new ASystemNanoTimer();
     private AHttpRequestAnalyzer httpRequestAnalyzer = new ASimpleHttpRequestAnalyzer();
 
-    private final List<AEnvironmentMeasurer> environmentMeasurers = new ArrayList<AEnvironmentMeasurer>();
+    private final List<AEnvironmentMeasurer> environmentMeasurers = new ArrayList<>();
     private final List<AScalarMeasurer> scalarMeasurers = new ArrayList<AScalarMeasurer>();
+    private final List<AScalarMeasurer> scalarTimedMeasurers = new ArrayList<>();
     private final List<ADataSink> dataSinks = new ArrayList<ADataSink>();
 
-    private final List<APresentationMenuEntry> presentationMenuEntries = new ArrayList<APresentationMenuEntry>();
+    private final List<APresentationMenuEntry> presentationMenuEntries = new ArrayList<>();
     private String defaultPage;
 
     public NSysMonConfigBuilder(AApplicationInfoProvider appInfo) {
@@ -73,6 +76,15 @@ public class NSysMonConfigBuilder {
         return this;
     }
 
+    public NSysMonConfigBuilder setMaxNumMeasurementsPerTimedScalar(int maxNum) {
+        this.maxNumMeasurementsPerTimedScalar = maxNum;
+        return this;
+    }
+
+    public NSysMonConfigBuilder setDurationOfOneTimedScalar(int number) {
+        this.durationOfOneTimedScalar = number;
+        return this;
+    }
     public NSysMonConfigBuilder setMeasurementTimeoutNanos(long measurementTimeoutNanos) {
         this.measurementTimeoutNanos = measurementTimeoutNanos;
         return this;
@@ -108,6 +120,11 @@ public class NSysMonConfigBuilder {
         return this;
     }
 
+    public NSysMonConfigBuilder addScalarTimedMeasurer(AScalarMeasurer scalarTimedMeasurer) {
+        this.scalarTimedMeasurers.add(scalarTimedMeasurer);
+        return this;
+    }
+
     public NSysMonConfigBuilder addDataSink(ADataSink dataSink) {
         this.dataSinks.add(dataSink);
         return this;
@@ -131,13 +148,14 @@ public class NSysMonConfigBuilder {
     public NSysMonConfig build() {
         return new NSysMonConfig(
                 appInfo,
-                averagingDelayForScalarsMillis,
-                maxNestedMeasurements, maxNumMeasurementsPerHierarchy,
+                averagingDelayForScalarsMillis, durationOfOneTimedScalar,
+                maxNestedMeasurements, maxNumMeasurementsPerHierarchy, maxNumMeasurementsPerTimedScalar,
                 measurementTimeoutNanos, maxNumMeasurementTimeouts,
                 dataSinkTimeoutNanos, maxNumDataSinkTimeouts,
                 timer, httpRequestAnalyzer,
-                environmentMeasurers, scalarMeasurers, dataSinks,
+                environmentMeasurers, scalarMeasurers, scalarTimedMeasurers, dataSinks,
                 defaultPage, presentationMenuEntries
                 );
     }
+
 }

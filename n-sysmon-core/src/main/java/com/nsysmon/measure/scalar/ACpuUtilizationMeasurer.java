@@ -24,12 +24,25 @@ public class ACpuUtilizationMeasurer implements AScalarMeasurer {
     public static final String KEY_AVAILABLE = KEY_PREFIX + "available";
     public static final String KEY_ALL_USED = KEY_PREFIX + "all-used";
     public static final String KEY_PREFIX_MHZ = KEY_PREFIX + "freq-mhz:";
+    private final boolean isWindows;
+
+    public ACpuUtilizationMeasurer(){
+        isWindows = System.getProperty("os.name").toLowerCase().contains("win");
+    }
 
     @Override public void prepareMeasurements(Map<String, Object> mementos) throws IOException {
+        //this measurement isn't working on windows
+        if (isWindows){
+            return;
+        }
         mementos.put(KEY_MEMENTO, createSnapshot());
     }
 
     @Override public void contributeMeasurements(Map<String, AScalarDataPoint> data, long timestamp, Map<String, Object> mementos) throws IOException {
+        //this measurement isn't working on windows
+        if (isWindows){
+            return;
+        }
         final Map<String, Snapshot> allCurrent = createSnapshot();
         @SuppressWarnings("unchecked")
         final Map<String, Snapshot> allPrev = (Map<String, Snapshot>) mementos.get(KEY_MEMENTO);

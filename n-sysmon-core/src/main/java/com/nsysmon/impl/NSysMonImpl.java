@@ -1,6 +1,7 @@
 package com.nsysmon.impl;
 
 import com.ajjpj.afoundation.collection.immutable.AList;
+import com.ajjpj.afoundation.collection.mutable.ARingBuffer;
 import com.nsysmon.NSysMonApi;
 import com.nsysmon.config.NSysMonAware;
 import com.nsysmon.config.NSysMonConfig;
@@ -18,6 +19,9 @@ import com.nsysmon.measure.scalar.AScalarMeasurer;
 import com.nsysmon.util.AShutdownable;
 
 import java.util.*;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 
 /**
@@ -39,7 +43,9 @@ public class NSysMonImpl implements AShutdownable, NSysMonApi {
     private final NSysMonConfig config;
     private volatile AList<RobustDataSinkWrapper> handlers = AList.nil();
     private volatile AList<RobustScalarMeasurerWrapper> scalarMeasurers = AList.nil();
+    private volatile AList<RobustScalarMeasurerWrapper> timedScalarMeasurers = AList.nil();
     private volatile AList<RobustEnvironmentMeasurerWrapper> environmentMeasurers = AList.nil();
+    private volatile TimedScalarMeasurer timedScalarMeasureRunnable;
 
     private final ThreadLocal<AMeasurementHierarchy> hierarchyPerThread = new ThreadLocal<AMeasurementHierarchy>();
 
@@ -48,6 +54,14 @@ public class NSysMonImpl implements AShutdownable, NSysMonApi {
 
         for(AScalarMeasurer m: config.initialScalarMeasurers) {
             addScalarMeasurer(m);
+        }
+
+        ScheduledExecutorService scheduledPool = Executors.newScheduledThreadPool(4);
+
+        timedScalarMeasureRunnable = new TimedScalarMeasurer(config.maxNumMeasurementsPerTimedScalar);
+        scheduledPool.scheduleAtFixedRate(timedScalarMeasureRunnable, 0, config.durationOfOneTimedScalar, TimeUnit.SECONDS);
+        for(AScalarMeasurer m: config.initialTimedScalarMeasurers) {
+            addTimedScalarMeasurer(m);
         }
 
         for(ADataSink h: config.initialDataSinks) {
@@ -78,6 +92,12 @@ public class NSysMonImpl implements AShutdownable, NSysMonApi {
     void addScalarMeasurer(AScalarMeasurer m) {
         injectSysMon(m);
         scalarMeasurers = scalarMeasurers.cons(new RobustScalarMeasurerWrapper(m, config.measurementTimeoutNanos, config.maxNumMeasurementTimeouts));
+    }
+
+    void addTimedScalarMeasurer(AScalarMeasurer m) {
+        injectSysMon(m);
+        timedScalarMeasurers = timedScalarMeasurers.cons(new RobustScalarMeasurerWrapper(m, config.measurementTimeoutNanos, config.maxNumMeasurementTimeouts));
+        timedScalarMeasureRunnable.refreshMeasurers(timedScalarMeasurers);
     }
 
     void addEnvironmentMeasurer(AEnvironmentMeasurer m) {
@@ -211,6 +231,17 @@ public class NSysMonImpl implements AShutdownable, NSysMonApi {
         for(RobustScalarMeasurerWrapper measurer: scalarMeasurers) {
             measurer.contributeMeasurements(result, now, mementos);
         }
+        return result;
+    }
+
+    @Override public Map<String, ARingBuffer<AScalarDataPoint>> getTimedScalarMeasurements() {
+        Map<String, ARingBuffer<AScalarDataPoint>> result = new TreeMap<>();
+        if(NSysMonConfig.isGloballyDisabled()) {
+            return result;
+        }
+
+        result = timedScalarMeasureRunnable.getMeasurements();
+
         return result;
     }
 

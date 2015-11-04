@@ -32,11 +32,25 @@ public class AProcDiskstatsMeasurer implements AScalarMeasurer {
 
     public static final String KEY_MOUNTPOINT = ":mountpoint:";
 
+    private final boolean isWindows;
+
+    public AProcDiskstatsMeasurer(){
+        isWindows = System.getProperty("os.name").toLowerCase().contains("win");
+    }
+
     @Override public void prepareMeasurements(Map<String, Object> mementos) throws Exception {
+        //this measurement isn't working on windows
+        if (isWindows){
+            return;
+        }
         mementos.put(KEY_MEMENTO, createSnapshot());
     }
 
     @Override public void contributeMeasurements(Map<String, AScalarDataPoint> data, long timestamp, Map<String, Object> mementos) throws Exception {
+        //this measurement isn't working on windows
+        if (isWindows){
+            return;
+        }
         contributeDiskSize(data, timestamp);
         contributeTraffic(data, timestamp, mementos);
         contributeMountPoints(data, timestamp);

@@ -1,5 +1,6 @@
 package com.nsysmon;
 
+import com.ajjpj.afoundation.collection.mutable.ARingBuffer;
 import com.nsysmon.config.NSysMonConfig;
 import com.nsysmon.data.ACorrelationId;
 import com.nsysmon.data.AHierarchicalDataRoot;
@@ -49,12 +50,15 @@ public interface NSysMonApi {
      */
     void injectSyntheticMeasurement(AHierarchicalDataRoot d);
 
-    public ACollectingMeasurement startCollectingMeasurement(String identifier);
-    public ACollectingMeasurement startCollectingMeasurement(String identifier, boolean serial);
+    ACollectingMeasurement startCollectingMeasurement(String identifier);
+    ACollectingMeasurement startCollectingMeasurement(String identifier, boolean serial);
 
-    public Map<String, AScalarDataPoint> getScalarMeasurements();
+    Map<String, AScalarDataPoint> getScalarMeasurements();
 
     Map<String, AScalarDataPoint> getScalarMeasurements(int averagingDelayForScalarsMillis);
 
+    Map<String,ARingBuffer<AScalarDataPoint>> getTimedScalarMeasurements();
+
     List<AEnvironmentData> getEnvironmentMeasurements() throws Exception;
+
 }

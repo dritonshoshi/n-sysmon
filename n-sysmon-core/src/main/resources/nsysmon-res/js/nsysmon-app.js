@@ -1,5 +1,6 @@
 
-angular.module('NSysMonApp', ['ngRoute', 'nsysmon'], function($routeProvider, configRaw) {
+angular.module('NSysMonApp', ['ngRoute', 'nsysmon', 'nvd3'], function($routeProvider, configRaw) {
+
     angular.forEach(configRaw.menuEntries, function(menuEntry) {
         angular.forEach(menuEntry.entries, function(pageDef) {
             $routeProvider.when('/' + pageDef.id, {templateUrl: '_$_nsysmon_$_/static/partials/' + pageDef.htmlFileName, controller: pageDef.controller});
@@ -10,6 +11,7 @@ angular.module('NSysMonApp', ['ngRoute', 'nsysmon'], function($routeProvider, co
 });
 
 angular.module('NSysMonApp').controller('NSysMonCtrl', function($scope, $route, $location, config) {
+    $scope.rc = {};
     $scope.configRaw = config.raw();
     $scope.curTitle = function() {
         return config.forCurrentPage().fullLabel;

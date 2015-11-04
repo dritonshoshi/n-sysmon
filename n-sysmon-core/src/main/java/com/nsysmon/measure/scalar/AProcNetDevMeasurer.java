@@ -23,12 +23,25 @@ public class AProcNetDevMeasurer implements AScalarMeasurer {
     public static final String KEY_SUFFIX_SENT_BYTES = ":sent-bytes";
     public static final String KEY_SUFFIX_SENT_PACKETS = ":sent-pkt";
     public static final String KEY_SUFFIX_COLLISIONS = ":collisions";
+    private final boolean isWindows;
+
+    public AProcNetDevMeasurer(){
+        isWindows = System.getProperty("os.name").toLowerCase().contains("win");
+    }
 
     @Override public void prepareMeasurements(Map<String, Object> mementos) throws Exception {
+        //this measurement isn't working on windows
+        if (isWindows){
+            return;
+        }
         mementos.put(KEY_MEMENTO, createSnapshot());
     }
 
     @Override public void contributeMeasurements(Map<String, AScalarDataPoint> data, long timestamp, Map<String, Object> mementos) throws Exception {
+        //this measurement isn't working on windows
+        if (isWindows){
+            return;
+        }
         final Snapshot prev = (Snapshot) mementos.get(KEY_MEMENTO);
         final Snapshot cur = createSnapshot();
 

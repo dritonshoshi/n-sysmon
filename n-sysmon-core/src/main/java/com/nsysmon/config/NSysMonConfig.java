@@ -24,6 +24,8 @@ public class NSysMonConfig {
 
     public final int maxNestedMeasurements;
     public final int maxNumMeasurementsPerHierarchy;
+    public final int maxNumMeasurementsPerTimedScalar;
+    public final int durationOfOneTimedScalar;
 
     public final long measurementTimeoutNanos;
     public final int maxNumMeasurementTimeouts;
@@ -36,22 +38,26 @@ public class NSysMonConfig {
 
     public final List<AEnvironmentMeasurer> initialEnvironmentMeasurers;
     public final List<AScalarMeasurer> initialScalarMeasurers;
+    public final List<AScalarMeasurer> initialTimedScalarMeasurers;
     public final List<ADataSink> initialDataSinks;
 
     public final String defaultPage;
     public final List<APresentationMenuEntry> presentationMenuEntries;
 
     public NSysMonConfig(AApplicationInfoProvider appInfo,
-                         int averagingDelayForScalarsMillis,
-                         int maxNestedMeasurements, int maxNumMeasurementsPerHierarchy,
+                         int averagingDelayForScalarsMillis, int durationOfOneTimedScalar,
+                         int maxNestedMeasurements, int maxNumMeasurementsPerHierarchy, int maxNumMeasurementsPerTimedScalar,
                          long measurementTimeoutNanos, int maxNumMeasurementTimeouts, long dataSinkTimeoutNanos, int maxNumDataSinkTimeouts,
                          ATimer timer, AHttpRequestAnalyzer httpRequestAnalyzer,
-                         List<AEnvironmentMeasurer> environmentMeasurers, List<AScalarMeasurer> initialScalarMeasurers, List<ADataSink> initialDataSinks,
+                         List<AEnvironmentMeasurer> environmentMeasurers, List<AScalarMeasurer> initialScalarMeasurers, List<AScalarMeasurer> initialTimedScalarMeasurers,
+                         List<ADataSink> initialDataSinks,
                          String defaultPage, List<APresentationMenuEntry> presentationMenuEntries) {
         this.appInfo = appInfo;
         this.averagingDelayForScalarsMillis = averagingDelayForScalarsMillis;
+        this.durationOfOneTimedScalar = durationOfOneTimedScalar;
         this.maxNestedMeasurements = maxNestedMeasurements;
         this.maxNumMeasurementsPerHierarchy = maxNumMeasurementsPerHierarchy;
+        this.maxNumMeasurementsPerTimedScalar = maxNumMeasurementsPerTimedScalar;
         this.measurementTimeoutNanos = measurementTimeoutNanos;
         this.maxNumMeasurementTimeouts = maxNumMeasurementTimeouts;
         this.dataSinkTimeoutNanos = dataSinkTimeoutNanos;
@@ -60,6 +66,7 @@ public class NSysMonConfig {
         this.httpRequestAnalyzer = httpRequestAnalyzer;
         this.initialEnvironmentMeasurers = Collections.unmodifiableList(environmentMeasurers);
         this.initialScalarMeasurers = Collections.unmodifiableList(initialScalarMeasurers);
+        this.initialTimedScalarMeasurers = Collections.unmodifiableList(initialTimedScalarMeasurers);
         this.initialDataSinks = Collections.unmodifiableList(initialDataSinks);
         this.defaultPage = defaultPage;
         this.presentationMenuEntries = Collections.unmodifiableList(presentationMenuEntries);

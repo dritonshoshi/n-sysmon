@@ -40,6 +40,7 @@ public class ADefaultConfigFactory implements AConfigFactory {
 
     public static final String KEY_ENV_MEASURERS = "env-measurers";
     public static final String KEY_SCALAR_MEASURERS = "scalar-measurers";
+    public static final String KEY_TIMED_SCALAR_MEASURERS = "timedscalar-measurers";
     public static final String KEY_DATA_SINKS = "data-sinks";
     public static final String KEY_PRESENTATION_MENUS = "presentation-menus";
 
@@ -50,6 +51,9 @@ public class ADefaultConfigFactory implements AConfigFactory {
 
     public static final String KEY_MAX_NESTED_MEASUREMENTS = "max-nested-measurements";
     public static final String KEY_MAX_NUM_MEASUREMENTS_PER_HIERARCHY = "max-measurements-per-hierarchy";
+    public static final String KEY_MAX_NUM_MEASUREMENTS_PER_TIMED_SCALAR = "max-measurements-per-timed-scalar";
+
+    public static final String KEY_DURATION_OF_ONE_TIMED_SCALAR = "duration-of-one-timed-scalar";
 
     public static final String KEY_DATA_SINK_TIMEOUT_NANOS = "data-sink-timeout-nanos";
     public static final String KEY_MAX_NUM_DATA_SINK_TIMEOUTS = "max-num-data-sink-timeouts";
@@ -154,8 +158,11 @@ public class ADefaultConfigFactory implements AConfigFactory {
         builder.setMeasurementTimeoutNanos(props.get(KEY_MEASUREMENT_TIMEOUT_NANOS, Long.TYPE));
         builder.setMaxNumMeasurementTimeouts(props.get(KEY_MAX_NUM_MEASUREMENT_TIMEOUTS, Integer.TYPE));
 
-        builder.setMaxNestedMeasurements (props.get (KEY_MAX_NESTED_MEASUREMENTS, Integer.TYPE));
-        builder.setMaxNumMeasurementsPerHierarchy (props.get (KEY_MAX_NUM_MEASUREMENTS_PER_HIERARCHY, Integer.TYPE));
+        builder.setDurationOfOneTimedScalar(props.get(KEY_DURATION_OF_ONE_TIMED_SCALAR, Integer.TYPE));
+
+        builder.setMaxNestedMeasurements(props.get(KEY_MAX_NESTED_MEASUREMENTS, Integer.TYPE));
+        builder.setMaxNumMeasurementsPerHierarchy(props.get(KEY_MAX_NUM_MEASUREMENTS_PER_HIERARCHY, Integer.TYPE));
+        builder.setMaxNumMeasurementsPerTimedScalar(props.get(KEY_MAX_NUM_MEASUREMENTS_PER_TIMED_SCALAR, Integer.TYPE));
 
         builder.setDataSinkTimeoutNanos (props.get (KEY_DATA_SINK_TIMEOUT_NANOS, Long.TYPE));
         builder.setMaxNumDataSinkTimeouts(props.get(KEY_MAX_NUM_DATA_SINK_TIMEOUTS, Integer.TYPE));
@@ -166,6 +173,10 @@ public class ADefaultConfigFactory implements AConfigFactory {
 
         for(AScalarMeasurer m: props.getList(KEY_SCALAR_MEASURERS, AScalarMeasurer.class)) {
             builder.addScalarMeasurer(m);
+        }
+
+        for(AScalarMeasurer m: props.getList(KEY_TIMED_SCALAR_MEASURERS, AScalarMeasurer.class)) {
+            builder.addScalarTimedMeasurer(m);
         }
 
         for(ADataSink h: props.getList(KEY_DATA_SINKS, ADataSink.class)) {
