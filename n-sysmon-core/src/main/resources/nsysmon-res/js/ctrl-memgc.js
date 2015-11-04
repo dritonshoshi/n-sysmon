@@ -5,6 +5,12 @@ angular.module('NSysMonApp').controller('CtrlMemGc', function($scope, $log, Rest
         html: true
     });
 
+    $scope.autoRefreshGC = true;
+    $scope.autoRefreshSecondsGC = 300;
+    var autoRefreshCounter = 0; // to invalidate auto-refresh if there was a manual refresh in between
+
+    $scope.$watch('autoRefreshGC', triggerAutoRefresh);
+    $scope.$watch('autoRefreshSecondsGC', triggerAutoRefresh);
 
     //TODO display committed and maximum memory
     //TODO get 'current' memory consumption in addition to GC requests
@@ -45,6 +51,27 @@ angular.module('NSysMonApp').controller('CtrlMemGc', function($scope, $log, Rest
         }
     });
 
+    function triggerAutoRefresh() {
+        if(! $scope.autoRefresh) {
+            return;
+        }
+
+        var oldCounter = autoRefreshCounter;
+        setTimeout(function() {
+            if(autoRefreshCounter !== oldCounter+1) {
+                return;
+            }
+            $scope.refresh();
+        }, $scope.autoRefreshSeconds * 1000);
+        autoRefreshCounter += 1;
+    }
+
+    $scope.refresh = function() {
+        sendCommand('getData');
+    };
+
+    $scope.refresh();
+
     function endMillis(gc) {
         return gc.durationNanos < 1000*1000 ? gc.startMillis : (gc.startMillis + gc.durationNanos / 1000 / 1000);
     }
@@ -77,6 +104,8 @@ angular.module('NSysMonApp').controller('CtrlMemGc', function($scope, $log, Rest
         $scope.endTime = new Date();
         $scope.dataSets = [];
         $scope.gcMarkings = [];
+
+        triggerAutoRefresh();
 
         function extractDataAsMap () {
             var result = {};

@@ -7,7 +7,10 @@
         </div>
         <a class="btn btn-default" ng-click="refresh()" data-toggle="tooltip" title="Fetch fresh data from the server">Refresh</a>
     </div>
-
+    <div class="input-group">
+        <span class="input-group-addon"><input type="checkbox" ng-model="autoRefreshGC" ng-checked="true"></span>
+        <input type="text" class="form-control" ng-model="autoRefreshSecondsGC" style="width:50px"> Automatically refresh after {{autoRefreshSeconds}} seconds
+    </div>
     <div>
         <input type="checkbox" ng-model="showFullGcMarkers"> Show Full GC markers &nbsp; &nbsp; &nbsp;
         <input type="checkbox" ng-model="showOtherGcMarkers"> Show other GC markers &nbsp; &nbsp; &nbsp;
