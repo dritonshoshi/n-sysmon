@@ -158,6 +158,11 @@ angular.module('NSysMonApp').controller('CtrlMemGc', function($scope, $log, Rest
         'PS Old Gen': 2,
         'PS Survivor Space': 3,
         'PS Eden Space': 4,
+        'Compressed Class Space' : 5,
+        'Metaspace' : 6,
+        'G1 Old Gen': 7,
+        'G1 Survivor Space': 8,
+        'G1 Eden Space': 9,
         '_full_': 10
     };
 
