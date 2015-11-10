@@ -403,7 +403,7 @@ angular.module('NSysMonApp').controller('CtrlAggregated', function($scope, $log,
         var withChildrenClass = (curNode.children && curNode.children.length) ? ' with-children' : '';
         var result =
             '<div class="data-row data-row-' + (curNode.level - $scope.rootLevel) + withChildrenClass + ' ' + dataRowSubdued + '">' +
-                '<div class="fqn-holder">' + curNode.fqn + '</div>' +
+                '<div class="fqn-holder">' + escapeHtml(curNode.fqn) + '</div>' +
                 '<div class="node-icon ' + $scope.nodeIconClass(curNode.fqn) + '">&nbsp;</div>' +
                 dataCols +
                 '<div class="node-text" style="margin-right: ' + $scope.totalDataWidth + 'px;">' + escapeHtml(curNode.name) + '</div>' +
