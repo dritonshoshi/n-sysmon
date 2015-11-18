@@ -45,11 +45,6 @@
 </fieldset>
 
 <fieldset class="scalar-group">
-    <legend>Disk</legend>
-    <div id="disk"></div>
-</fieldset>
-
-<fieldset class="scalar-group">
     <legend>JVM Memory</legend>
     <div id="jvm-mem"></div>
 </fieldset>
@@ -59,6 +54,11 @@
     <table class="table table-condensed table-striped">
         <tr ng-repeat="s in miscScalars"><td class="scalar-name">{{s.name}}</td><td class="scalar-value">{{s.formattedValue}}</td></tr>
     </table>
-
 </fieldset>
+
+<fieldset class="scalar-group">
+    <legend>Disk</legend>
+    <div id="disk"></div>
+</fieldset>
+
 
