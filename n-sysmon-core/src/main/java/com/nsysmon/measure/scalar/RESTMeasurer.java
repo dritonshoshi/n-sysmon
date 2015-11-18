@@ -1,5 +1,8 @@
 package com.nsysmon.measure.scalar;
 
+import com.nsysmon.NSysMonApi;
+import com.nsysmon.config.ADefaultConfigFactory;
+import com.nsysmon.config.NSysMonAware;
 import com.nsysmon.data.AScalarDataPoint;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -7,17 +10,21 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
 import org.codehaus.jackson.map.ObjectMapper;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-public class RESTMeasurer implements AScalarMeasurer {
+public class RESTMeasurer implements AScalarMeasurer, NSysMonAware {
+    private String url;
+    private NSysMonApi sysMon;
 
-    public static void main(String[] args) throws IOException {
-        RESTMeasurer restMeasurer = new RESTMeasurer();
-        HashMap map = restMeasurer.callRest();
-        System.out.println(map);
+//    public static void main(String[] args) throws IOException {
+//        RESTMeasurer restMeasurer = new RESTMeasurer("http://localhost:8080/omd-server/rest/nsysmonmeasurements/get/");
+//        HashMap map = restMeasurer.callRest(42);
+//        System.out.println(map);
+//    }
 
+    public RESTMeasurer() {
+        this.url = "NOT_CONFIGURED";
     }
 
     @Override public void prepareMeasurements(Map<String, Object> mementos) throws Exception {
@@ -25,7 +32,8 @@ public class RESTMeasurer implements AScalarMeasurer {
 
     @Override public void contributeMeasurements(final Map<String, AScalarDataPoint> data, long timestamp, Map<String, Object> mementos) throws Exception {
         RESTMeasurer restMeasurer = new RESTMeasurer();
-        HashMap<String, Double> myMap = (HashMap<String, Double>) restMeasurer.callRest();
+        //System.out.println(url);
+        HashMap<String, Double> myMap = (HashMap<String, Double>) restMeasurer.callRest(timestamp);
 
         for (String key : myMap.keySet()) {
             AScalarDataPoint point = new AScalarDataPoint(timestamp, key, Double.doubleToLongBits(myMap.get(key)), 0);
@@ -34,17 +42,14 @@ public class RESTMeasurer implements AScalarMeasurer {
     }
 
     @Override public void shutdown() throws Exception {
-
     }
 
-    private HashMap callRest() {
-        HashMap map = null;
+    private HashMap callRest(long timestamp) {
+        HashMap map = new HashMap();
         try {
             DefaultHttpClient httpClient = new DefaultHttpClient();
 
-            String getUrl = "http://localhost:8080/omd-server/rest/nsysmonmeasurements/get/1"; //TODO move to config
-
-            HttpGet getMethod = new HttpGet(getUrl);
+            HttpGet getMethod = new HttpGet(url + "/" + timestamp);
             HttpResponse response = httpClient.execute(getMethod);
 
             // CONVERT RESPONSE TO STRING
@@ -57,5 +62,9 @@ public class RESTMeasurer implements AScalarMeasurer {
         }
         return map;
     }
-}
 
+    @Override public void setNSysMon(NSysMonApi sysMon) {
+        this.sysMon = sysMon;
+        url = sysMon.getConfig().additionalConfigurationParameters.get(ADefaultConfigFactory.KEY_RESTMEASURER_URL);
+    }
+}

@@ -1,5 +1,6 @@
 package com.nsysmon.config;
 
+import com.ajjpj.afoundation.collection.immutable.AOption;
 import com.ajjpj.afoundation.function.AFunction0;
 import com.ajjpj.afoundation.util.AUnchecker;
 import com.nsysmon.config.appinfo.AApplicationInfoProvider;
@@ -12,13 +13,15 @@ import com.nsysmon.datasink.ADataSink;
 import com.nsysmon.measure.environment.AEnvironmentMeasurer;
 import com.nsysmon.measure.http.AHttpRequestAnalyzer;
 import com.nsysmon.measure.scalar.AScalarMeasurer;
-import com.ajjpj.afoundation.collection.immutable.AOption;
-//import com.ajjpj.afoundation.util.AUnchecker;
 import com.nsysmon.util.timer.ATimer;
 
 import java.io.InputStream;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
+
+//import com.ajjpj.afoundation.util.AUnchecker;
 
 
 /**
@@ -57,6 +60,7 @@ public class ADefaultConfigFactory implements AConfigFactory {
 
     public static final String KEY_DATA_SINK_TIMEOUT_NANOS = "data-sink-timeout-nanos";
     public static final String KEY_MAX_NUM_DATA_SINK_TIMEOUTS = "max-num-data-sink-timeouts";
+    public static final String KEY_RESTMEASURER_URL = "com.nsysmon.measure.scalar.RESTMeasurer.url";
 
     private static volatile NSysMonLoggerFactory configuredLogger;
 
@@ -166,6 +170,10 @@ public class ADefaultConfigFactory implements AConfigFactory {
 
         builder.setDataSinkTimeoutNanos (props.get (KEY_DATA_SINK_TIMEOUT_NANOS, Long.TYPE));
         builder.setMaxNumDataSinkTimeouts(props.get(KEY_MAX_NUM_DATA_SINK_TIMEOUTS, Integer.TYPE));
+        //TODO this need to be refactored, so meeasurements can be configured
+        Map<String, String> additionalConfigurations = new HashMap<>();
+        additionalConfigurations.put(KEY_RESTMEASURER_URL, props.get(KEY_RESTMEASURER_URL, String.class));
+        builder.setAdditionalConfigurationParameters(additionalConfigurations);
 
         for(AEnvironmentMeasurer m: props.getList(KEY_ENV_MEASURERS, AEnvironmentMeasurer.class)) {
             builder.addEnvironmentMeasurer(m);

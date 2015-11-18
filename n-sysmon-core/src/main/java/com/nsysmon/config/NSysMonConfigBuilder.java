@@ -14,7 +14,7 @@ import com.nsysmon.util.timer.ATimer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
+import java.util.Map;
 
 /**
  * @author arno
@@ -45,6 +45,7 @@ public class NSysMonConfigBuilder {
 
     private final List<APresentationMenuEntry> presentationMenuEntries = new ArrayList<>();
     private String defaultPage;
+    private Map<String, String> additionalConfigurationParameters;
 
     public NSysMonConfigBuilder(AApplicationInfoProvider appInfo) {
         this.appInfo = appInfo;
@@ -154,8 +155,11 @@ public class NSysMonConfigBuilder {
                 dataSinkTimeoutNanos, maxNumDataSinkTimeouts,
                 timer, httpRequestAnalyzer,
                 environmentMeasurers, scalarMeasurers, scalarTimedMeasurers, dataSinks,
-                defaultPage, presentationMenuEntries
+                defaultPage, presentationMenuEntries, additionalConfigurationParameters
                 );
     }
 
+    public void setAdditionalConfigurationParameters(Map<String, String> additionalConfigurationParameters) {
+        this.additionalConfigurationParameters = additionalConfigurationParameters;
+    }
 }

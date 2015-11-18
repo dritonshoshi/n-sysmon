@@ -10,7 +10,7 @@ import com.nsysmon.util.timer.ATimer;
 
 import java.util.Collections;
 import java.util.List;
-
+import java.util.Map;
 
 /**
  * @author arno
@@ -43,15 +43,12 @@ public class NSysMonConfig {
 
     public final String defaultPage;
     public final List<APresentationMenuEntry> presentationMenuEntries;
+    public final Map<String, String> additionalConfigurationParameters;
 
-    public NSysMonConfig(AApplicationInfoProvider appInfo,
-                         int averagingDelayForScalarsMillis, int durationOfOneTimedScalar,
-                         int maxNestedMeasurements, int maxNumMeasurementsPerHierarchy, int maxNumMeasurementsPerTimedScalar,
-                         long measurementTimeoutNanos, int maxNumMeasurementTimeouts, long dataSinkTimeoutNanos, int maxNumDataSinkTimeouts,
-                         ATimer timer, AHttpRequestAnalyzer httpRequestAnalyzer,
-                         List<AEnvironmentMeasurer> environmentMeasurers, List<AScalarMeasurer> initialScalarMeasurers, List<AScalarMeasurer> initialTimedScalarMeasurers,
-                         List<ADataSink> initialDataSinks,
-                         String defaultPage, List<APresentationMenuEntry> presentationMenuEntries) {
+    public NSysMonConfig(AApplicationInfoProvider appInfo, int averagingDelayForScalarsMillis, int durationOfOneTimedScalar, int maxNestedMeasurements, int maxNumMeasurementsPerHierarchy, int maxNumMeasurementsPerTimedScalar,
+            long measurementTimeoutNanos, int maxNumMeasurementTimeouts, long dataSinkTimeoutNanos, int maxNumDataSinkTimeouts, ATimer timer, AHttpRequestAnalyzer httpRequestAnalyzer,
+            List<AEnvironmentMeasurer> environmentMeasurers, List<AScalarMeasurer> initialScalarMeasurers, List<AScalarMeasurer> initialTimedScalarMeasurers, List<ADataSink> initialDataSinks,
+            String defaultPage, List<APresentationMenuEntry> presentationMenuEntries, Map<String, String> additionalConfigurationParameters) {
         this.appInfo = appInfo;
         this.averagingDelayForScalarsMillis = averagingDelayForScalarsMillis;
         this.durationOfOneTimedScalar = durationOfOneTimedScalar;
@@ -70,6 +67,7 @@ public class NSysMonConfig {
         this.initialDataSinks = Collections.unmodifiableList(initialDataSinks);
         this.defaultPage = defaultPage;
         this.presentationMenuEntries = Collections.unmodifiableList(presentationMenuEntries);
+        this.additionalConfigurationParameters = additionalConfigurationParameters;
     }
 
     /**
