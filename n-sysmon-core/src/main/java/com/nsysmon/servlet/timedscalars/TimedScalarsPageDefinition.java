@@ -87,7 +87,6 @@ public class TimedScalarsPageDefinition implements APresentationPageDefinition {
     //TODO FOX088S think about splitting this into 2 methods one for the names and one for the data
     private void serveData(final AJsonSerHelper json) throws IOException {
         final Map<String, ARingBuffer<AScalarDataPoint>> scalars = sysMon.getTimedScalarMeasurements();
-        System.out.println("serveData called");
         json.startObject();
 
         json.writeKey("timedScalars");
