@@ -33,6 +33,8 @@ public class NSysMonConfig {
     public final long dataSinkTimeoutNanos;
     public final int maxNumDataSinkTimeouts;
 
+    public final int restMeasurerTimeoutSeconds;
+
     public final ATimer timer;
     public final AHttpRequestAnalyzer httpRequestAnalyzer;
 
@@ -48,7 +50,7 @@ public class NSysMonConfig {
     public NSysMonConfig(AApplicationInfoProvider appInfo, int averagingDelayForScalarsMillis, int durationOfOneTimedScalar, int maxNestedMeasurements, int maxNumMeasurementsPerHierarchy, int maxNumMeasurementsPerTimedScalar,
             long measurementTimeoutNanos, int maxNumMeasurementTimeouts, long dataSinkTimeoutNanos, int maxNumDataSinkTimeouts, ATimer timer, AHttpRequestAnalyzer httpRequestAnalyzer,
             List<AEnvironmentMeasurer> environmentMeasurers, List<AScalarMeasurer> initialScalarMeasurers, List<AScalarMeasurer> initialTimedScalarMeasurers, List<ADataSink> initialDataSinks,
-            String defaultPage, List<APresentationMenuEntry> presentationMenuEntries, Map<String, String> additionalConfigurationParameters) {
+            String defaultPage, List<APresentationMenuEntry> presentationMenuEntries,int restMeasurerTimeoutSeconds, Map<String, String> additionalConfigurationParameters) {
         this.appInfo = appInfo;
         this.averagingDelayForScalarsMillis = averagingDelayForScalarsMillis;
         this.durationOfOneTimedScalar = durationOfOneTimedScalar;
@@ -67,6 +69,7 @@ public class NSysMonConfig {
         this.initialDataSinks = Collections.unmodifiableList(initialDataSinks);
         this.defaultPage = defaultPage;
         this.presentationMenuEntries = Collections.unmodifiableList(presentationMenuEntries);
+        this.restMeasurerTimeoutSeconds = restMeasurerTimeoutSeconds;
         this.additionalConfigurationParameters = additionalConfigurationParameters;
     }
 

@@ -35,6 +35,8 @@ public class NSysMonConfigBuilder {
     private long dataSinkTimeoutNanos = 100_000;
     private int maxNumDataSinkTimeouts = 3;
 
+    private int restMeasurerTimeoutSeconds = 10;
+
     private ATimer timer = new ASystemNanoTimer();
     private AHttpRequestAnalyzer httpRequestAnalyzer = new ASimpleHttpRequestAnalyzer();
 
@@ -86,6 +88,12 @@ public class NSysMonConfigBuilder {
         this.durationOfOneTimedScalar = number;
         return this;
     }
+
+    public NSysMonConfigBuilder setRestMeasurerTimeoutSeconds(int restMeasurerTimeoutSeconds) {
+        this.restMeasurerTimeoutSeconds = restMeasurerTimeoutSeconds;
+        return this;
+    }
+
     public NSysMonConfigBuilder setMeasurementTimeoutNanos(long measurementTimeoutNanos) {
         this.measurementTimeoutNanos = measurementTimeoutNanos;
         return this;
@@ -155,7 +163,7 @@ public class NSysMonConfigBuilder {
                 dataSinkTimeoutNanos, maxNumDataSinkTimeouts,
                 timer, httpRequestAnalyzer,
                 environmentMeasurers, scalarMeasurers, scalarTimedMeasurers, dataSinks,
-                defaultPage, presentationMenuEntries, additionalConfigurationParameters
+                defaultPage, presentationMenuEntries, restMeasurerTimeoutSeconds, additionalConfigurationParameters
                 );
     }
 

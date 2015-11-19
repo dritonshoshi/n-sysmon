@@ -54,13 +54,15 @@ public class ADefaultConfigFactory implements AConfigFactory {
 
     public static final String KEY_MAX_NESTED_MEASUREMENTS = "max-nested-measurements";
     public static final String KEY_MAX_NUM_MEASUREMENTS_PER_HIERARCHY = "max-measurements-per-hierarchy";
-    public static final String KEY_MAX_NUM_MEASUREMENTS_PER_TIMED_SCALAR = "max-measurements-per-timed-scalar";
 
+    public static final String KEY_MAX_NUM_MEASUREMENTS_PER_TIMED_SCALAR = "max-measurements-per-timed-scalar";
     public static final String KEY_DURATION_OF_ONE_TIMED_SCALAR = "duration-of-one-timed-scalar";
 
     public static final String KEY_DATA_SINK_TIMEOUT_NANOS = "data-sink-timeout-nanos";
     public static final String KEY_MAX_NUM_DATA_SINK_TIMEOUTS = "max-num-data-sink-timeouts";
+
     public static final String KEY_RESTMEASURER_URL = "com.nsysmon.measure.scalar.RESTMeasurer.url";
+    public static final String KEY_RESTMEASURER_URL_TIMEOUT_SECONDS = "com.nsysmon.measure.scalar.RESTMeasurer.timeout";
 
     private static volatile NSysMonLoggerFactory configuredLogger;
 
@@ -170,9 +172,11 @@ public class ADefaultConfigFactory implements AConfigFactory {
 
         builder.setDataSinkTimeoutNanos (props.get (KEY_DATA_SINK_TIMEOUT_NANOS, Long.TYPE));
         builder.setMaxNumDataSinkTimeouts(props.get(KEY_MAX_NUM_DATA_SINK_TIMEOUTS, Integer.TYPE));
+        builder.setRestMeasurerTimeoutSeconds(props.get(KEY_RESTMEASURER_URL_TIMEOUT_SECONDS, Integer.TYPE));
         //TODO this need to be refactored, so meeasurements can be configured
         Map<String, String> additionalConfigurations = new HashMap<>();
         additionalConfigurations.put(KEY_RESTMEASURER_URL, props.get(KEY_RESTMEASURER_URL, String.class));
+
         builder.setAdditionalConfigurationParameters(additionalConfigurations);
 
         for(AEnvironmentMeasurer m: props.getList(KEY_ENV_MEASURERS, AEnvironmentMeasurer.class)) {
