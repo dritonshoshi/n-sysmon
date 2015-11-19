@@ -17,8 +17,10 @@ import java.net.SocketTimeoutException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 public class RESTMeasurer implements AScalarMeasurer, NSysMonAware {
+    private static final Pattern DOT_PATTERN = Pattern.compile("\\.");
     private String url;
     private int timeoutInSeconds = 10;
     private static final Logger LOG = Logger.getLogger(RESTMeasurer.class);
@@ -36,9 +38,13 @@ public class RESTMeasurer implements AScalarMeasurer, NSysMonAware {
     @Override public void contributeMeasurements(final Map<String, AScalarDataPoint> data, long timestamp, Map<String, Object> mementos) throws Exception {
         final Map<String, Double> myMap = callRest(timestamp);
 
-        for (String key : myMap.keySet()) {
-            AScalarDataPoint point = new AScalarDataPoint(timestamp, key, Double.doubleToLongBits(myMap.get(key)), 0);
-            data.put(key, point);
+        for (Map.Entry<String, Double> stringDoubleEntry : myMap.entrySet()) {
+            final String valueString = Double.toString(stringDoubleEntry.getValue());
+            final int numFracDigits = valueString.substring(valueString.indexOf('.') + 1).length();
+            final long value = Long.parseLong(DOT_PATTERN.matcher(valueString).replaceAll(""));
+
+            AScalarDataPoint point = new AScalarDataPoint(timestamp, stringDoubleEntry.getKey().intern(), value, numFracDigits);
+            data.put(stringDoubleEntry.getKey(), point);
         }
     }
 

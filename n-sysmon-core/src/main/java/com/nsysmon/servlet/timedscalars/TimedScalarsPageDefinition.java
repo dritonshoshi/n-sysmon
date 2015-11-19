@@ -61,7 +61,6 @@ public class TimedScalarsPageDefinition implements APresentationPageDefinition {
 
     private void serveGraphData(final AJsonSerHelper json, List<String> params) throws IOException {
         //TODO FOX088S why is this called twice at start?
-        System.out.println("serveGraphData called:"+params);
         for (String param : params) {
             final Map<String, ARingBuffer<AScalarDataPoint>> scalars = sysMon.getTimedScalarMeasurements();
 
