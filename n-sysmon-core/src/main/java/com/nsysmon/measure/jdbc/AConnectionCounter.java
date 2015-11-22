@@ -1,6 +1,7 @@
 package com.nsysmon.measure.jdbc;
 
 
+import com.ajjpj.afoundation.collection.immutable.AOption;
 import com.nsysmon.config.wiring.ABeanFactory;
 import com.nsysmon.data.AScalarDataPoint;
 import com.nsysmon.measure.scalar.AScalarMeasurer;
@@ -67,15 +68,19 @@ public class AConnectionCounter implements AScalarMeasurer, AIConnectionCounter 
     @Override
     public void contributeMeasurements(Map<String, AScalarDataPoint> data, long timestamp, Map<String, Object> mementos) {
         for(String key: openPerConnectionPool.keySet()) {
-            final String ident = (DEFAULT_POOL_IDENTIFIER.equals (key)) ? "Open JDBC Connections" : ("Open JDBC Connections (" + key + ")");
+            final String ident = (DEFAULT_POOL_IDENTIFIER.equals (key)) ? "Open JDBC Connections" : ("Open JDBC Connections (" + key + ')');
             data.put(ident, new AScalarDataPoint(timestamp, ident, openPerConnectionPool.get(key).get(), 0));
         }
         for(String key: activePerConnectionPool.keySet()) {
-            final String ident = (DEFAULT_POOL_IDENTIFIER.equals (key)) ? "Active JDBC Connections" : ("Active JDBC Connections (" + key + ")");
+            final String ident = (DEFAULT_POOL_IDENTIFIER.equals (key)) ? "Active JDBC Connections" : ("Active JDBC Connections (" + key + ')');
             data.put(ident, new AScalarDataPoint(timestamp, ident, activePerConnectionPool.get(key).get(), 0));
         }
     }
 
     @Override public void shutdown() {
+    }
+
+    @Override public AOption<Long> getTimeoutInMilliSeconds() {
+        return AOption.none();
     }
 }

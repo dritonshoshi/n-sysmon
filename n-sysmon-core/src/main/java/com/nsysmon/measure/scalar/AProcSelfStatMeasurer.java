@@ -1,5 +1,6 @@
 package com.nsysmon.measure.scalar;
 
+import com.ajjpj.afoundation.collection.immutable.AOption;
 import com.ajjpj.afoundation.io.AFile;
 import com.nsysmon.data.AScalarDataPoint;
 
@@ -73,5 +74,9 @@ public class AProcSelfStatMeasurer implements AScalarMeasurer {
             this.userJiffies = userJiffies;
             this.kernelJiffies = kernelJiffies;
         }
+    }
+
+    @Override public AOption<Long> getTimeoutInMilliSeconds() {
+        return AOption.none();
     }
 }

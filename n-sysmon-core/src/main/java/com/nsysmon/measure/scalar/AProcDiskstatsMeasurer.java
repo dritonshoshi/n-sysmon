@@ -1,5 +1,6 @@
 package com.nsysmon.measure.scalar;
 
+import com.ajjpj.afoundation.collection.immutable.AOption;
 import com.ajjpj.afoundation.io.AFile;
 import com.ajjpj.afoundation.proc.CliCommand;
 import com.nsysmon.data.AScalarDataPoint;
@@ -11,26 +12,28 @@ import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 /**
  * @author arno
  */
 public class AProcDiskstatsMeasurer implements AScalarMeasurer {
-    public static final AFile PROC_DISKSTATS = new AFile("/proc/diskstats", Charset.defaultCharset());
+    private static final AFile PROC_DISKSTATS = new AFile("/proc/diskstats", Charset.defaultCharset());
 
-    public static final String KEY_PREFIX = "disk:";
-    public static final String KEY_MEMENTO = KEY_PREFIX;
+    private static final String KEY_PREFIX = "disk:";
+    private static final String KEY_MEMENTO = KEY_PREFIX;
 
-    public static final String KEY_SUFFIX_SIZE = ":sizeGB";
-    public static final String KEY_SUFFIX_USED = ":usedGB";
-    public static final String KEY_SUFFIX_AVAILABLE = ":availableGB";
-    public static final String KEY_SUFFIX_READ_SECTORS = ":read-sectors";
-    public static final String KEY_SUFFIX_WRITTEN_SECTORS = ":written-sectors";
-    public static final String KEY_SUFFIX_READ_MBYTES = ":read-mbytes";
-    public static final String KEY_SUFFIX_WRITTEN_MBYTES = ":written-mbytes";
-    public static final String KEY_SUFFIX_IOS_IN_PROGRESS = ":ios-in-progress";
+    private static final String KEY_SUFFIX_SIZE = ":sizeGB";
+    private static final String KEY_SUFFIX_USED = ":usedGB";
+    private static final String KEY_SUFFIX_AVAILABLE = ":availableGB";
+    private static final String KEY_SUFFIX_READ_SECTORS = ":read-sectors";
+    private static final String KEY_SUFFIX_WRITTEN_SECTORS = ":written-sectors";
+    private static final String KEY_SUFFIX_READ_MBYTES = ":read-mbytes";
+    private static final String KEY_SUFFIX_WRITTEN_MBYTES = ":written-mbytes";
+    private static final String KEY_SUFFIX_IOS_IN_PROGRESS = ":ios-in-progress";
 
-    public static final String KEY_MOUNTPOINT = ":mountpoint:";
+    private static final String KEY_MOUNTPOINT = ":mountpoint:";
+    private static final Pattern PATTERN = Pattern.compile("\\s+");
 
     private final boolean isWindows;
 
@@ -56,13 +59,13 @@ public class AProcDiskstatsMeasurer implements AScalarMeasurer {
         contributeMountPoints(data, timestamp);
     }
 
-    static void contributeMountPoints(Map<String, AScalarDataPoint> data, long timestamp) throws Exception {
+    private static void contributeMountPoints(Map<String, AScalarDataPoint> data, long timestamp) throws Exception {
         for(Map.Entry<String, String> entry: AFileSystemsEnvironmentMeasurer.getMountPoints().entrySet()) {
             add(data, timestamp, getMountPointKey(entry.getKey(), entry.getValue()), 1, 0);
         }
     }
 
-    static void contributeTraffic(Map<String, AScalarDataPoint> data, long timestamp, Map<String, Object> mementos) throws Exception {
+    private static void contributeTraffic(Map<String, AScalarDataPoint> data, long timestamp, Map<String, Object> mementos) throws Exception {
         final Snapshot prev = (Snapshot) mementos.get(KEY_MEMENTO);
         final Snapshot current = createSnapshot();
 
@@ -97,14 +100,14 @@ public class AProcDiskstatsMeasurer implements AScalarMeasurer {
         }
     }
 
-    static void contributeDiskSize(Map<String, AScalarDataPoint> data, long timestamp) throws Exception {
+    private static void contributeDiskSize(Map<String, AScalarDataPoint> data, long timestamp) throws Exception {
         final List<String> df = new CliCommand("df", "-P").getOutput();
         for(String line: df) {
             if(! line.startsWith("/dev/")) {
                 continue;
             }
 
-            final String[] split = line.split("\\s+");
+            final String[] split = PATTERN.split(line.trim());
             if(split.length < 6) {
                 continue;
             }
@@ -122,7 +125,7 @@ public class AProcDiskstatsMeasurer implements AScalarMeasurer {
     }
 
 
-    static int physicalBlockSize(String dev) throws IOException {
+    private static int physicalBlockSize(String dev) throws IOException {
         while (! dev.isEmpty()) {
             final File f = new File("/sys/block/" + dev + "/queue/physical_block_size");
             if(f.exists()) {
@@ -137,39 +140,39 @@ public class AProcDiskstatsMeasurer implements AScalarMeasurer {
         data.put(key, new AScalarDataPoint(timestamp, key, value, numFracDigits));
     }
 
-    public static String getMountPointKey(String dev, String mountPoint) {
+    private static String getMountPointKey(String dev, String mountPoint) {
         return KEY_PREFIX + dev + KEY_MOUNTPOINT + mountPoint;
     }
 
-    public static String getSizeKey(String dev) {
+    private static String getSizeKey(String dev) {
         return KEY_PREFIX + dev + KEY_SUFFIX_SIZE;
     }
 
-    public static String getUsedKey(String dev) {
+    private static String getUsedKey(String dev) {
         return KEY_PREFIX + dev + KEY_SUFFIX_USED;
     }
 
-    public static String getAvailableKey(String dev) {
+    private static String getAvailableKey(String dev) {
         return KEY_PREFIX + dev + KEY_SUFFIX_AVAILABLE;
     }
 
-    public static String getReadSectorsKey(String dev) {
+    private static String getReadSectorsKey(String dev) {
         return KEY_PREFIX + dev + KEY_SUFFIX_READ_SECTORS;
     }
 
-    public static String getWrittenSectorsKey(String dev) {
+    private static String getWrittenSectorsKey(String dev) {
         return KEY_PREFIX + dev + KEY_SUFFIX_WRITTEN_SECTORS;
     }
 
-    public static String getReadMbytesKey(String dev) {
+    private static String getReadMbytesKey(String dev) {
         return KEY_PREFIX + dev + KEY_SUFFIX_READ_MBYTES;
     }
 
-    public static String getWrittenMbytesKey(String dev) {
+    private static String getWrittenMbytesKey(String dev) {
         return KEY_PREFIX + dev + KEY_SUFFIX_WRITTEN_MBYTES;
     }
 
-    public static String getIosInProgressKey(String dev) {
+    private static String getIosInProgressKey(String dev) {
         return KEY_PREFIX + dev + KEY_SUFFIX_IOS_IN_PROGRESS;
     }
 
@@ -177,11 +180,11 @@ public class AProcDiskstatsMeasurer implements AScalarMeasurer {
         return createSnapshot(PROC_DISKSTATS.lines());
     }
 
-    static Snapshot createSnapshot(Iterable<String> source) throws IOException {
+    static Snapshot createSnapshot(Iterable<String> source) {
         final Snapshot result = new Snapshot();
 
         for(String line: source) {
-            final String[] split = line.trim().split("\\s+");
+            final String[] split = PATTERN.split(line.trim());
 
             final String dev = split[2];
             final long sectorsRead = Long.valueOf(split[2+3]);
@@ -201,8 +204,12 @@ public class AProcDiskstatsMeasurer implements AScalarMeasurer {
 
     static class Snapshot {
         final long timestamp = System.currentTimeMillis();
-        final Map<String, Long> sectorsRead = new HashMap<String, Long>();
-        final Map<String, Long> sectorsWritten = new HashMap<String, Long>();
-        final Map<String, Integer> iosInProgress = new HashMap<String, Integer>();
+        final Map<String, Long> sectorsRead = new HashMap<>();
+        final Map<String, Long> sectorsWritten = new HashMap<>();
+        final Map<String, Integer> iosInProgress = new HashMap<>();
+    }
+
+    @Override public AOption<Long> getTimeoutInMilliSeconds() {
+        return AOption.none();
     }
 }

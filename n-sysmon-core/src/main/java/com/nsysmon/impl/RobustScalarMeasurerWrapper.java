@@ -1,5 +1,6 @@
 package com.nsysmon.impl;
 
+import com.ajjpj.afoundation.collection.immutable.AOption;
 import com.nsysmon.config.log.NSysMonLogger;
 import com.nsysmon.data.AScalarDataPoint;
 import com.nsysmon.measure.scalar.AScalarMeasurer;
@@ -33,15 +34,17 @@ class RobustScalarMeasurerWrapper {
             try {
                 final long start = System.nanoTime();
                 inner.prepareMeasurements(mementos);
-                handleDuration(System.nanoTime() - start);
+                handleDuration(System.nanoTime() - start, inner.getTimeoutInMilliSeconds());
             } catch (Exception e) {
                 log.warn("Disabling scalar measurer " + inner.getClass().getName() + " because an exception occurred", e);
                 strategy = DISABLED;
             }
         }
 
-        private void handleDuration(long durationNanos) {
-            if(durationNanos > timeoutNanos) {
+        private void handleDuration(long durationNanos, AOption<Long> timeoutInMilliseconds) {
+            final long timeout = timeoutInMilliseconds.isEmpty() ? timeoutNanos : timeoutInMilliseconds.get() * 1_000_000;
+
+            if(durationNanos > timeout) {
                 log.warn("Scalar measurer " + inner.getClass().getName() + " timed out (took " + durationNanos + "ns)");
                 numTimeouts.incrementAndGet();
                 strategy = TIMED_OUT;
@@ -52,7 +55,7 @@ class RobustScalarMeasurerWrapper {
             try {
                 final long start = System.nanoTime();
                 inner.contributeMeasurements(data, timestamp, mementos);
-                handleDuration(System.nanoTime() - start);
+                handleDuration(System.nanoTime() - start, inner.getTimeoutInMilliSeconds());
             } catch (Exception e) {
                 log.warn("Disabling scalar measurer " + inner.getClass().getName() + " because an exception occurred", e);
                 strategy = DISABLED;
@@ -65,15 +68,17 @@ class RobustScalarMeasurerWrapper {
             try {
                 final long start = System.nanoTime();
                 inner.prepareMeasurements(mementos);
-                handleDuration(System.nanoTime() - start);
+                handleDuration(System.nanoTime() - start, inner.getTimeoutInMilliSeconds());
             } catch (Exception e) {
                 log.warn("Disabling scalar measurer " + inner.getClass().getName() + " because an exception occurred", e);
                 strategy = DISABLED;
             }
         }
 
-        private void handleDuration(long durationNanos) {
-            if(durationNanos > timeoutNanos) {
+        private void handleDuration(long durationNanos, AOption<Long> timeoutInMilliseconds) {
+            final long timeout = timeoutInMilliseconds.isEmpty() ? timeoutNanos : timeoutInMilliseconds.get() * 1_000_000;
+
+            if(durationNanos > timeout) {
                 if(numTimeouts.incrementAndGet() >= maxNumTimeouts) {
                     log.warn("Scalar measurer " + inner.getClass().getName() + " timed out " + maxNumTimeouts + " times in row - permanently disabling");
                     strategy = DISABLED;
@@ -88,7 +93,7 @@ class RobustScalarMeasurerWrapper {
             try {
                 final long start = System.nanoTime();
                 inner.contributeMeasurements(data, timestamp, mementos);
-                handleDuration(System.nanoTime() - start);
+                handleDuration(System.nanoTime() - start, inner.getTimeoutInMilliSeconds());
             } catch (Exception e) {
                 log.warn("Disabling scalar measurer " + inner.getClass().getName() + " because an exception occurred", e);
                 strategy = DISABLED;
@@ -96,7 +101,7 @@ class RobustScalarMeasurerWrapper {
         }
     };
 
-    private final Strategy DISABLED = new Strategy() {
+    private static final Strategy DISABLED = new Strategy() {
         @Override public void prepareMeasurements(Map<String, Object> mementos) {
         }
 
@@ -124,7 +129,7 @@ class RobustScalarMeasurerWrapper {
         try {
             inner.shutdown();
         } catch (Exception exc) {
-            log.error("failed to shut down scalar measurer " + inner.getClass().getName() + ".", exc);
+            log.error("failed to shut down scalar measurer " + inner.getClass().getName() + '.', exc);
         }
     }
 }

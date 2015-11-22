@@ -1,5 +1,6 @@
 package com.nsysmon.measure.scalar;
 
+import com.ajjpj.afoundation.collection.immutable.AOption;
 import com.ajjpj.afoundation.function.AFunction1;
 import com.ajjpj.afoundation.io.AFile;
 import com.nsysmon.data.AScalarDataPoint;
@@ -128,5 +129,9 @@ public class ACpuUtilizationMeasurer implements AScalarMeasurer {
             this.idle = idle;
             this.stolen = stolen;
         }
+    }
+
+    @Override public AOption<Long> getTimeoutInMilliSeconds() {
+        return AOption.none();
     }
 }

@@ -1,6 +1,5 @@
 package com.nsysmon.measure.scalar;
 
-
 import com.ajjpj.afoundation.collection.immutable.AOption;
 import com.nsysmon.data.AScalarDataPoint;
 
@@ -10,18 +9,13 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.Map;
 
-/**
- * @author arno
- */
-public class ASystemLoadMeasurer implements AScalarMeasurer {
-    public static final String IDENT_LOAD_1_MIN = "load-1-minute";
-    public static final String IDENT_LOAD_5_MIN = "load-5-minutes";
-    public static final String IDENT_LOAD_15_MIN = "load-15-minutes";
+public class SystemLoadOneMinuteMeasurer implements AScalarMeasurer {
+    private static final String IDENT_LOAD_1_MIN = "SystemLoad";
 
     private final File procFile = new File("/proc/loadavg");
     private final boolean isWindows;
 
-    public ASystemLoadMeasurer(){
+    public SystemLoadOneMinuteMeasurer(){
         isWindows = System.getProperty("os.name").toLowerCase().contains("win");
     }
 
@@ -38,12 +32,8 @@ public class ASystemLoadMeasurer implements AScalarMeasurer {
         final String[] raw = in.readLine().split(" ");
 
         final int load1 = (int)(Double.parseDouble(raw[0])*100);
-        final int load5 = (int)(Double.parseDouble(raw[1])*100);
-        final int load15 = (int)(Double.parseDouble(raw[2])*100);
 
         result.put(IDENT_LOAD_1_MIN, new AScalarDataPoint(timestamp, IDENT_LOAD_1_MIN, load1, 2));
-        result.put(IDENT_LOAD_5_MIN, new AScalarDataPoint(timestamp, IDENT_LOAD_5_MIN, load5, 2));
-        result.put(IDENT_LOAD_15_MIN, new AScalarDataPoint(timestamp, IDENT_LOAD_15_MIN, load15, 2));
     }
 
     @Override public void shutdown() {

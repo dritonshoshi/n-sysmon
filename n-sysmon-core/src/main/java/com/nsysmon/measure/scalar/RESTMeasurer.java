@@ -1,5 +1,6 @@
 package com.nsysmon.measure.scalar;
 
+import com.ajjpj.afoundation.collection.immutable.AOption;
 import com.nsysmon.NSysMonApi;
 import com.nsysmon.config.ADefaultConfigFactory;
 import com.nsysmon.config.NSysMonAware;
@@ -39,16 +40,20 @@ public class RESTMeasurer implements AScalarMeasurer, NSysMonAware {
         final Map<String, Double> myMap = callRest(timestamp);
 
         for (Map.Entry<String, Double> stringDoubleEntry : myMap.entrySet()) {
+            final String key = stringDoubleEntry.getKey().intern();
             final String valueString = Double.toString(stringDoubleEntry.getValue());
             final int numFracDigits = valueString.substring(valueString.indexOf('.') + 1).length();
             final long value = Long.parseLong(DOT_PATTERN.matcher(valueString).replaceAll(""));
-
-            AScalarDataPoint point = new AScalarDataPoint(timestamp, stringDoubleEntry.getKey().intern(), value, numFracDigits);
-            data.put(stringDoubleEntry.getKey(), point);
+            final AScalarDataPoint point = new AScalarDataPoint(timestamp, key, value, numFracDigits);
+            data.put(key, point);
         }
     }
 
     @Override public void shutdown() throws Exception {
+    }
+
+    @Override public AOption<Long> getTimeoutInMilliSeconds() {
+        return AOption.some((long) ((timeoutInSeconds  + 2) * 1000));
     }
 
     private Map<String, Double> callRest(long timestamp) {
@@ -63,7 +68,6 @@ public class RESTMeasurer implements AScalarMeasurer, NSysMonAware {
             return reader.readValue(result);
         }
         catch (SocketTimeoutException e) {
-            LOG.warn(e);
             return Collections.emptyMap();
         }
         catch (Exception e) {
@@ -74,6 +78,6 @@ public class RESTMeasurer implements AScalarMeasurer, NSysMonAware {
 
     @Override public void setNSysMon(NSysMonApi sysMon) {
         url = sysMon.getConfig().additionalConfigurationParameters.get(ADefaultConfigFactory.KEY_RESTMEASURER_URL);
-        timeoutInSeconds = sysMon.getConfig().restMeasurerTimeoutSeconds;
+        timeoutInSeconds = Integer.parseInt(sysMon.getConfig().additionalConfigurationParameters.get(ADefaultConfigFactory.KEY_RESTMEASURER_URL_TIMEOUT_SECONDS));
     }
 }

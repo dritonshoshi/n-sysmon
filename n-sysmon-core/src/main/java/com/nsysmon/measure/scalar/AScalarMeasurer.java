@@ -1,6 +1,7 @@
 package com.nsysmon.measure.scalar;
 
 
+import com.ajjpj.afoundation.collection.immutable.AOption;
 import com.nsysmon.data.AScalarDataPoint;
 import com.nsysmon.util.AShutdownable;
 
@@ -24,4 +25,5 @@ import java.util.Map;
 public interface AScalarMeasurer extends AShutdownable {
     void prepareMeasurements(Map<String, Object> mementos) throws Exception;
     void contributeMeasurements(Map<String, AScalarDataPoint> data, long timestamp, Map<String, Object> mementos) throws Exception;
+    AOption<Long> getTimeoutInMilliSeconds();
 }

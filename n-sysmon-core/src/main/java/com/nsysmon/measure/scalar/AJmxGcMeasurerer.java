@@ -1,5 +1,6 @@
 package com.nsysmon.measure.scalar;
 
+import com.ajjpj.afoundation.collection.immutable.AOption;
 import com.nsysmon.NSysMonApi;
 import com.nsysmon.config.NSysMonAware;
 import com.nsysmon.data.ACorrelationId;
@@ -16,7 +17,6 @@ import javax.management.openmbean.CompositeData;
 import java.lang.management.GarbageCollectorMXBean;
 import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryUsage;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -50,9 +50,9 @@ public class AJmxGcMeasurerer implements AScalarMeasurer, NSysMonAware {
 
     private final GcNotificationListener listener = new GcNotificationListener();
 
-    private final Map<String, Long> prevGcTimeMillis = new ConcurrentHashMap<String, Long>();
-    private final Map<String, Long> timeFracInGcPpm = new ConcurrentHashMap<String, Long>();
-    private final Map<String, Long> gcFrequencyPerMinuteTimes100 = new ConcurrentHashMap<String, Long>();
+    private final Map<String, Long> prevGcTimeMillis = new ConcurrentHashMap<>();
+    private final Map<String, Long> timeFracInGcPpm = new ConcurrentHashMap<>();
+    private final Map<String, Long> gcFrequencyPerMinuteTimes100 = new ConcurrentHashMap<>();
 
     @Override public void setNSysMon(NSysMonApi sysMon) {
         this.sysMon = sysMon;
@@ -83,6 +83,10 @@ public class AJmxGcMeasurerer implements AScalarMeasurer, NSysMonAware {
             } catch (ListenerNotFoundException e) { // ignore this to facilitate repeated shutdown
             }
         }
+    }
+
+    @Override public AOption<Long> getTimeoutInMilliSeconds() {
+        return AOption.none();
     }
 
     private void updateScalars(long now, String gcType, long durationNanos) {
@@ -128,7 +132,7 @@ public class AJmxGcMeasurerer implements AScalarMeasurer, NSysMonAware {
 
             updateScalars(startMillis, gcType, durationNanos);
 
-            final Map<String, String> paramMap = new HashMap<String, String>();
+            final Map<String, String> paramMap = new HashMap<>();
 
             paramMap.put(KEY_ID, String.valueOf(info.getGcInfo().getId()));
             paramMap.put(KEY_CAUSE, info.getGcCause());
@@ -154,14 +158,11 @@ public class AJmxGcMeasurerer implements AScalarMeasurer, NSysMonAware {
             }
 
             final AHierarchicalData byGcTypeNode = new AHierarchicalData(true, startMillis, durationNanos, gcType, Collections.<String,String>emptyMap(), Collections.<AHierarchicalData>emptyList());
-            return new AHierarchicalData(true, startMillis, durationNanos, IDENT_GC_TRACE_ROOT, paramMap, Arrays.asList(byGcTypeNode));
+            return new AHierarchicalData(true, startMillis, durationNanos, IDENT_GC_TRACE_ROOT, paramMap, Collections.singletonList(byGcTypeNode));
         }
 
         private boolean isGcRelevantMemoryKind(String memKey) {
-            if("Code Cache".equals(memKey)) {
-                return false;
-            }
-            return true;
+            return !"Code Cache".equals(memKey);
         }
 
         @Override public void handleNotification(Notification notification, Object handback) {

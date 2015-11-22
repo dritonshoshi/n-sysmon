@@ -35,15 +35,13 @@ public class NSysMonConfigBuilder {
     private long dataSinkTimeoutNanos = 100_000;
     private int maxNumDataSinkTimeouts = 3;
 
-    private int restMeasurerTimeoutSeconds = 10;
-
     private ATimer timer = new ASystemNanoTimer();
     private AHttpRequestAnalyzer httpRequestAnalyzer = new ASimpleHttpRequestAnalyzer();
 
     private final List<AEnvironmentMeasurer> environmentMeasurers = new ArrayList<>();
-    private final List<AScalarMeasurer> scalarMeasurers = new ArrayList<AScalarMeasurer>();
+    private final List<AScalarMeasurer> scalarMeasurers = new ArrayList<>();
     private final List<AScalarMeasurer> scalarTimedMeasurers = new ArrayList<>();
-    private final List<ADataSink> dataSinks = new ArrayList<ADataSink>();
+    private final List<ADataSink> dataSinks = new ArrayList<>();
 
     private final List<APresentationMenuEntry> presentationMenuEntries = new ArrayList<>();
     private String defaultPage;
@@ -86,11 +84,6 @@ public class NSysMonConfigBuilder {
 
     public NSysMonConfigBuilder setDurationOfOneTimedScalar(int number) {
         this.durationOfOneTimedScalar = number;
-        return this;
-    }
-
-    public NSysMonConfigBuilder setRestMeasurerTimeoutSeconds(int restMeasurerTimeoutSeconds) {
-        this.restMeasurerTimeoutSeconds = restMeasurerTimeoutSeconds;
         return this;
     }
 
@@ -163,7 +156,7 @@ public class NSysMonConfigBuilder {
                 dataSinkTimeoutNanos, maxNumDataSinkTimeouts,
                 timer, httpRequestAnalyzer,
                 environmentMeasurers, scalarMeasurers, scalarTimedMeasurers, dataSinks,
-                defaultPage, presentationMenuEntries, restMeasurerTimeoutSeconds, additionalConfigurationParameters
+                defaultPage, presentationMenuEntries, additionalConfigurationParameters
                 );
     }
 

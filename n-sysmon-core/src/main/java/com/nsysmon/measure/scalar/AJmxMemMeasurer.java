@@ -1,6 +1,7 @@
 package com.nsysmon.measure.scalar;
 
 
+import com.ajjpj.afoundation.collection.immutable.AOption;
 import com.nsysmon.data.AScalarDataPoint;
 
 import java.lang.management.ManagementFactory;
@@ -44,5 +45,9 @@ public class AJmxMemMeasurer implements AScalarMeasurer {
     }
 
     @Override public void shutdown() throws Exception {
+    }
+
+    @Override public AOption<Long> getTimeoutInMilliSeconds() {
+        return AOption.none();
     }
 }

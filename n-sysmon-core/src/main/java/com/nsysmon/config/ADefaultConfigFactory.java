@@ -172,10 +172,11 @@ public class ADefaultConfigFactory implements AConfigFactory {
 
         builder.setDataSinkTimeoutNanos (props.get (KEY_DATA_SINK_TIMEOUT_NANOS, Long.TYPE));
         builder.setMaxNumDataSinkTimeouts(props.get(KEY_MAX_NUM_DATA_SINK_TIMEOUTS, Integer.TYPE));
-        builder.setRestMeasurerTimeoutSeconds(props.get(KEY_RESTMEASURER_URL_TIMEOUT_SECONDS, Integer.TYPE));
+
         //TODO this need to be refactored, so meeasurements can be configured
         Map<String, String> additionalConfigurations = new HashMap<>();
         additionalConfigurations.put(KEY_RESTMEASURER_URL, props.get(KEY_RESTMEASURER_URL, String.class));
+        additionalConfigurations.put(KEY_RESTMEASURER_URL_TIMEOUT_SECONDS, props.get(KEY_RESTMEASURER_URL_TIMEOUT_SECONDS, String.class));
 
         builder.setAdditionalConfigurationParameters(additionalConfigurations);
 
@@ -198,7 +199,7 @@ public class ADefaultConfigFactory implements AConfigFactory {
         for(String menuEntryRaw: props.getListRaw(KEY_PRESENTATION_MENUS)) {
             final String menuEntry = menuEntryRaw.trim();
 
-            final List<APresentationPageDefinition> pageDefs = props.getList(KEY_PRESENTATION_MENUS + "." + menuEntry, APresentationPageDefinition.class);
+            final List<APresentationPageDefinition> pageDefs = props.getList(KEY_PRESENTATION_MENUS + '.' + menuEntry, APresentationPageDefinition.class);
             builder.addPresentationMenuEntry(menuEntry, pageDefs);
         }
 
