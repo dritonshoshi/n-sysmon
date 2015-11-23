@@ -12,13 +12,22 @@ import com.nsysmon.data.ACorrelationId;
 import com.nsysmon.data.AHierarchicalDataRoot;
 import com.nsysmon.data.AScalarDataPoint;
 import com.nsysmon.datasink.ADataSink;
-import com.nsysmon.measure.*;
+import com.nsysmon.measure.ACollectingMeasurement;
+import com.nsysmon.measure.AMeasureCallback;
+import com.nsysmon.measure.AMeasureCallbackVoid;
+import com.nsysmon.measure.AMeasurementHierarchy;
+import com.nsysmon.measure.AMeasurementHierarchyImpl;
+import com.nsysmon.measure.ASimpleMeasurement;
 import com.nsysmon.measure.environment.AEnvironmentData;
 import com.nsysmon.measure.environment.AEnvironmentMeasurer;
 import com.nsysmon.measure.scalar.AScalarMeasurer;
 import com.nsysmon.util.AShutdownable;
+import com.nsysmon.util.DaemonThreadFactory;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -47,7 +56,7 @@ public class NSysMonImpl implements AShutdownable, NSysMonApi {
     private volatile AList<RobustEnvironmentMeasurerWrapper> environmentMeasurers = AList.nil();
     private volatile TimedScalarMeasurer timedScalarMeasureRunnable;
 
-    private final ThreadLocal<AMeasurementHierarchy> hierarchyPerThread = new ThreadLocal<AMeasurementHierarchy>();
+    private final ThreadLocal<AMeasurementHierarchy> hierarchyPerThread = new ThreadLocal<>();
 
     public NSysMonImpl(NSysMonConfig config) {
         this.config = config;
@@ -56,7 +65,7 @@ public class NSysMonImpl implements AShutdownable, NSysMonApi {
             addScalarMeasurer(m);
         }
 
-        ScheduledExecutorService scheduledPool = Executors.newScheduledThreadPool(4);
+        ScheduledExecutorService scheduledPool = Executors.newSingleThreadScheduledExecutor(new DaemonThreadFactory());
 
         timedScalarMeasureRunnable = new TimedScalarMeasurer(config.maxNumMeasurementsPerTimedScalar);
         scheduledPool.scheduleAtFixedRate(timedScalarMeasureRunnable, 0, config.durationOfOneTimedScalar, TimeUnit.SECONDS);
