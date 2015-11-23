@@ -5,16 +5,14 @@ import com.nsysmon.NSysMonApi;
 import com.nsysmon.config.ADefaultConfigFactory;
 import com.nsysmon.config.NSysMonAware;
 import com.nsysmon.data.AScalarDataPoint;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.params.HttpConnectionParams;
-import org.apache.http.util.EntityUtils;
 import org.apache.log4j.Logger;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.map.ObjectReader;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.SocketTimeoutException;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -22,13 +20,13 @@ import java.util.regex.Pattern;
 
 public class RESTMeasurer implements AScalarMeasurer, NSysMonAware {
     private static final Pattern DOT_PATTERN = Pattern.compile("\\.");
-    private String url;
+    private String restMeasurerUrl;
     private int timeoutInSeconds = 10;
     private static final Logger LOG = Logger.getLogger(RESTMeasurer.class);
 
 //    public static void main(String[] args) throws IOException {
 //        RESTMeasurer restMeasurer = new RESTMeasurer();
-//       restMeasurer.url = "http://localhost:8080/omd-server/rest/nsysmonmeasurements/get/";
+//        restMeasurer.url = "http://localhost:8080/omd-server/rest/nsysmonmeasurements/get/";
 //        Map map = restMeasurer.callRest(42);
 //        System.out.println(map);
 //    }
@@ -56,16 +54,14 @@ public class RESTMeasurer implements AScalarMeasurer, NSysMonAware {
         return AOption.some((long) ((timeoutInSeconds  + 2) * 1000));
     }
 
-    private Map<String, Double> callRest(long timestamp) {
-        try (DefaultHttpClient httpClient = new DefaultHttpClient()) {
-            HttpConnectionParams.setSoTimeout(httpClient.getParams(), timeoutInSeconds * 1000);
-            HttpConnectionParams.setConnectionTimeout(httpClient.getParams(), timeoutInSeconds * 1000);
-            HttpGet getMethod = new HttpGet(url + timestamp);
-            HttpResponse response = httpClient.execute(getMethod);
+    private Map<String, Double> callRest(long timestamp) throws IOException {
 
-            String result = EntityUtils.toString(response.getEntity());
-            ObjectReader reader = new ObjectMapper().reader(HashMap.class);
-            return reader.readValue(result);
+        final URL url = new URL(restMeasurerUrl + timestamp);
+        final URLConnection conn = url.openConnection();
+        conn.setConnectTimeout(timeoutInSeconds * 1000);
+        conn.setReadTimeout(timeoutInSeconds * 1000);
+        try (InputStreamReader isr = new InputStreamReader(conn.getInputStream()); BufferedReader br = new BufferedReader(isr)) {
+            return parseResponse(br.readLine());
         }
         catch (SocketTimeoutException e) {
             return Collections.emptyMap();
@@ -76,8 +72,25 @@ public class RESTMeasurer implements AScalarMeasurer, NSysMonAware {
         }
     }
 
+    private Map<String, Double> parseResponse(final String response) {
+        if (response == null || response.length() < 3) {
+            return Collections.emptyMap();
+        }
+
+        final String responseWithoutBraces = response.substring(1, response.length()-1);
+        final String[] measurements = responseWithoutBraces.split(",");
+        final Map<String, Double> result = new HashMap<>(measurements.length);
+        for (String measurement : measurements) {
+            final String[] values = measurement.split(":");
+            final String measurer = values[0].substring(1, values[0].length() - 1);
+            final Double value = Double.parseDouble(values[1]);
+            result.put(measurer, value);
+        }
+        return result;
+    }
+
     @Override public void setNSysMon(NSysMonApi sysMon) {
-        url = sysMon.getConfig().additionalConfigurationParameters.get(ADefaultConfigFactory.KEY_RESTMEASURER_URL);
+        restMeasurerUrl = sysMon.getConfig().additionalConfigurationParameters.get(ADefaultConfigFactory.KEY_RESTMEASURER_URL);
         timeoutInSeconds = Integer.parseInt(sysMon.getConfig().additionalConfigurationParameters.get(ADefaultConfigFactory.KEY_RESTMEASURER_URL_TIMEOUT_SECONDS));
     }
 }
