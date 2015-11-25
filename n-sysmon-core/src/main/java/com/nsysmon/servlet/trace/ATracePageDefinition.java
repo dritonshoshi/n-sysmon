@@ -4,12 +4,18 @@ import com.nsysmon.NSysMonApi;
 import com.nsysmon.data.AHierarchicalData;
 import com.nsysmon.data.AHierarchicalDataRoot;
 import com.nsysmon.impl.NSysMonConfigurer;
-import com.nsysmon.measure.scalar.AJmxGcMeasurerer;
+import com.nsysmon.measure.scalar.AJmxGcMeasurer;
 import com.nsysmon.servlet.performance.AAbstractNsysmonPerformancePageDef;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 /**
  * @author arno
@@ -143,7 +149,7 @@ public class ATracePageDefinition extends AAbstractNsysmonPerformancePageDef {
         final SortedSet<String> memKinds = new TreeSet<>();
 
         for(String key: new TreeSet<String>(node.getParameters().keySet())) {
-            if(key.startsWith(AJmxGcMeasurerer.KEY_PREFIX_MEM)) {
+            if(key.startsWith(AJmxGcMeasurer.KEY_PREFIX_MEM)) {
                 memKinds.add(key.split(":")[1]);
                 continue;
             }
@@ -154,10 +160,10 @@ public class ATracePageDefinition extends AAbstractNsysmonPerformancePageDef {
         final NumberFormat nf = new DecimalFormat("0.0");
         final NumberFormat nfPos = new DecimalFormat("+0.0;-0.0");
         for(String memKind: memKinds) {
-            final String usedAfter      = nf.   format(Long.valueOf(node.getParameters().get(AJmxGcMeasurerer.getUsedAfterKey(memKind))) / 1024.0 / 1024.0);
-            final String committedAfter = nf.   format(Long.valueOf(node.getParameters().get(AJmxGcMeasurerer.getCommittedAfterKey(memKind))) / 1024.0 / 1024.0);
-            final String usedDelta      = nfPos.format(Long.valueOf(node.getParameters().get(AJmxGcMeasurerer.getUsedDeltaKey(memKind))) / 1024.0 / 1024.0);
-            final String committedDelta = nfPos.format(Long.valueOf(node.getParameters().get(AJmxGcMeasurerer.getCommittedDeltaKey(memKind))) / 1024.0 / 1024.0);
+            final String usedAfter      = nf.   format(Long.valueOf(node.getParameters().get(AJmxGcMeasurer.getUsedAfterKey(memKind))) / 1024.0 / 1024.0);
+            final String committedAfter = nf.   format(Long.valueOf(node.getParameters().get(AJmxGcMeasurer.getCommittedAfterKey(memKind))) / 1024.0 / 1024.0);
+            final String usedDelta      = nfPos.format(Long.valueOf(node.getParameters().get(AJmxGcMeasurer.getUsedDeltaKey(memKind))) / 1024.0 / 1024.0);
+            final String committedDelta = nfPos.format(Long.valueOf(node.getParameters().get(AJmxGcMeasurer.getCommittedDeltaKey(memKind))) / 1024.0 / 1024.0);
             final String memValue = usedAfter + "MB (" + usedDelta + ") / " + committedAfter + "MB (" + committedDelta + ")";
             result.add(Arrays.asList(memKind, memValue));
         }
@@ -167,6 +173,6 @@ public class ATracePageDefinition extends AAbstractNsysmonPerformancePageDef {
     }
 
     private boolean isGarbageCollectionNode(AHierarchicalData node) {
-        return node.getParameters().containsKey(AJmxGcMeasurerer.KEY_ID);
+        return node.getParameters().containsKey(AJmxGcMeasurer.KEY_ID);
     }
 }

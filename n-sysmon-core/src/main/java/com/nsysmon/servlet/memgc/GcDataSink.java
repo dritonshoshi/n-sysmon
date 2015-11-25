@@ -4,7 +4,7 @@ import com.ajjpj.afoundation.collection.mutable.ARingBuffer;
 import com.nsysmon.data.AHierarchicalData;
 import com.nsysmon.data.AHierarchicalDataRoot;
 import com.nsysmon.datasink.ADataSink;
-import com.nsysmon.measure.scalar.AJmxGcMeasurerer;
+import com.nsysmon.measure.scalar.AJmxGcMeasurer;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -25,7 +25,7 @@ class GcDataSink implements ADataSink {
     }
 
     @Override public void onFinishedHierarchicalMeasurement(AHierarchicalDataRoot data) {
-        if(! AJmxGcMeasurerer.IDENT_GC_TRACE_ROOT.equals(data.getRootNode().getIdentifier())) {
+        if(! AJmxGcMeasurer.IDENT_GC_TRACE_ROOT.equals(data.getRootNode().getIdentifier())) {
             return;
         }
 
@@ -35,18 +35,18 @@ class GcDataSink implements ADataSink {
             final long durationNanos = d.getDurationNanos();
             final String gcType = d.getIdentifier();
 
-            final String cause = params.get(AJmxGcMeasurerer.KEY_CAUSE);
-            final String algorithm = params.get(AJmxGcMeasurerer.KEY_ALGORITHM);
+            final String cause = params.get(AJmxGcMeasurer.KEY_CAUSE);
+            final String algorithm = params.get(AJmxGcMeasurer.KEY_ALGORITHM);
 
             final GcDetails gcDetails = new GcDetails(startMillis, durationNanos, gcType, cause, algorithm);
 
             for(String memKind: memKinds(params.keySet())) {
                 //TO_CONSIDER create a cache with the keys, here and in AJmxGcMeasurer?
-                final long usedAfter = Long.valueOf(params.get(AJmxGcMeasurerer.KEY_PREFIX_MEM + memKind + AJmxGcMeasurerer.KEY_SUFFIX_USED));
-                final long committedAfter = Long.valueOf(params.get(AJmxGcMeasurerer.KEY_PREFIX_MEM + memKind + AJmxGcMeasurerer.KEY_SUFFIX_COMMITTED));
+                final long usedAfter = Long.valueOf(params.get(AJmxGcMeasurer.KEY_PREFIX_MEM + memKind + AJmxGcMeasurer.KEY_SUFFIX_USED));
+                final long committedAfter = Long.valueOf(params.get(AJmxGcMeasurer.KEY_PREFIX_MEM + memKind + AJmxGcMeasurer.KEY_SUFFIX_COMMITTED));
 
-                final long usedBefore = usedAfter - Long.valueOf(params.get(AJmxGcMeasurerer.KEY_PREFIX_MEM + memKind + AJmxGcMeasurerer.KEY_SUFFIX_USED_DELTA));
-                final long committedBefore = committedAfter - Long.valueOf(params.get(AJmxGcMeasurerer.KEY_PREFIX_MEM + memKind + AJmxGcMeasurerer.KEY_SUFFIX_COMMITTED_DELTA));
+                final long usedBefore = usedAfter - Long.valueOf(params.get(AJmxGcMeasurer.KEY_PREFIX_MEM + memKind + AJmxGcMeasurer.KEY_SUFFIX_USED_DELTA));
+                final long committedBefore = committedAfter - Long.valueOf(params.get(AJmxGcMeasurer.KEY_PREFIX_MEM + memKind + AJmxGcMeasurer.KEY_SUFFIX_COMMITTED_DELTA));
 
                 gcDetails.memDetails.add(new GcMemDetails(memKind, usedBefore, usedAfter, committedBefore, committedAfter));
             }
@@ -59,13 +59,13 @@ class GcDataSink implements ADataSink {
         final Set<String> result = new HashSet<String>();
 
         for(String key: paramKeys) {
-            if(! key.startsWith(AJmxGcMeasurerer.KEY_PREFIX_MEM)) {
+            if(! key.startsWith(AJmxGcMeasurer.KEY_PREFIX_MEM)) {
                 continue;
             }
 
-            if(key.endsWith(AJmxGcMeasurerer.KEY_SUFFIX_USED)) {
-                final String withoutPrefix = key.substring(AJmxGcMeasurerer.KEY_PREFIX_MEM.length());
-                result.add(withoutPrefix.substring(0, withoutPrefix.length() - AJmxGcMeasurerer.KEY_SUFFIX_USED.length()));
+            if(key.endsWith(AJmxGcMeasurer.KEY_SUFFIX_USED)) {
+                final String withoutPrefix = key.substring(AJmxGcMeasurer.KEY_PREFIX_MEM.length());
+                result.add(withoutPrefix.substring(0, withoutPrefix.length() - AJmxGcMeasurer.KEY_SUFFIX_USED.length()));
             }
         }
 
