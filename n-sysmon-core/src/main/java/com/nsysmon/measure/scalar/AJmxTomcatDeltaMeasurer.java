@@ -16,16 +16,16 @@ public class AJmxTomcatDeltaMeasurer implements AScalarMeasurer {
     private static final String KEY_PREFIX = "Tomcat";
     private static final String KEY_REQUEST_COUNT = KEY_PREFIX + "RequestCount";
     private static final String KEY_BYTES_RECEIVED  = KEY_PREFIX + "MBReceived";
-    private static final String KEY_BYTES_SEND  = KEY_PREFIX + "MBSend";
+    private static final String KEY_BYTES_SENT  = KEY_PREFIX + "MBSent";
 
     private static final String OBJECT_GLOBAL_REQUEST_PROCESSOR = "Tomcat:type=GlobalRequestProcessor,name=\"http-bio-8080\"";
     private static final String NAME_REQUEST_COUNT = "requestCount";
     private static final String NAME_BYTES_RECEIVED = "bytesReceived";
-    private static final String NAME_BYTES_SEND = "bytesSend";
+    private static final String NAME_BYTES_SENT = "bytesSent";
 
     private static int formerRequestCount = 0;
     private static long formerBytesReceived = 0;
-    private static long formerBytesSend = 0;
+    private static long formerBytesSent = 0;
 
     @Override public void prepareMeasurements(Map<String, Object> mementos) throws Exception {
     }
@@ -36,19 +36,19 @@ public class AJmxTomcatDeltaMeasurer implements AScalarMeasurer {
         try {
             final Object requestCount = server.getAttribute(new ObjectName(OBJECT_GLOBAL_REQUEST_PROCESSOR), NAME_REQUEST_COUNT);
             final Object bytesReceived = server.getAttribute(new ObjectName(OBJECT_GLOBAL_REQUEST_PROCESSOR), NAME_BYTES_RECEIVED);
-            final Object bytesSend = server.getAttribute(new ObjectName(OBJECT_GLOBAL_REQUEST_PROCESSOR), NAME_BYTES_SEND);
+            final Object bytesSent = server.getAttribute(new ObjectName(OBJECT_GLOBAL_REQUEST_PROCESSOR), NAME_BYTES_SENT);
 
             final int currentRequestCount = (Integer) requestCount;
             final long currentBytesReceived = (Long) bytesReceived;
-            final long currentBytesSend = (Long) bytesSend;
+            final long currentBytesSent = (Long) bytesSent;
 
             data.put(KEY_REQUEST_COUNT, new AScalarDataPoint(timestamp, KEY_REQUEST_COUNT, currentRequestCount - formerRequestCount, 0));
             data.put(KEY_BYTES_RECEIVED, new AScalarDataPoint(timestamp, KEY_BYTES_RECEIVED, formatToMegaBytes(currentBytesReceived - formerBytesReceived), 3));
-            data.put(KEY_BYTES_SEND, new AScalarDataPoint(timestamp, KEY_BYTES_SEND, formatToMegaBytes(currentBytesSend - formerBytesSend), 3));
+            data.put(KEY_BYTES_SENT, new AScalarDataPoint(timestamp, KEY_BYTES_SENT, formatToMegaBytes(currentBytesSent - formerBytesSent), 3));
 
             formerRequestCount = currentRequestCount;
             formerBytesReceived = currentBytesReceived;
-            formerBytesSend = currentBytesSend;
+            formerBytesSent = currentBytesSent;
         } catch (Exception e) {
             LOG.error(e);
         }

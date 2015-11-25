@@ -17,13 +17,13 @@ public class AJmxTomcatMeasurer implements AScalarMeasurer {
     private static final String KEY_PREFIX = "Tomcat ";
     private static final String KEY_REQUEST_COUNT = KEY_PREFIX + "Request Count";
     private static final String KEY_BYTES_RECEIVED  = KEY_PREFIX + "Received MB";
-    private static final String KEY_BYTES_SEND  = KEY_PREFIX + "Send MB";
+    private static final String KEY_BYTES_SENT = KEY_PREFIX + "Sent MB";
     private static final String KEY_ERROR_COUNT  = KEY_PREFIX + "Error Count";
 
     private static final String OBJECT_GLOBAL_REQUEST_PROCESSOR = "Tomcat:type=GlobalRequestProcessor,name=\"http-bio-8080\"";
     private static final String NAME_REQUEST_COUNT = "requestCount";
     private static final String NAME_BYTES_RECEIVED = "bytesReceived";
-    private static final String NAME_BYTES_SEND = "bytesSend";
+    private static final String NAME_BYTES_SENT = "bytesSent";
     private static final String NAME_ERROR_COUNT = "errorCount";
 
 
@@ -36,12 +36,12 @@ public class AJmxTomcatMeasurer implements AScalarMeasurer {
         try {
             final Object requestCount = server.getAttribute(new ObjectName(OBJECT_GLOBAL_REQUEST_PROCESSOR), NAME_REQUEST_COUNT);
             final Object bytesReceived = server.getAttribute(new ObjectName(OBJECT_GLOBAL_REQUEST_PROCESSOR), NAME_BYTES_RECEIVED);
-            final Object bytesSend = server.getAttribute(new ObjectName(OBJECT_GLOBAL_REQUEST_PROCESSOR), NAME_BYTES_SEND);
+            final Object bytesSent = server.getAttribute(new ObjectName(OBJECT_GLOBAL_REQUEST_PROCESSOR), NAME_BYTES_SENT);
             final Object errorCount = server.getAttribute(new ObjectName(OBJECT_GLOBAL_REQUEST_PROCESSOR), NAME_ERROR_COUNT);
 
             data.put(KEY_REQUEST_COUNT, new AScalarDataPoint(timestamp, KEY_REQUEST_COUNT, (Integer) requestCount, 0));
             data.put(KEY_BYTES_RECEIVED, new AScalarDataPoint(timestamp, KEY_BYTES_RECEIVED, formatToMegaBytes((Long) bytesReceived), 3));
-            data.put(KEY_BYTES_SEND, new AScalarDataPoint(timestamp, KEY_BYTES_SEND, formatToMegaBytes((Long) bytesSend), 3));
+            data.put(KEY_BYTES_SENT, new AScalarDataPoint(timestamp, KEY_BYTES_SENT, formatToMegaBytes((Long) bytesSent), 3));
             data.put(KEY_ERROR_COUNT, new AScalarDataPoint(timestamp, KEY_ERROR_COUNT, (Integer) errorCount, 0));
         } catch (Exception e) {
             LOG.error(e);
