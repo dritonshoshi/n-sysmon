@@ -26,7 +26,7 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * @author arno
  */
-public class AJmxGcMeasurerer implements AScalarMeasurer, NSysMonAware {
+public class AJmxGcMeasurer implements AScalarMeasurer, NSysMonAware {
     public static final String IDENT_GC_TRACE_ROOT = "Garbage Collection";
 
     public static final String KEY_ID = "gc-id";
