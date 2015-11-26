@@ -7,7 +7,7 @@ import java.util.Map;
 import java.util.Random;
 
 public class RandomValues2 implements AScalarMeasurer {
-    public static final String MEASUREMENT_NAME = "RandomNumber2";
+    public static final String MEASUREMENT_NAME = "RandomNumber 2";
     private final Random rnd = new Random();
 
     @Override

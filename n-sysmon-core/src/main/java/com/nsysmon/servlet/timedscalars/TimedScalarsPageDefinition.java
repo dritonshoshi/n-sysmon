@@ -7,6 +7,7 @@ import com.nsysmon.config.presentation.APresentationPageDefinition;
 import com.nsysmon.data.AScalarDataPoint;
 
 import java.io.IOException;
+import java.net.URLDecoder;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -62,11 +63,12 @@ public class TimedScalarsPageDefinition implements APresentationPageDefinition {
     private void serveGraphData(final AJsonSerHelper json, List<String> params) throws IOException {
         //TODO FOX088S why is this called twice at start?
         for (String param : params) {
+            String paramWithoutHtml = URLDecoder.decode(param, "UTF-8");
             final Map<String, ARingBuffer<AScalarDataPoint>> scalars = sysMon.getTimedScalarMeasurements();
 
             json.startArray();
             for (String key : scalars.keySet()) {
-                if (key.equalsIgnoreCase(param)) {
+                if (key.equalsIgnoreCase(paramWithoutHtml)) {
                     json.startObject();
                     json.writeKey("key");
                     json.writeStringLiteral(key);
