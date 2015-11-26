@@ -1,4 +1,3 @@
-
 <div class="options-header">
     <div class="button-box">
         <a class="btn btn-default" ng-click="refresh()" data-toggle="tooltip" title="Fetch fresh data from the server">Refresh</a>
@@ -9,17 +8,19 @@
     </div>
 </div>
 
-<fieldset class="scalar-group">
-    <legend>Available Data</legend>
-    <table class="table table-condensed table-striped">
-        <tr ng-repeat="s in timedScalars">
-            <td class="scalar-name" ng-click="loadGraphData(s.key)">{{s.key}}</td>
-        </tr>
-    </table>
-</fieldset>
+<div ng-app='NSysMonApp' ng-controller='CtrlTimedScalars' style="{position:relative;vertical-align: top}">
+    <fieldset class="timedscalar-measurements">
+        <legend>Available Data</legend>
+        <table class="table table-condensed table-striped">
+            <tr ng-repeat="s in timedScalars">
+                <td class="scalar-name" ng-click="loadGraphData(s.key)">{{s.key}}</td>
+            </tr>
+        </table>
+    </fieldset>
 
-<div ng-app='NSysMonApp'>
-    <div ng-controller='CtrlTimedScalars'>
+
+    <fieldset class="timedscalar-graph">
+        <legend>Graphical Display</legend>
         <nvd3 options='options' id='chart' data='graphData' api="rc.api"></nvd3>
-    </div>
+    </fieldset>
 </div>

@@ -43,6 +43,26 @@ fieldset legend {
     text-align: center;
 }
 
+.timedscalar-measurements {
+    width: 15%;
+    display: inline-block;
+    margin-left: 10px;
+    margin-right: 10px;
+    margin-top: 5px;
+    padding: 0 20px;
+    border: 1px solid;
+    vertical-align: top;
+}
+.timedscalar-graph {
+    width: 80%;
+    display: inline-block;
+    margin-left: 10px;
+    margin-right: 10px;
+    margin-top: 5px;
+    padding: 0 20px;
+    border: 1px solid;
+}
+
 .inline-color {
     display: inline-block;
     margin-top: 5px;

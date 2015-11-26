@@ -7,7 +7,7 @@ angular.module('NSysMonApp').controller('CtrlTimedScalars', function($scope, $ti
               "top": 20,
               "right": 20,
               "bottom": 60,
-              "left": 40
+              "left": 60
             },
 //            x: function(d){ return d[0]; },
 //            y: function(d){ return d[1]/100; },
