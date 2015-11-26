@@ -44,18 +44,17 @@ angular.module('NSysMonApp').controller('CtrlTimedScalars', function($scope, $ti
         refreshDataOnly: true // default: false
     };
 
+    $scope.currentDisplayedScalars;
+
     $scope.graphData = []; //can leave empty
 
     $scope.autoRefresh = false;
     $scope.autoRefreshSeconds = 1; //TODO change this value to something usefull
     var autoRefreshCounter = 0; // to invalidate auto-refresh if there was a manual refresh in between
 
-    var currentData = "";
-
     function initGraphDataFromResponse(data) {
         $scope.graphData = data;
         $scope.rc.api.updateWithData(data);
-        //$scope.$apply();
         triggerAutoRefresh();
     }
 
@@ -78,8 +77,8 @@ angular.module('NSysMonApp').controller('CtrlTimedScalars', function($scope, $ti
     }
 
     $scope.refresh = function() {
-        if (currentData != ""){
-            Rest.call('getGraphData/'+currentData, initGraphDataFromResponse);
+        if (($scope.currentDisplayedScalars != "") && (typeof $scope.currentDisplayedScalars !== 'undefined')) {
+            Rest.call('getGraphData/'+$scope.currentDisplayedScalars, initGraphDataFromResponse);
         }
     };
 
@@ -89,7 +88,7 @@ angular.module('NSysMonApp').controller('CtrlTimedScalars', function($scope, $ti
     }
 
     $scope.loadGraphData = function(key) {
-        currentData = key;
+        $scope.currentDisplayedScalars = key;
         $scope.refresh();
     }
 

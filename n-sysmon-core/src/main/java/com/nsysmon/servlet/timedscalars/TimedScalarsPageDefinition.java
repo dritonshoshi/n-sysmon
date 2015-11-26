@@ -3,6 +3,7 @@ package com.nsysmon.servlet.timedscalars;
 import com.ajjpj.afoundation.collection.mutable.ARingBuffer;
 import com.ajjpj.afoundation.io.AJsonSerHelper;
 import com.nsysmon.NSysMonApi;
+import com.nsysmon.config.log.NSysMonLogger;
 import com.nsysmon.config.presentation.APresentationPageDefinition;
 import com.nsysmon.data.AScalarDataPoint;
 
@@ -16,6 +17,7 @@ import java.util.Map;
 
 public class TimedScalarsPageDefinition implements APresentationPageDefinition {
     private volatile NSysMonApi sysMon;
+    private static final NSysMonLogger LOG = NSysMonLogger.get(TimedScalarsPageDefinition.class);
 
     @Override
     public String getId() {
@@ -62,6 +64,7 @@ public class TimedScalarsPageDefinition implements APresentationPageDefinition {
 
     private void serveGraphData(final AJsonSerHelper json, List<String> params) throws IOException {
         //TODO FOX088S why is this called twice at start?
+        //LOG.info(params.toString());
         for (String param : params) {
             String paramWithoutHtml = URLDecoder.decode(param, "UTF-8");
             final Map<String, ARingBuffer<AScalarDataPoint>> scalars = sysMon.getTimedScalarMeasurements();
@@ -107,21 +110,21 @@ public class TimedScalarsPageDefinition implements APresentationPageDefinition {
 
     private void writeRingBuffer(final AJsonSerHelper json, final ARingBuffer buffer) throws IOException {
         Iterator iterator = buffer.iterator();
-while (iterator.hasNext()){
-    AScalarDataPoint scalarDataPoint = (AScalarDataPoint)iterator.next();
-    try {
-        json.startObject();
+        while (iterator.hasNext()) {
+            AScalarDataPoint scalarDataPoint = (AScalarDataPoint) iterator.next();
+            try {
+                json.startObject();
 
-        json.writeKey("x");
-        json.writeNumberLiteral(scalarDataPoint.getTimestamp(), 0);
-        json.writeKey("y");
-        json.writeNumberLiteral(scalarDataPoint.getValue(), scalarDataPoint.getNumFracDigits());
+                json.writeKey("x");
+                json.writeNumberLiteral(scalarDataPoint.getTimestamp(), 0);
+                json.writeKey("y");
+                json.writeNumberLiteral(scalarDataPoint.getValue(), scalarDataPoint.getNumFracDigits());
 
-        json.endObject();
-    } catch (IOException e) {
-        System.err.println(e);
-    }
-}
+                json.endObject();
+            } catch (IOException e) {
+                System.err.println(e);
+            }
+        }
 
 /*
         buffer.forEach(new Consumer() {

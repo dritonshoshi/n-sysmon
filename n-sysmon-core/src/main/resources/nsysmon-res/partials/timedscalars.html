@@ -1,14 +1,17 @@
-<div class="options-header">
-    <div class="button-box">
-        <a class="btn btn-default" ng-click="refresh()" data-toggle="tooltip" title="Fetch fresh data from the server">Refresh</a>
-    </div>
-    <div class="input-group">
-        <span class="input-group-addon"><input type="checkbox" ng-model="autoRefresh"></span>
-        <input type="text" class="form-control" ng-model="autoRefreshSeconds" style="width:50px"> Automatically refresh graph after {{autoRefreshSeconds}} seconds
-    </div>
-</div>
-
 <div ng-app='NSysMonApp' ng-controller='CtrlTimedScalars' style="{position:relative;vertical-align: top}">
+    <div class="options-header">
+        <div class="button-box">
+            <a class="btn btn-default" ng-click="refresh()" data-toggle="tooltip"
+               title="Fetch fresh data from the server">Refresh</a>
+        </div>
+        <div class="input-group">
+            <span class="input-group-addon"><input type="checkbox" ng-model="autoRefresh"></span>
+            <input type="text" class="form-control" ng-model="autoRefreshSeconds" style="width:50px"> Automatically
+            refresh graph after {{autoRefreshSeconds}} seconds
+        </div>
+    </div>
+
+    <input type='hidden' ng-model="currentDisplayedScalars">
     <fieldset class="timedscalar-measurements">
         <legend>Available Data</legend>
         <table class="table table-condensed table-striped">
