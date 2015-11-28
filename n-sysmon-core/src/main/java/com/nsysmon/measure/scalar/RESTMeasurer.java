@@ -16,6 +16,7 @@ import java.net.URLConnection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
 public class RESTMeasurer implements AScalarMeasurer, NSysMonAware {
@@ -51,15 +52,15 @@ public class RESTMeasurer implements AScalarMeasurer, NSysMonAware {
     }
 
     @Override public AOption<Long> getTimeoutInMilliSeconds() {
-        return AOption.some((long) ((timeoutInSeconds  + 2) * 1000));
+        return AOption.some(TimeUnit.SECONDS.toMillis(timeoutInSeconds + 2));
     }
 
     private Map<String, Double> callRest(long timestamp) throws IOException {
 
         final URL url = new URL(restMeasurerUrl + timestamp);
         final URLConnection conn = url.openConnection();
-        conn.setConnectTimeout(timeoutInSeconds * 1000);
-        conn.setReadTimeout(timeoutInSeconds * 1000);
+        conn.setConnectTimeout((int) TimeUnit.SECONDS.toMillis(timeoutInSeconds));
+        conn.setReadTimeout((int) TimeUnit.SECONDS.toMillis(timeoutInSeconds));
         try (InputStreamReader isr = new InputStreamReader(conn.getInputStream()); BufferedReader br = new BufferedReader(isr)) {
             return parseResponse(br.readLine());
         }
