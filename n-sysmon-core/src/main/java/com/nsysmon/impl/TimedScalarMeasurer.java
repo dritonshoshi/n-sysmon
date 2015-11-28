@@ -2,6 +2,7 @@ package com.nsysmon.impl;
 
 import com.ajjpj.afoundation.collection.immutable.AList;
 import com.ajjpj.afoundation.collection.mutable.ARingBuffer;
+import com.nsysmon.config.NSysMonConfig;
 import com.nsysmon.data.AScalarDataPoint;
 
 import java.util.Date;
@@ -20,6 +21,10 @@ public class TimedScalarMeasurer implements Runnable {
 
     @Override
     public void run() {
+        if (NSysMonConfig.isGloballyDisabled()){
+            //do nothing it nsysmon is disabled
+            return;
+        }
         long timestamp = new Date().getTime();
         Map<String, AScalarDataPoint> data = new TreeMap<>();
 
