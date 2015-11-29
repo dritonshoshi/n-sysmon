@@ -16,7 +16,7 @@
         <legend>Available Data</legend>
         <table class="table table-condensed table-striped">
             <tr ng-repeat="s in timedScalars">
-                <td class="scalar-name" ng-click="loadGraphData(s.key)">{{s.key}}</td>
+                <td class="scalar-name" ng-click="toggleGraphData(s.key)" ng-class="s.selected ? 'timedScalarOn' : 'timedScalarOff'">{{s.key}}</td>
             </tr>
         </table>
     </fieldset>

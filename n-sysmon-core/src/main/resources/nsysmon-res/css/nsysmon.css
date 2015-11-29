@@ -43,6 +43,13 @@ fieldset legend {
     text-align: center;
 }
 
+.timedScalarOff {
+//    text-align: left;
+}
+.timedScalarOn {
+//    text-align: right;
+    background-color: rgba(255, 155, 155, .8) !important;
+}
 .timedscalar-measurements {
     width: 15%;
     display: inline-block;

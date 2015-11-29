@@ -52,7 +52,7 @@ public class TimedScalarsPageDefinition implements APresentationPageDefinition {
     @Override
     public boolean handleRestCall(String service, List<String> params, AJsonSerHelper json) throws IOException {
         if ("getData".equals(service)) {
-            serveData(json);
+            serveData(json, params);
             return true;
         }else if ("getGraphData".equals(service)) {
             serveGraphData(json, params);
@@ -65,11 +65,16 @@ public class TimedScalarsPageDefinition implements APresentationPageDefinition {
     private void serveGraphData(final AJsonSerHelper json, List<String> params) throws IOException {
         //TODO FOX088S why is this called twice at start?
         //LOG.info(params.toString());
-        for (String param : params) {
+        if (params == null || params.size() < 1){
+            return;
+        }
+        String selectedEntries = params.get(0);
+
+        json.startArray();
+        for (String param : selectedEntries.split(",")) {
             String paramWithoutHtml = URLDecoder.decode(param, "UTF-8");
             final Map<String, ARingBuffer<AScalarDataPoint>> scalars = sysMon.getTimedScalarMeasurements();
 
-            json.startArray();
             for (String key : scalars.keySet()) {
                 if (key.equalsIgnoreCase(paramWithoutHtml)) {
                     json.startObject();
@@ -77,19 +82,18 @@ public class TimedScalarsPageDefinition implements APresentationPageDefinition {
                     json.writeStringLiteral(key);
                     json.writeKey("values");
                     json.startArray();
-                    writeRingBuffer(json, scalars.get(key));
+                    writeRingBufferIntoJson(json, scalars.get(key));
                     json.endArray();
                     json.endObject();
                 }
             }
-            json.endArray();
-
         }
+        json.endArray();
 
     }
 
     //TODO FOX088S think about splitting this into 2 methods one for the names and one for the data
-    private void serveData(final AJsonSerHelper json) throws IOException {
+    private void serveData(final AJsonSerHelper json, List<String> params) throws IOException {
         final Map<String, ARingBuffer<AScalarDataPoint>> scalars = sysMon.getTimedScalarMeasurements();
         json.startObject();
 
@@ -101,6 +105,8 @@ public class TimedScalarsPageDefinition implements APresentationPageDefinition {
             json.startObject();
             json.writeKey("key");
             json.writeStringLiteral(key);
+            json.writeKey("selected");
+            json.writeBooleanLiteral(params.contains(key));
             json.endObject();
         }
 
@@ -108,7 +114,7 @@ public class TimedScalarsPageDefinition implements APresentationPageDefinition {
         json.endObject();
     }
 
-    private void writeRingBuffer(final AJsonSerHelper json, final ARingBuffer buffer) throws IOException {
+    private void writeRingBufferIntoJson(final AJsonSerHelper json, final ARingBuffer buffer) throws IOException {
         Iterator iterator = buffer.iterator();
         while (iterator.hasNext()) {
             AScalarDataPoint scalarDataPoint = (AScalarDataPoint) iterator.next();
