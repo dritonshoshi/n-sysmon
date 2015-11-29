@@ -20,7 +20,8 @@ angular.module('NSysMonApp').controller('CtrlTimedScalars', function($scope, $ti
                tickFormat: function(d) {
                     return d3.time.format('%m.%d %H:%M:%S')(new Date(d))
                 },
-                showMaxMin: false
+                showMaxMin: false,
+                axisLabel: "Time"
             },
             "x2Axis": {
                tickFormat: function(d) {
@@ -29,10 +30,12 @@ angular.module('NSysMonApp').controller('CtrlTimedScalars', function($scope, $ti
                 showMaxMin: false
             },
             "yAxis": {
-              "axisLabel": "Y Axis",
-              "rotateYLabel": false
+              "axisLabel": "Value",
+              "rotateYLabel": true,
             },
-            "y2Axis": {}
+            "y2Axis": {
+              "rotateYLabel": true,
+            }
         }
     };
 
@@ -43,8 +46,6 @@ angular.module('NSysMonApp').controller('CtrlTimedScalars', function($scope, $ti
         autorefresh: true, // default: true
         refreshDataOnly: true // default: false
     };
-
-    $scope.currentDisplayedScalars;
 
     $scope.graphData = []; //can leave empty
 
@@ -77,9 +78,20 @@ angular.module('NSysMonApp').controller('CtrlTimedScalars', function($scope, $ti
     }
 
     $scope.refresh = function() {
-        if (($scope.currentDisplayedScalars != "") && (typeof $scope.currentDisplayedScalars !== 'undefined')) {
-            Rest.call('getGraphData/'+$scope.currentDisplayedScalars, initGraphDataFromResponse);
+        selectedEntries = "";
+        if (typeof $scope.timedScalars == 'undefined'){
+            return;
         }
+        for (timedScalar in $scope.timedScalars) {
+            if ($scope.timedScalars[timedScalar].selected){
+                selectedEntries = selectedEntries.concat($scope.timedScalars[timedScalar].key);
+                selectedEntries = selectedEntries.concat(",");
+            }
+        }
+        if (selectedEntries.length > 1) {
+            Rest.call('getGraphData/' + selectedEntries, initGraphDataFromResponse);
+        }
+
     };
 
     function initFromResponse(data) {
@@ -87,8 +99,8 @@ angular.module('NSysMonApp').controller('CtrlTimedScalars', function($scope, $ti
         triggerAutoRefresh();
     }
 
-    $scope.loadGraphData = function(key) {
-        $scope.currentDisplayedScalars = key;
+    $scope.toggleGraphData = function(key) {
+        $scope.timedScalars[key].selected = !$scope.timedScalars[key].selected;
         $scope.refresh();
     }
 
