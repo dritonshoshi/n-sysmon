@@ -1,6 +1,9 @@
 package com.nsysmon.measure.scalar;
 
 import com.ajjpj.afoundation.collection.immutable.AOption;
+import com.nsysmon.NSysMonApi;
+import com.nsysmon.config.ADefaultConfigFactory;
+import com.nsysmon.config.NSysMonAware;
 import com.nsysmon.data.AScalarDataPoint;
 import org.apache.log4j.Logger;
 
@@ -9,10 +12,9 @@ import javax.management.ObjectName;
 import java.lang.management.ManagementFactory;
 import java.util.Map;
 
-public class AJmxTomcatMeasurer implements AScalarMeasurer {
+public class AJmxTomcatMeasurer implements AScalarMeasurer, NSysMonAware {
 
     private static final Logger LOG = Logger.getLogger(AJmxTomcatMeasurer.class);
-
 
     private static final String KEY_PREFIX = "Tomcat ";
     private static final String KEY_REQUEST_COUNT = KEY_PREFIX + "Request Count";
@@ -20,7 +22,7 @@ public class AJmxTomcatMeasurer implements AScalarMeasurer {
     private static final String KEY_BYTES_SENT = KEY_PREFIX + "Sent MB";
     private static final String KEY_ERROR_COUNT  = KEY_PREFIX + "Error Count";
 
-    private static final String OBJECT_GLOBAL_REQUEST_PROCESSOR = "Tomcat:type=GlobalRequestProcessor,name=\"http-bio-8080\"";
+    private static String OBJECT_GLOBAL_REQUEST_PROCESSOR;
     private static final String NAME_REQUEST_COUNT = "requestCount";
     private static final String NAME_BYTES_RECEIVED = "bytesReceived";
     private static final String NAME_BYTES_SENT = "bytesSent";
@@ -60,5 +62,9 @@ public class AJmxTomcatMeasurer implements AScalarMeasurer {
     }
 
     @Override public void shutdown() throws Exception {
+    }
+
+    @Override public void setNSysMon(NSysMonApi sysMon) {
+        OBJECT_GLOBAL_REQUEST_PROCESSOR = sysMon.getConfig().additionalConfigurationParameters.get(ADefaultConfigFactory.KEY_TOMCAT_GLOBAL_REQUEST_PROCESSOR);
     }
 }

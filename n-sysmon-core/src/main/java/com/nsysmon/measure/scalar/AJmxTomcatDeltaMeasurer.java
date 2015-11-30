@@ -1,6 +1,9 @@
 package com.nsysmon.measure.scalar;
 
 import com.ajjpj.afoundation.collection.immutable.AOption;
+import com.nsysmon.NSysMonApi;
+import com.nsysmon.config.ADefaultConfigFactory;
+import com.nsysmon.config.NSysMonAware;
 import com.nsysmon.data.AScalarDataPoint;
 import org.apache.log4j.Logger;
 
@@ -9,7 +12,7 @@ import javax.management.ObjectName;
 import java.lang.management.ManagementFactory;
 import java.util.Map;
 
-public class AJmxTomcatDeltaMeasurer implements AScalarMeasurer {
+public class AJmxTomcatDeltaMeasurer implements AScalarMeasurer, NSysMonAware {
 
     private static final Logger LOG = Logger.getLogger(AJmxTomcatDeltaMeasurer.class);
 
@@ -18,7 +21,7 @@ public class AJmxTomcatDeltaMeasurer implements AScalarMeasurer {
     private static final String KEY_BYTES_RECEIVED  = KEY_PREFIX + "MBReceived";
     private static final String KEY_BYTES_SENT  = KEY_PREFIX + "MBSent";
 
-    private static final String OBJECT_GLOBAL_REQUEST_PROCESSOR = "Tomcat:type=GlobalRequestProcessor,name=\"http-bio-8080\"";
+    private static String OBJECT_GLOBAL_REQUEST_PROCESSOR;
     private static final String NAME_REQUEST_COUNT = "requestCount";
     private static final String NAME_BYTES_RECEIVED = "bytesReceived";
     private static final String NAME_BYTES_SENT = "bytesSent";
@@ -66,5 +69,9 @@ public class AJmxTomcatDeltaMeasurer implements AScalarMeasurer {
     }
 
     @Override public void shutdown() throws Exception {
+    }
+
+    @Override public void setNSysMon(NSysMonApi sysMon) {
+        OBJECT_GLOBAL_REQUEST_PROCESSOR = sysMon.getConfig().additionalConfigurationParameters.get(ADefaultConfigFactory.KEY_TOMCAT_GLOBAL_REQUEST_PROCESSOR);
     }
 }

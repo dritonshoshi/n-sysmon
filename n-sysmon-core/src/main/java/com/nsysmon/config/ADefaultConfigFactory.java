@@ -64,6 +64,8 @@ public class ADefaultConfigFactory implements AConfigFactory {
     public static final String KEY_RESTMEASURER_URL = "com.nsysmon.measure.scalar.RESTMeasurer.url";
     public static final String KEY_RESTMEASURER_URL_TIMEOUT_SECONDS = "com.nsysmon.measure.scalar.RESTMeasurer.timeout";
 
+    public static final String KEY_TOMCAT_GLOBAL_REQUEST_PROCESSOR = "tomcat-global-request-processor";
+
     private static volatile NSysMonLoggerFactory configuredLogger;
 
     public static AConfigFactory getConfigFactory() {
@@ -177,6 +179,7 @@ public class ADefaultConfigFactory implements AConfigFactory {
         Map<String, String> additionalConfigurations = new HashMap<>();
         additionalConfigurations.put(KEY_RESTMEASURER_URL, props.get(KEY_RESTMEASURER_URL, String.class));
         additionalConfigurations.put(KEY_RESTMEASURER_URL_TIMEOUT_SECONDS, props.get(KEY_RESTMEASURER_URL_TIMEOUT_SECONDS, String.class));
+        additionalConfigurations.put(KEY_TOMCAT_GLOBAL_REQUEST_PROCESSOR, props.get(KEY_TOMCAT_GLOBAL_REQUEST_PROCESSOR, String.class));
 
         builder.setAdditionalConfigurationParameters(additionalConfigurations);
 
