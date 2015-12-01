@@ -61,8 +61,8 @@ public class ADefaultConfigFactory implements AConfigFactory {
     public static final String KEY_DATA_SINK_TIMEOUT_NANOS = "data-sink-timeout-nanos";
     public static final String KEY_MAX_NUM_DATA_SINK_TIMEOUTS = "max-num-data-sink-timeouts";
 
-    public static final String KEY_RESTMEASURER_URL = "com.nsysmon.measure.scalar.RESTMeasurer.url";
-    public static final String KEY_RESTMEASURER_URL_TIMEOUT_SECONDS = "com.nsysmon.measure.scalar.RESTMeasurer.timeout";
+    public static final String KEY_RESTMEASURER_URL = "rest-measurer-url";
+    public static final String KEY_RESTMEASURER_URL_TIMEOUT_SECONDS = "rest-measurer-timeout";
 
     public static final String KEY_TOMCAT_GLOBAL_REQUEST_PROCESSOR = "tomcat-global-request-processor";
 
