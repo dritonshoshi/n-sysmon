@@ -39,10 +39,6 @@ public class TimedScalarMeasurer implements Runnable {
             }
             dataBuffer.get(keyNewData).put(data.get(keyNewData));
         }
-
-
-        //System.out.println(new Date() + " " + Thread.currentThread().getName() + " is Running Delayed Task, having " + timedScalarMeasurers.size() + " measurers.");
-        //System.out.println(new Date());
     }
 
     public Map<String, ARingBuffer<AScalarDataPoint>> getMeasurements() {
