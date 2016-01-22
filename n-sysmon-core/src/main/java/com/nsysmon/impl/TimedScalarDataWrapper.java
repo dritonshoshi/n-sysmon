@@ -10,7 +10,7 @@ import java.util.Date;
 import java.util.Map;
 import java.util.TreeMap;
 
-public class TimedScalarDataWrapper implements  Runnable {
+public class TimedScalarDataWrapper implements Runnable {
     private final Map<String, ARingBuffer<AScalarDataPoint>> dataBuffer = new TreeMap<>();
     private final int maxEntries;
     private AList<RobustScalarMeasurerWrapper> timedScalarMeasurers = AList.nil();
@@ -20,7 +20,6 @@ public class TimedScalarDataWrapper implements  Runnable {
         this.maxEntries = maxEntries;
     }
 
-    //TODO FOX088S refactor in runnable and datawrapper
     @Override
     public void run() {
         if (NSysMonConfig.isGloballyDisabled()){
