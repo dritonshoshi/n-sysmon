@@ -57,8 +57,9 @@ public interface NSysMonApi {
 
     Map<String, AScalarDataPoint> getScalarMeasurements(int averagingDelayForScalarsMillis);
 
-    Map<String,ARingBuffer<AScalarDataPoint>> getTimedScalarMeasurements();
-
     List<AEnvironmentData> getEnvironmentMeasurements() throws Exception;
 
+    Map<String,ARingBuffer<AScalarDataPoint>> getTimedScalarMeasurements();
+
+    void addTimedScalarMeasurement(AScalarDataPoint... dataPoint);
 }

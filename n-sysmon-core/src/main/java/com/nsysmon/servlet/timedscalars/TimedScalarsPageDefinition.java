@@ -132,25 +132,5 @@ public class TimedScalarsPageDefinition implements APresentationPageDefinition {
             }
         }
 
-/*
-        buffer.forEach(new Consumer() {
-            @Override
-            public void accept(Object o) {
-                try {
-                    AScalarDataPoint scalarDataPoint = (AScalarDataPoint) o;
-                    json.startObject();
-
-                    json.writeKey("x");
-                    json.writeNumberLiteral(scalarDataPoint.getTimestamp(), 0);
-                    json.writeKey("y");
-                    json.writeNumberLiteral(scalarDataPoint.getValue(), scalarDataPoint.getNumFracDigits());
-
-                    json.endObject();
-                } catch (IOException e) {
-                    System.err.println(e);
-                }
-            }
-        });
-        */
     }
 }

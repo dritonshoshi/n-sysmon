@@ -10,16 +10,17 @@ import java.util.Date;
 import java.util.Map;
 import java.util.TreeMap;
 
-public class TimedScalarMeasurer implements Runnable {
+public class TimedScalarDataWrapper implements  Runnable {
     private final Map<String, ARingBuffer<AScalarDataPoint>> dataBuffer = new TreeMap<>();
     private final int maxEntries;
     private AList<RobustScalarMeasurerWrapper> timedScalarMeasurers = AList.nil();
     private Map<String, Object> mementos = new TreeMap<>();
 
-    public TimedScalarMeasurer(int maxEntries) {
+    public TimedScalarDataWrapper(int maxEntries) {
         this.maxEntries = maxEntries;
     }
 
+    //TODO FOX088S refactor in runnable and datawrapper
     @Override
     public void run() {
         if (NSysMonConfig.isGloballyDisabled()){
@@ -33,11 +34,8 @@ public class TimedScalarMeasurer implements Runnable {
             timedScalarMeasurer.contributeMeasurements(data, timestamp, mementos);
         }
 
-        for (String keyNewData : data.keySet()) {
-            if (!dataBuffer.containsKey(keyNewData)) {
-                dataBuffer.put(keyNewData, new ARingBuffer<>(AScalarDataPoint.class, maxEntries));
-            }
-            dataBuffer.get(keyNewData).put(data.get(keyNewData));
+        for (AScalarDataPoint point : data.values()) {
+            addMeasurement(point);
         }
     }
 
@@ -52,4 +50,13 @@ public class TimedScalarMeasurer implements Runnable {
         this.timedScalarMeasurers = timedScalarMeasurers;
     }
 
+    public void addMeasurement(AScalarDataPoint... dataPoint) {
+        for (AScalarDataPoint point : dataPoint) {
+            String name = point.getName();
+            if (!dataBuffer.containsKey(name)){
+                dataBuffer.put(name, new ARingBuffer<>(AScalarDataPoint.class, maxEntries));
+            }
+            dataBuffer.get(name).put(point);
+        }
+    }
 }
