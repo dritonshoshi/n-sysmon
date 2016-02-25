@@ -110,7 +110,7 @@ public class NSysMonPreparedStatement extends NSysMonStatement implements Prepar
     }
 
     private void setSysMonParam(int index, Object value) {
-        m.addParameter(keyForIndex(index), String.valueOf(value));
+//TODO FOX088S        m.addParameter(keyForIndex(index), String.valueOf(value));
     }
 
     @Override public void setNull(int parameterIndex, int sqlType) throws SQLException {
