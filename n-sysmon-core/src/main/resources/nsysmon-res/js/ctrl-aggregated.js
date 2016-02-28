@@ -23,10 +23,12 @@ angular.module('NSysMonApp').controller('CtrlAggregated', function($scope, $log,
     $scope.expansionModel = {};
     $scope.rootLevel = 0;
     $scope.hideTitleRows = 1;
+    $scope.showDataTooltips = 0;
 
     var nodesByFqn = {};
 
     $scope.$watch('hideTitleRows', renderTree);
+    $scope.$watch('showDataTooltips', renderTree);
 
     function initFromResponse(data) {
 //        $log.log('init from response');
@@ -327,6 +329,9 @@ angular.module('NSysMonApp').controller('CtrlAggregated', function($scope, $log,
         $('#theTree').html(hhttmmll);
 
         $('.data-row.with-children').click(onClickNode);
+        if ($scope.showDataTooltips == 1){
+            $("[data-toggle=data-tooltip]").tooltip();
+        }
     }
 
     function onClickNode() {
@@ -406,12 +411,19 @@ angular.module('NSysMonApp').controller('CtrlAggregated', function($scope, $log,
                 '<div class="fqn-holder">' + escapeHtml(curNode.fqn) + '</div>' +
                 '<div class="node-icon ' + $scope.nodeIconClass(curNode.fqn) + '">&nbsp;</div>' +
                 dataCols +
-                '<div class="node-text" style="margin-right: ' + $scope.totalDataWidth + 'px;">' + escapeHtml(curNode.name) + '</div>' +
+                '<div data-toggle="data-tooltip" class="node-text" style="margin-right: ' + $scope.totalDataWidth + 'px;" ' + renderTooltipp(curNode) + '>' + escapeHtml(curNode.name) + '</div>' +
                 '</div>';
         //$log.log($scope.pickedTraces); // The Tooltips has to be sent from the server. See ABottomUpPageDefinition and ATracePageDefinition
+        //$log.log("xx="+curNode.tooltip);
         result += htmlForChildrenDiv(curNode);
 
         return result;
+    }
+    function renderTooltipp(curNode) {
+        if (!curNode || !curNode.tooltip || $scope.showDataTooltips != 1){
+            return '';
+        }
+        return 'title="' + curNode.tooltip + '"';
     }
 
     function htmlForChildrenDiv(curNode, shouldRender) {
@@ -433,36 +445,3 @@ angular.module('NSysMonApp').controller('CtrlAggregated', function($scope, $log,
         }
     }
 });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

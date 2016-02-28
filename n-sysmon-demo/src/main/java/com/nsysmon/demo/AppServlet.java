@@ -120,6 +120,13 @@ public class AppServlet extends HttpServlet {
                 return sleep();
             }
         });
+        NSysMon.get().measure("d", new AMeasureCallback<Object, RuntimeException>() {
+            @Override
+            public Object call(AWithParameters m) {
+                doQueryWithMultipleParameters();
+                return sleep();
+            }
+        });
 
         hugeTree(8, 6);
     }
@@ -152,6 +159,34 @@ public class AppServlet extends HttpServlet {
                 final PreparedStatement ps = conn.prepareStatement("select * from A where oid < ? and 1=1 and 1=1 and 1=1 and 1=1 and 1=1 and 1=1 and 1=1 and 1=1 and 1=1 and 1=1 and 1=1 and 1=1 and 1=1 and 1=1 and 1=1 and 1=1 and 1=1 and 1=1 and 1=1 and 1=1 and 1=1 and 1=1 and 1=1 and 1=1 and 1=1 and 1=1 and 1=1");
                 try {
                     ps.setLong(1, 25);
+                    final ResultSet rs = ps.executeQuery();
+                    while (rs.next()) {
+                    }
+                }
+                finally {
+                    ps.close();
+                }
+            } finally {
+                conn.commit();
+                conn.close();
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void doQueryWithMultipleParameters() {
+        try {
+            final Connection conn = getConnection();
+            try {
+                final PreparedStatement ps = conn.prepareStatement("select * from A where oid < ? and oid < ? and oid < ? and 1=? and 2=? and 3=?");
+                try {
+                    ps.setLong(1, 25);
+                    ps.setLong(2, 25);
+                    ps.setLong(3, 25);
+                    ps.setLong(4, 1);
+                    ps.setLong(5, 2);
+                    ps.setLong(6, 3);
                     final ResultSet rs = ps.executeQuery();
                     while (rs.next()) {
                     }
