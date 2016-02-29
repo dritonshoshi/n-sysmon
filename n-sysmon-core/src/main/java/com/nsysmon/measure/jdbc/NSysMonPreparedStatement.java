@@ -1,5 +1,6 @@
 package com.nsysmon.measure.jdbc;
 
+import com.nsysmon.NSysMon;
 import com.nsysmon.NSysMonApi;
 import com.nsysmon.measure.ACollectingMeasurement;
 import com.nsysmon.measure.AMeasureCallback;
@@ -110,7 +111,9 @@ public class NSysMonPreparedStatement extends NSysMonStatement implements Prepar
     }
 
     private void setSysMonParam(int index, Object value) {
-//TODO FOX088S        m.addParameter(keyForIndex(index), String.valueOf(value));
+        if (NSysMon.get().getConfig().collectSqlParameters) {
+            m.addParameter(keyForIndex(index), String.valueOf(value));
+        }
     }
 
     @Override public void setNull(int parameterIndex, int sqlType) throws SQLException {

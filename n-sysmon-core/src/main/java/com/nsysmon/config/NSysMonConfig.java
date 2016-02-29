@@ -45,10 +45,12 @@ public class NSysMonConfig {
     public final List<APresentationMenuEntry> presentationMenuEntries;
     public final Map<String, String> additionalConfigurationParameters;
 
+    public final Boolean collectSqlParameters;
+
     public NSysMonConfig(AApplicationInfoProvider appInfo, int averagingDelayForScalarsMillis, int durationOfOneTimedScalar, int maxNestedMeasurements, int maxNumMeasurementsPerHierarchy, int maxNumMeasurementsPerTimedScalar,
             long measurementTimeoutNanos, int maxNumMeasurementTimeouts, long dataSinkTimeoutNanos, int maxNumDataSinkTimeouts, ATimer timer, AHttpRequestAnalyzer httpRequestAnalyzer,
             List<AEnvironmentMeasurer> environmentMeasurers, List<AScalarMeasurer> initialScalarMeasurers, List<AScalarMeasurer> initialTimedScalarMeasurers, List<ADataSink> initialDataSinks,
-            String defaultPage, List<APresentationMenuEntry> presentationMenuEntries, Map<String, String> additionalConfigurationParameters) {
+            String defaultPage, List<APresentationMenuEntry> presentationMenuEntries, Map<String, String> additionalConfigurationParameters, Boolean collectSqlParameters) {
         this.appInfo = appInfo;
         this.averagingDelayForScalarsMillis = averagingDelayForScalarsMillis;
         this.durationOfOneTimedScalar = durationOfOneTimedScalar;
@@ -68,6 +70,7 @@ public class NSysMonConfig {
         this.defaultPage = defaultPage;
         this.presentationMenuEntries = Collections.unmodifiableList(presentationMenuEntries);
         this.additionalConfigurationParameters = additionalConfigurationParameters;
+        this.collectSqlParameters = collectSqlParameters;
     }
 
     /**

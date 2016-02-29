@@ -58,11 +58,10 @@ public class ADefaultConfigFactory implements AConfigFactory {
     public static final String KEY_MAX_NUM_MEASUREMENTS_PER_TIMED_SCALAR = "max-measurements-per-timed-scalar";
     public static final String KEY_DURATION_OF_ONE_TIMED_SCALAR = "duration-of-one-timed-scalar";
 
+    public static final String KEY_COLLECT_SQL_PARAMETERS = "collect-sql-parameters";
+
     public static final String KEY_DATA_SINK_TIMEOUT_NANOS = "data-sink-timeout-nanos";
     public static final String KEY_MAX_NUM_DATA_SINK_TIMEOUTS = "max-num-data-sink-timeouts";
-
-    public static final String KEY_RESTMEASURER_URL = "rest-measurer-url";
-    public static final String KEY_RESTMEASURER_URL_TIMEOUT_SECONDS = "rest-measurer-timeout";
 
     public static final String KEY_TOMCAT_GLOBAL_REQUEST_PROCESSOR = "tomcat-global-request-processor";
 
@@ -168,6 +167,8 @@ public class ADefaultConfigFactory implements AConfigFactory {
 
         builder.setDurationOfOneTimedScalar(props.get(KEY_DURATION_OF_ONE_TIMED_SCALAR, Integer.TYPE));
 
+        builder.setCollectSqlParameters(props.get(KEY_COLLECT_SQL_PARAMETERS, Boolean.TYPE));
+
         builder.setMaxNestedMeasurements(props.get(KEY_MAX_NESTED_MEASUREMENTS, Integer.TYPE));
         builder.setMaxNumMeasurementsPerHierarchy(props.get(KEY_MAX_NUM_MEASUREMENTS_PER_HIERARCHY, Integer.TYPE));
         builder.setMaxNumMeasurementsPerTimedScalar(props.get(KEY_MAX_NUM_MEASUREMENTS_PER_TIMED_SCALAR, Integer.TYPE));
@@ -175,10 +176,8 @@ public class ADefaultConfigFactory implements AConfigFactory {
         builder.setDataSinkTimeoutNanos (props.get (KEY_DATA_SINK_TIMEOUT_NANOS, Long.TYPE));
         builder.setMaxNumDataSinkTimeouts(props.get(KEY_MAX_NUM_DATA_SINK_TIMEOUTS, Integer.TYPE));
 
-        //TODO this need to be refactored, so meeasurements can be configured
+        //TODO this need to be refactored, so measurements can be configured
         Map<String, String> additionalConfigurations = new HashMap<>();
-        additionalConfigurations.put(KEY_RESTMEASURER_URL, props.get(KEY_RESTMEASURER_URL, String.class));
-        additionalConfigurations.put(KEY_RESTMEASURER_URL_TIMEOUT_SECONDS, props.get(KEY_RESTMEASURER_URL_TIMEOUT_SECONDS, String.class));
         additionalConfigurations.put(KEY_TOMCAT_GLOBAL_REQUEST_PROCESSOR, props.get(KEY_TOMCAT_GLOBAL_REQUEST_PROCESSOR, String.class));
 
         builder.setAdditionalConfigurationParameters(additionalConfigurations);

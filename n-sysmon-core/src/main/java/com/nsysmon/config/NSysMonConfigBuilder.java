@@ -35,6 +35,8 @@ public class NSysMonConfigBuilder {
     private long dataSinkTimeoutNanos = 100_000;
     private int maxNumDataSinkTimeouts = 3;
 
+    private boolean collectSqlParameters = false;
+
     private ATimer timer = new ASystemNanoTimer();
     private AHttpRequestAnalyzer httpRequestAnalyzer = new ASimpleHttpRequestAnalyzer();
 
@@ -90,6 +92,14 @@ public class NSysMonConfigBuilder {
     public NSysMonConfigBuilder setMeasurementTimeoutNanos(long measurementTimeoutNanos) {
         this.measurementTimeoutNanos = measurementTimeoutNanos;
         return this;
+    }
+
+    public void setCollectSqlParameters(boolean collectSqlParameters) {
+        this.collectSqlParameters = collectSqlParameters;
+    }
+
+    public boolean isCollectSqlParameters() {
+        return collectSqlParameters;
     }
 
     public NSysMonConfigBuilder setHttpRequestAnalyzer(AHttpRequestAnalyzer httpRequestAnalyzer) {
@@ -156,7 +166,7 @@ public class NSysMonConfigBuilder {
                 dataSinkTimeoutNanos, maxNumDataSinkTimeouts,
                 timer, httpRequestAnalyzer,
                 environmentMeasurers, scalarMeasurers, scalarTimedMeasurers, dataSinks,
-                defaultPage, presentationMenuEntries, additionalConfigurationParameters
+                defaultPage, presentationMenuEntries, additionalConfigurationParameters, collectSqlParameters
                 );
     }
 
