@@ -32,7 +32,6 @@ angular.module('NSysMonApp').controller('CtrlAggregated', function($scope, $log,
 
     function initFromResponse(data) {
 //        $log.log('init from response');
-        $scope.data = angular.toJson(data);
         $scope.isStarted = data.isStarted;
         $scope.columnDefs = data.columnDefs.reverse();
         $scope.traces = data.traces;
@@ -232,19 +231,28 @@ angular.module('NSysMonApp').controller('CtrlAggregated', function($scope, $log,
         renderTree();
     };
 
-    $scope.doExportAsJSON = function() {
-        function pad2(n) {
-            var result = n.toString();
-            while(result.length < 2) {
-                result = '0' + result;
-            }
-            return result;
-        }
-        var now = new Date();
-        var formattedNow = now.getFullYear() + '-' + pad2((now.getMonth()+1)) + '-' + pad2(now.getDate()) + '-' + pad2(now.getHours()) + '-' + pad2(now.getMinutes()) + '-' + pad2(now.getSeconds());
 
-        var blob = new Blob([$scope.data], {type: "application/json;charset=utf-8"});
-        saveAs(blob, "nsysmon-export-" + formattedNow + '.json');
+    $scope.doExportAsJSON = function() {
+
+        function internalExportAsJson(data) {
+
+            function pad2(n) {
+                var result = n.toString();
+                while(result.length < 2) {
+                    result = '0' + result;
+                }
+                return result;
+            }
+            var now = new Date();
+            var formattedNow = now.getFullYear() + '-' + pad2((now.getMonth()+1)) + '-' + pad2(now.getDate()) + '-' + pad2(now.getHours()) + '-' + pad2(now.getMinutes()) + '-' + pad2(now.getSeconds());
+
+            var blob = new Blob([angular.toJson(data)], {type: "application/json;charset=utf-8"});
+            blockGui(false);
+            saveAs(blob, "nsysmon-export-" + formattedNow + '.json');
+        }
+
+        blockGui(true);
+        Rest.call('getData', internalExportAsJson);
     };
 
     $scope.doImportJSON = function() {
@@ -259,8 +267,7 @@ angular.module('NSysMonApp').controller('CtrlAggregated', function($scope, $log,
 
             reader.onloadend = function(e){
             $scope.$apply(function() {
-                $scope.data = e.target.result;
-                initFromResponse(angular.fromJson($scope.data));
+                initFromResponse(angular.fromJson(e.target.result));
             });
 
         };
