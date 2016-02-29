@@ -15,9 +15,11 @@ public class OverviewDebuggingData implements APresentationPageDefinition {
     private volatile NSysMonApi sysMon;
     private static final NSysMonLogger LOG = NSysMonLogger.get(OverviewDebuggingData.class);
 
+    //TODO FOX088S http://localhost:8181/nsysmon/_$_nsysmon_$_/rest/overviewDebuggingData/getData
+
     @Override
     public String getId() {
-        return "overviewDebugData";
+        return "overviewDebuggingData";
     }
 
     @Override
@@ -37,13 +39,12 @@ public class OverviewDebuggingData implements APresentationPageDefinition {
 
     @Override
     public String getControllerName() {
-        return "CtrlOverviewDebug";
+        return "CtrlOverviewDebugging";
     }
 
     @Override
     public boolean handleRestCall(String service, List<String> params, AJsonSerHelper json) throws Exception {
         if ("getData".equals(service)) {
-            //TODO FOX088S
             serveData(params, json);
             return true;
         }
@@ -58,7 +59,6 @@ public class OverviewDebuggingData implements APresentationPageDefinition {
 
     private void serveData(final List<String> params, final AJsonSerHelper json) throws IOException {
         json.startObject();
-        json.writeKey(getId());
 
         addPageDefinitions(json);
         addConfiguration(json);
@@ -68,14 +68,23 @@ public class OverviewDebuggingData implements APresentationPageDefinition {
 
     private void addConfiguration(final AJsonSerHelper json) throws IOException {
         json.writeKey("configurationParameters");
+        json.startArray();
+
         json.startObject();
-
-        json.writeKey("durationOfOneTimedScalar");
+        json.writeKey("key");
+        json.writeStringLiteral("durationOfOneTimedScalar");
+        json.writeKey("value");
         json.writeNumberLiteral(sysMon.getConfig().durationOfOneTimedScalar, 0);
+        json.endObject();
 
-        json.writeKey("collectSqlParameters");
+        json.startObject();
+        json.writeKey("key");
+        json.writeStringLiteral("collectSqlParameters");
+        json.writeKey("value");
         json.writeBooleanLiteral(sysMon.getConfig().collectSqlParameters);
         json.endObject();
+
+        json.endArray();
     }
 
     private void addPageDefinitions(final AJsonSerHelper json) throws IOException {
@@ -86,12 +95,11 @@ public class OverviewDebuggingData implements APresentationPageDefinition {
             }
         }
 
-        json.startObject();
         json.writeKey("pageDefinitions");
         json.startArray();
 
         for (Map.Entry<String, APresentationPageDefinition> stringAPresentationPageDefinitionEntry : pageDefs.entrySet()) {
-            LOG.info("processing" + stringAPresentationPageDefinitionEntry.getKey());
+            //LOG.info("processing" + stringAPresentationPageDefinitionEntry.getKey());
             json.startObject();
 
             json.writeKey("id");
@@ -103,6 +111,5 @@ public class OverviewDebuggingData implements APresentationPageDefinition {
             json.endObject();
         }
         json.endArray();
-        json.endObject();
     }
 }
