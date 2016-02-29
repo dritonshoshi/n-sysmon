@@ -98,7 +98,7 @@ angular.module('NSysMonApp').controller('CtrlAggregated', function($scope, $log,
         return $scope.isInPickMode ? 'btn-danger' : 'btn-default';
     };
 
-    $scope.refresh();
+    //disabled getData on load $scope.refresh();
 
     function revIdx(idx) {
         return $scope.columnDefs.length - idx - 1;
