@@ -42,6 +42,7 @@ public class NSysMonServlet extends AbstractNSysMonServlet {
     }
 
     @Override protected boolean handleRestCall(List<String> restParams, HttpServletResponse resp) throws Exception {
+        //TODO This results in the JSON being one huge line. Find a way to add newlines so other tools can open the file
         final AJsonSerHelper json = new AJsonSerHelper(resp.getOutputStream());
 
         final String pageId = restParams.remove(0);
@@ -51,7 +52,6 @@ public class NSysMonServlet extends AbstractNSysMonServlet {
         if(pageDef == null) {
             throw new IllegalArgumentException("no page def with ID '" + pageId + "'");
         }
-
         return pageDef.handleRestCall(service, restParams, json);
     }
 
