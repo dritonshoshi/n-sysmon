@@ -15,7 +15,6 @@ public class OverviewDebuggingData implements APresentationPageDefinition {
     private volatile NSysMonApi sysMon;
     private static final NSysMonLogger LOG = NSysMonLogger.get(OverviewDebuggingData.class);
 
-    //TODO FOX088S http://localhost:8181/nsysmon/_$_nsysmon_$_/rest/overviewDebuggingData/getData
 
     @Override
     public String getId() {
@@ -57,6 +56,7 @@ public class OverviewDebuggingData implements APresentationPageDefinition {
 
     }
 
+    //Test at http://localhost:8181/nsysmon/_$_nsysmon_$_/rest/overviewDebuggingData/getData
     private void serveData(final List<String> params, final AJsonSerHelper json) throws IOException {
         json.startObject();
 
@@ -70,21 +70,46 @@ public class OverviewDebuggingData implements APresentationPageDefinition {
         json.writeKey("configurationParameters");
         json.startArray();
 
-        json.startObject();
-        json.writeKey("key");
-        json.writeStringLiteral("durationOfOneTimedScalar");
-        json.writeKey("value");
-        json.writeNumberLiteral(sysMon.getConfig().durationOfOneTimedScalar, 0);
-        json.endObject();
+        addConfigEntry("averagingDelayForScalarsMillis", sysMon.getConfig().averagingDelayForScalarsMillis, json);
+        addConfigEntry("dataSinkTimeoutNanos", sysMon.getConfig().dataSinkTimeoutNanos, json);
+        addConfigEntry("durationOfOneTimedScalar", sysMon.getConfig().durationOfOneTimedScalar, json);
+        addConfigEntry("maxNestedMeasurements", sysMon.getConfig().maxNestedMeasurements, json);
+        addConfigEntry("maxNumDataSinkTimeouts", sysMon.getConfig().maxNumDataSinkTimeouts, json);
+        addConfigEntry("maxNumMeasurementsPerHierarchy", sysMon.getConfig().maxNumMeasurementsPerHierarchy, json);
+        addConfigEntry("maxNumMeasurementsPerTimedScalar", sysMon.getConfig().maxNumMeasurementsPerTimedScalar, json);
+        addConfigEntry("maxNumMeasurementTimeouts", sysMon.getConfig().maxNumMeasurementTimeouts, json);
+        addConfigEntry("measurementTimeoutNanos", sysMon.getConfig().measurementTimeoutNanos, json);
 
-        json.startObject();
-        json.writeKey("key");
-        json.writeStringLiteral("collectSqlParameters");
-        json.writeKey("value");
-        json.writeBooleanLiteral(sysMon.getConfig().collectSqlParameters);
-        json.endObject();
+        addConfigEntry("collectSqlParameters", sysMon.getConfig().collectSqlParameters, json);
 
         json.endArray();
+    }
+
+    private void addConfigEntry(String key, int value, AJsonSerHelper json) throws IOException {
+        json.startObject();
+        json.writeKey("key");
+        json.writeStringLiteral(key);
+        json.writeKey("value");
+        json.writeNumberLiteral(value, 0);
+        json.endObject();
+    }
+
+    private void addConfigEntry(String key, boolean value, AJsonSerHelper json) throws IOException {
+        json.startObject();
+        json.writeKey("key");
+        json.writeStringLiteral(key);
+        json.writeKey("value");
+        json.writeBooleanLiteral(value);
+        json.endObject();
+    }
+
+    private void addConfigEntry(String key, long value, AJsonSerHelper json) throws IOException {
+        json.startObject();
+        json.writeKey("key");
+        json.writeStringLiteral(key);
+        json.writeKey("value");
+        json.writeNumberLiteral(value, 0);
+        json.endObject();
     }
 
     private void addPageDefinitions(final AJsonSerHelper json) throws IOException {
