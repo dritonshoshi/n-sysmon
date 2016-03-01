@@ -98,15 +98,15 @@ public class OverviewDebuggingData implements APresentationPageDefinition {
         json.writeKey("pageDefinitions");
         json.startArray();
 
-        for (Map.Entry<String, APresentationPageDefinition> stringAPresentationPageDefinitionEntry : pageDefs.entrySet()) {
+        for (APresentationPageDefinition value : pageDefs.values()) {
             //LOG.info("processing" + stringAPresentationPageDefinitionEntry.getKey());
             json.startObject();
 
             json.writeKey("id");
-            json.writeStringLiteral(stringAPresentationPageDefinitionEntry.getKey());
+            json.writeStringLiteral(value.getId());
 
             json.writeKey("fullLabel");
-            json.writeStringLiteral(stringAPresentationPageDefinitionEntry.getValue().getFullLabel());
+            json.writeStringLiteral(value.getFullLabel());
 
             json.endObject();
         }
