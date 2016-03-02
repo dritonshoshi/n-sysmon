@@ -14,11 +14,17 @@ public class AHierarchicalDataRoot {
     private final Collection<ACorrelationId> startedFlows;
     private final Collection<ACorrelationId> joinedFlows;
     private final AHierarchicalData root;
+    private final boolean wasKilled;
 
     public AHierarchicalDataRoot(AHierarchicalData root, Collection<ACorrelationId> startedFlows, Collection<ACorrelationId> joinedFlows) {
-        this.startedFlows = new ArrayList<ACorrelationId>(startedFlows);
-        this.joinedFlows = new ArrayList<ACorrelationId>(joinedFlows);
+        this(root, startedFlows, joinedFlows, false);
+    }
+
+    public AHierarchicalDataRoot(AHierarchicalData root, Collection<ACorrelationId> startedFlows, Collection<ACorrelationId> joinedFlows, boolean wasKilled) {
+        this.startedFlows = new ArrayList<>(startedFlows);
+        this.joinedFlows = new ArrayList<>(joinedFlows);
         this.root = root;
+        this.wasKilled = wasKilled;
     }
 
     public AUUID getUuid() {
@@ -37,12 +43,17 @@ public class AHierarchicalDataRoot {
         return root;
     }
 
+    public boolean isKilled() {
+        return wasKilled;
+    }
+
     @Override
     public String toString() {
         return "AHierarchicalDataRoot{" +
                 "startedFlows=" + startedFlows +
                 ", joinedFlows=" + joinedFlows +
                 ", root=" + root +
+                ", wasKilled=" + wasKilled +
                 '}';
     }
 }

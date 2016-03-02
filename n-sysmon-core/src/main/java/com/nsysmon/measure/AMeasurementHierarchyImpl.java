@@ -98,24 +98,13 @@ public class AMeasurementHierarchyImpl implements AMeasurementHierarchy {
         }
 
         doKill();
-//        final ASimpleSerialMeasurementImpl rootMeasurement = doKillForcefully ();
-//        log.error ("Excessive number of measurements in a single hierarchy:  " + size + " - probable memory leak, forcefully cleaning measurement stack. Root measurement was " +
-//                rootMeasurement.getIdentifier() + " with parameters " + rootMeasurement.getParameters() + ", started at " + new Date(rootMeasurement.getStartTimeMillis()));
     }
 
     private void doKill() {
         //TODO FOX088S add logging
+        //        log.error ("Excessive number of measurements in a single hierarchy:  " + size + " - probable memory leak, forcefully cleaning measurement stack. Root measurement was " +
+        //                rootMeasurement.getIdentifier() + " with parameters " + rootMeasurement.getParameters() + ", started at " + new Date(rootMeasurement.getStartTimeMillis()));
         killedDueSize = true;
-    }
-
-    private ASimpleSerialMeasurementImpl doKillForcefully() {
-        ASimpleSerialMeasurementImpl rootMeasurement = null;
-        while(unfinished.nonEmpty()) {
-            rootMeasurement = unfinished.peek();
-            finish (unfinished.peek());
-        }
-
-        return rootMeasurement;
     }
 
     private void checkMaxDepth () {
@@ -124,9 +113,6 @@ public class AMeasurementHierarchyImpl implements AMeasurementHierarchy {
         }
 
         doKill();
-//        final ASimpleSerialMeasurementImpl rootMeasurement = doKillForcefully ();
-//        log.error ("Call depth " + unfinished.size () + " - probable memory leak, forcefully cleaning measurement stack. Root measurement was " +
-//                rootMeasurement.getIdentifier() + " with parameters " + rootMeasurement.getParameters() + ", started at " + new Date(rootMeasurement.getStartTimeMillis()));
     }
 
     private void logWasKilled() {
@@ -181,7 +167,7 @@ public class AMeasurementHierarchyImpl implements AMeasurementHierarchy {
                 finish(m);
             }
             isFinished = true;
-            dataSink.onFinishedHierarchicalMeasurement(new AHierarchicalDataRoot(newData, startedFlows, joinedFlows));
+            dataSink.onFinishedHierarchicalMeasurement(new AHierarchicalDataRoot(newData, startedFlows, joinedFlows, wasKilled));
         }
         else {
             childrenStack.peek().add(newData);
