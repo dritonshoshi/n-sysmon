@@ -53,8 +53,8 @@ public class AMeasurementHierarchyImplTest {
         simpleMeasurement.finish();
 
         Assert.assertFalse(sysMon.hasRunningMeasurement());
-        Assert.assertEquals(1 + 1, dataSink.numStarted);
-        Assert.assertEquals(1 + 1, dataSink.data.size());
+        Assert.assertEquals(1, dataSink.numStarted);
+        Assert.assertEquals(1, dataSink.data.size());
     }
 
     @Test public void maxNumMeasurementsPerHierarchy_FourTooFew() {
@@ -68,8 +68,8 @@ public class AMeasurementHierarchyImplTest {
         simpleMeasurement.finish();
 
         Assert.assertFalse(sysMon.hasRunningMeasurement());
-        Assert.assertEquals(1 + 4, dataSink.numStarted);
-        Assert.assertEquals(1 + 4, dataSink.data.size());
+        Assert.assertEquals(1, dataSink.numStarted);
+        Assert.assertEquals(1, dataSink.data.size());
     }
 
     @Test public void maxNumMeasurementsPerHierarchy_FiveTooFew() {
@@ -83,9 +83,9 @@ public class AMeasurementHierarchyImplTest {
         simpleMeasurement.finish();
 
         Assert.assertFalse(sysMon.hasRunningMeasurement());
-        //different expected result, because now we have the next hierarchy and there are no 5 sub-measurements but one sub-measurement having additonal 4 measurements
-        Assert.assertEquals(1 + 1, dataSink.numStarted);
-        Assert.assertEquals(1 + 1, dataSink.data.size());
+
+        Assert.assertEquals(1, dataSink.numStarted);
+        Assert.assertEquals(1, dataSink.data.size());
     }
 
     private void performMeasurement(final NSysMonApi sysMon) {

@@ -43,6 +43,8 @@ public class AMeasurementHierarchyImpl implements AMeasurementHierarchy {
      */
     private boolean wasKilled = false;
 
+    private boolean killedDueSize = false;
+
     public AMeasurementHierarchyImpl(NSysMonConfig config, ADataSink dataSink) {
         this.config = config;
         this.dataSink = dataSink;
@@ -56,7 +58,7 @@ public class AMeasurementHierarchyImpl implements AMeasurementHierarchy {
     }
 
     @Override public ASimpleMeasurement start(String identifier, boolean isSerial) {
-        if(config.isGloballyDisabled() || checkNotFinished()) {
+        if(NSysMonConfig.isGloballyDisabled() || checkNotFinished()) {
             return new ASimpleMeasurement() {
                 @Override public void finish() {
                 }
@@ -73,9 +75,11 @@ public class AMeasurementHierarchyImpl implements AMeasurementHierarchy {
         if(isSerial) {
             checkOverflow();
             final ASimpleSerialMeasurementImpl result = new ASimpleSerialMeasurementImpl(this, config.timer.getCurrentNanos(), identifier);
-            unfinished.push(result);
-            size += 1;
-            childrenStack.push(new ArrayList<AHierarchicalData>());
+            if (!killedDueSize){
+                unfinished.push(result);
+                size += 1;
+                childrenStack.push(new ArrayList<AHierarchicalData>());
+            }
             return result;
         }
         else {
@@ -89,13 +93,19 @@ public class AMeasurementHierarchyImpl implements AMeasurementHierarchy {
     }
 
     private void checkMaxSize () {
-        if (wasKilled || size < config.maxNumMeasurementsPerHierarchy) {
+        if (wasKilled || size < config.maxNumMeasurementsPerHierarchy || killedDueSize) {
             return;
         }
 
-        final ASimpleSerialMeasurementImpl rootMeasurement = doKillForcefully ();
-        log.error ("Excessive number of measurements in a single hierarchy:  " + size + " - probable memory leak, forcefully cleaning measurement stack. Root measurement was " +
-                rootMeasurement.getIdentifier() + " with parameters " + rootMeasurement.getParameters() + ", started at " + new Date(rootMeasurement.getStartTimeMillis()));
+        doKill();
+//        final ASimpleSerialMeasurementImpl rootMeasurement = doKillForcefully ();
+//        log.error ("Excessive number of measurements in a single hierarchy:  " + size + " - probable memory leak, forcefully cleaning measurement stack. Root measurement was " +
+//                rootMeasurement.getIdentifier() + " with parameters " + rootMeasurement.getParameters() + ", started at " + new Date(rootMeasurement.getStartTimeMillis()));
+    }
+
+    private void doKill() {
+        //TODO FOX088S add logging
+        killedDueSize = true;
     }
 
     private ASimpleSerialMeasurementImpl doKillForcefully() {
@@ -109,13 +119,14 @@ public class AMeasurementHierarchyImpl implements AMeasurementHierarchy {
     }
 
     private void checkMaxDepth () {
-        if (wasKilled || unfinished.size() < config.maxNestedMeasurements) {
+        if (wasKilled || unfinished.size() < config.maxNestedMeasurements || killedDueSize) {
             return;
         }
 
-        final ASimpleSerialMeasurementImpl rootMeasurement = doKillForcefully ();
-        log.error ("Call depth " + unfinished.size () + " - probable memory leak, forcefully cleaning measurement stack. Root measurement was " +
-                rootMeasurement.getIdentifier() + " with parameters " + rootMeasurement.getParameters() + ", started at " + new Date(rootMeasurement.getStartTimeMillis()));
+        doKill();
+//        final ASimpleSerialMeasurementImpl rootMeasurement = doKillForcefully ();
+//        log.error ("Call depth " + unfinished.size () + " - probable memory leak, forcefully cleaning measurement stack. Root measurement was " +
+//                rootMeasurement.getIdentifier() + " with parameters " + rootMeasurement.getParameters() + ", started at " + new Date(rootMeasurement.getStartTimeMillis()));
     }
 
     private void logWasKilled() {
