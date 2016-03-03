@@ -14,7 +14,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author arno
  */
 public class ADrillDownPageDefinition extends AAbstractNsysmonPerformancePageDef {
-    private static final int MILLION = 1000*1000;
+    private static final int MILLION = 1_000_000;
 
     private static final List<ColDef> colDefs = Arrays.asList(
             new ColDef("%", true, 1, ColWidth.Medium),

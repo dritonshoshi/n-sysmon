@@ -150,7 +150,9 @@ public class AMeasurementHierarchyImpl implements AMeasurementHierarchy {
                 }
             }
             else {
-                log.error (new IllegalStateException("Calling 'finish' on a measurement that is not on the measurement stack: " + measurement));
+                if (!killedDueSize) {
+                    log.error(new IllegalStateException("Calling 'finish' on a measurement that is not on the measurement stack: " + measurement));
+                }
                 return;
             }
         }
@@ -167,7 +169,8 @@ public class AMeasurementHierarchyImpl implements AMeasurementHierarchy {
                 finish(m);
             }
             isFinished = true;
-            dataSink.onFinishedHierarchicalMeasurement(new AHierarchicalDataRoot(newData, startedFlows, joinedFlows, wasKilled));
+            dataSink.onFinishedHierarchicalMeasurement(new AHierarchicalDataRoot(newData, startedFlows, joinedFlows, killedDueSize));
+            //System.out.println("killedDueSize="+killedDueSize);
         }
         else {
             childrenStack.peek().add(newData);

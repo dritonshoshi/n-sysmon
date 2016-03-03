@@ -107,6 +107,10 @@ public abstract class AAbstractNsysmonPerformancePageDef implements APresentatio
         json.writeKey("name");
         json.writeStringLiteral(node.label);
 
+        json.writeKey("wasKilled");
+        json.writeBooleanLiteral(node.wasKilled);
+        //System.out.println(node.wasKilled);
+
         if(node.tooltip != null) {
             json.writeKey("tooltip");
             json.startArray();
@@ -172,17 +176,22 @@ public abstract class AAbstractNsysmonPerformancePageDef implements APresentatio
         public final boolean isSerial;
         public final long[] colDataRaw;
         public final List<TreeNode> children;
+        public boolean wasKilled;
 
         public TreeNode(String label, boolean isSerial, long[] colDataRaw, List<TreeNode> children) {
             this(null, label, null, isSerial, colDataRaw, children);
         }
         public TreeNode(String id, String label, List<List<String>> tooltip, boolean isSerial, long[] colDataRaw, List<TreeNode> children) {
+            this(id, label, tooltip, isSerial, colDataRaw, children, false);
+        }
+        public TreeNode(String id, String label, List<List<String>> tooltip, boolean isSerial, long[] colDataRaw, List<TreeNode> children, boolean wasKilled) {
             this.id = id;
             this.label = label;
             this.tooltip = tooltip;
             this.isSerial = isSerial;
             this.colDataRaw = colDataRaw;
             this.children = children;
+            this.wasKilled = wasKilled;
         }
     }
 }

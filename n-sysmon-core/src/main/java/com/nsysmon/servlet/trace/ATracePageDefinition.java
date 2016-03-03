@@ -78,7 +78,7 @@ public class ATracePageDefinition extends AAbstractNsysmonPerformancePageDef {
         final List<TreeNode> result = new ArrayList<>();
 
         for(AHierarchicalDataRoot root: collector.getData()) {
-            result.add(asTreeNode(root.getRootNode(), root.getUuid().toString(), System.currentTimeMillis(), root.getRootNode().getDurationNanos(), 0));
+            result.add(asTreeNode(root.getRootNode(), root.getUuid().toString(), System.currentTimeMillis(), root.getRootNode().getDurationNanos(), 0, root.isKilled()));
         }
 
         Collections.sort(result, new Comparator<TreeNode>() {
@@ -90,7 +90,7 @@ public class ATracePageDefinition extends AAbstractNsysmonPerformancePageDef {
         return result;
     }
 
-    private TreeNode asTreeNode(AHierarchicalData node, String id, long now, long parentNanos, int level) {
+    private TreeNode asTreeNode(AHierarchicalData node, String id, long now, long parentNanos, int level, boolean wasKilled) {
         final List<TreeNode> children = new ArrayList<>();
         long selfNanos = node.getDurationNanos();
 
@@ -101,7 +101,7 @@ public class ATracePageDefinition extends AAbstractNsysmonPerformancePageDef {
             if(child.isSerial()) {
                 selfNanos -= child.getDurationNanos();
             }
-            children.add(asTreeNode(child, String.valueOf(i), childNow, node.getDurationNanos(), level+1));
+            children.add(asTreeNode(child, String.valueOf(i), childNow, node.getDurationNanos(), level+1, wasKilled));
             i++;
         }
 
@@ -120,9 +120,7 @@ public class ATracePageDefinition extends AAbstractNsysmonPerformancePageDef {
                 node.getStartTimeMillis() - now
         };
 
-
-
-        return new TreeNode(id, node.getIdentifier(), tooltipFor(node), node.isSerial(), colDataRaw, children);
+        return new TreeNode(id, node.getIdentifier(), tooltipFor(node), node.isSerial(), colDataRaw, children, wasKilled);
     }
 
     private List<List<String>> tooltipFor(AHierarchicalData node) {
@@ -136,7 +134,7 @@ public class ATracePageDefinition extends AAbstractNsysmonPerformancePageDef {
 
         final List<List<String>> result = new ArrayList<>();
 
-        for(String key: new TreeSet<String>(node.getParameters().keySet())) {
+        for(String key: new TreeSet<>(node.getParameters().keySet())) {
             result.add(Arrays.asList(key, node.getParameters().get(key)));
         }
 
@@ -148,7 +146,7 @@ public class ATracePageDefinition extends AAbstractNsysmonPerformancePageDef {
 
         final SortedSet<String> memKinds = new TreeSet<>();
 
-        for(String key: new TreeSet<String>(node.getParameters().keySet())) {
+        for(String key: new TreeSet<>(node.getParameters().keySet())) {
             if(key.startsWith(AJmxGcMeasurer.KEY_PREFIX_MEM)) {
                 memKinds.add(key.split(":")[1]);
                 continue;
