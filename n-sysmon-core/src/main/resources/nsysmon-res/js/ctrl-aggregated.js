@@ -170,6 +170,13 @@ angular.module('NSysMonApp').controller('CtrlAggregated', function($scope, $log,
         }
         return 'node-icon-empty';
     };
+    $scope.nodeIconClassWasKilled = function(node) {
+        //$log.log("xx="+node.wasKilled);
+        if(node && node.wasKilled) {
+            return 'node-icon-wasKilled';
+        }
+        return 'no-icon node-icon-empty';
+    };
     $scope.expansionStyle = function(node) {
         return $scope.isExpanded(node) ? 'block' : 'none';
     };
@@ -417,15 +424,18 @@ angular.module('NSysMonApp').controller('CtrlAggregated', function($scope, $log,
             '<div class="data-row data-row-' + (curNode.level - $scope.rootLevel) + withChildrenClass + ' ' + dataRowSubdued + '">' +
                 '<div class="fqn-holder">' + escapeHtml(curNode.fqn) + '</div>' +
                 '<div class="node-icon ' + $scope.nodeIconClass(curNode.fqn) + '">&nbsp;</div>' +
+                '<div class="' + $scope.nodeIconClassWasKilled(curNode) + '">&nbsp;</div>' +
                 dataCols +
                 '<div data-toggle="data-tooltip" class="node-text" style="margin-right: ' + $scope.totalDataWidth + 'px;" ' + renderTooltipp(curNode) + '>' + escapeHtml(curNode.name) + '</div>' +
                 '</div>';
         //$log.log($scope.pickedTraces); // The Tooltips has to be sent from the server. See ABottomUpPageDefinition and ATracePageDefinition
         //$log.log("xx="+curNode.tooltip);
+        //$log.log("xx="+curNode.wasKilled);
         result += htmlForChildrenDiv(curNode);
 
         return result;
     }
+
     function renderTooltipp(curNode) {
         if (!curNode || !curNode.tooltip || $scope.showDataTooltips != 1){
             return '';
