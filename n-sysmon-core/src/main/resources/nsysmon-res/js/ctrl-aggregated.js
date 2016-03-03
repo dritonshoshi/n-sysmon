@@ -440,7 +440,16 @@ angular.module('NSysMonApp').controller('CtrlAggregated', function($scope, $log,
         if (!curNode || !curNode.tooltip || $scope.showDataTooltips != 1){
             return '';
         }
-        return 'title="' + curNode.tooltip + '"';
+        var rc = '';
+        curNode.tooltip.forEach(function(entry) {
+            rc += '(';
+            rc += entry.id;
+            rc += '=';
+            rc += entry.value;
+            rc += ')';
+            rc += ' ';
+        }, this);
+        return 'title="' + rc + '"';
     }
 
     function htmlForChildrenDiv(curNode, shouldRender) {

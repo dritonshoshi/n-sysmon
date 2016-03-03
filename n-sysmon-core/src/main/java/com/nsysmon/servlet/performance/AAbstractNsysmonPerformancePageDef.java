@@ -116,17 +116,22 @@ public abstract class AAbstractNsysmonPerformancePageDef implements APresentatio
             json.startArray();
 
             for(List<String> row: node.tooltip) {
-                json.startArray();
 
                 if (row.size() == 2){
-                    json.writeStringLiteral(row.get(0) + "=" + row.get(1));
+                    json.startObject();
+                    json.writeKey("id");
+                    json.writeStringLiteral(row.get(0));
+                    json.writeKey("value");
+                    json.writeStringLiteral(row.get(1));
+                    json.endObject();
                 }else{
+                    json.startArray();
                     for(String cell: row) {
                         json.writeStringLiteral(cell);
                     }
+                    json.endArray();
                 }
 
-                json.endArray();
             }
 
             json.endArray();
