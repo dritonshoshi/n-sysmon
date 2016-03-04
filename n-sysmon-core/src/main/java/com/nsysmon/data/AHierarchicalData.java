@@ -37,8 +37,15 @@ public class AHierarchicalData {
         this.startTimeMillis = startTimeMillis;
         this.durationNanos = durationNanos;
         this.identifier = identifier.intern();
-        this.parameters = Collections.unmodifiableMap(new HashMap<>(parameters));
-        this.children = new ArrayList<>(Collections.unmodifiableList(children));
+        //use empty 0-size map for better memory management
+        Map<String, String> tmpParameters = new HashMap<>(0);
+        tmpParameters.putAll(parameters);
+        this.parameters = Collections.unmodifiableMap(tmpParameters);
+        //use empty 0-size map for better memory management
+        ArrayList<AHierarchicalData> tmpChildren = new ArrayList<>(0);
+        tmpChildren.addAll(children);
+        tmpChildren.trimToSize();
+        this.children = tmpChildren;
         this.wasKilled = wasKilled;
     }
 
@@ -63,7 +70,7 @@ public class AHierarchicalData {
     }
 
     public List<AHierarchicalData> getChildren() {
-        return children;
+        return Collections.unmodifiableList(children);
     }
 
 //TODO FOX088S add this to rest

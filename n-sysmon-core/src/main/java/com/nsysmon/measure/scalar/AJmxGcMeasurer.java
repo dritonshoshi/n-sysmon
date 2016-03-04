@@ -157,8 +157,8 @@ public class AJmxGcMeasurer implements AScalarMeasurer, NSysMonAware {
 //                after.getMax();
             }
 
-            final AHierarchicalData byGcTypeNode = new AHierarchicalData(true, startMillis, durationNanos, gcType, Collections.<String,String>emptyMap(), Collections.<AHierarchicalData>emptyList());
-            return new AHierarchicalData(true, startMillis, durationNanos, IDENT_GC_TRACE_ROOT, paramMap, Collections.singletonList(byGcTypeNode));
+            final AHierarchicalData byGcTypeNode = new AHierarchicalData(true, startMillis, durationNanos, gcType, Collections.<String,String>emptyMap(), Collections.<AHierarchicalData>emptyList(), false);
+            return new AHierarchicalData(true, startMillis, durationNanos, IDENT_GC_TRACE_ROOT, paramMap, Collections.singletonList(byGcTypeNode), false);
         }
 
         private boolean isGcRelevantMemoryKind(String memKey) {

@@ -16,7 +16,7 @@ import java.util.concurrent.ConcurrentHashMap;
 class DrillDownDataSink implements ADataSink {
     private volatile boolean isActive = false;
 
-    private final ConcurrentHashMap<String, AMinMaxAvgData> rootMap = new ConcurrentHashMap<String, AMinMaxAvgData>();
+    private final ConcurrentHashMap<String, AMinMaxAvgData> rootMap = new ConcurrentHashMap<>();
 
     public void setActive(boolean active) {
         this.isActive = active;
@@ -51,10 +51,10 @@ class DrillDownDataSink implements ADataSink {
         recCollect(newData, rootMap);
     }
 
-    private void recCollect(AHierarchicalData data, ConcurrentHashMap<String, AMinMaxAvgData> parentMap) {
+    private void recCollect(AHierarchicalData data, Map<String, AMinMaxAvgData> parentMap) {
         final AMinMaxAvgData prev = parentMap.get(data.getIdentifier());
 
-        final ConcurrentHashMap<String, AMinMaxAvgData> childMap;
+        final Map<String, AMinMaxAvgData> childMap;
 
         if(prev == null) {
             final AMinMaxAvgData newData = new AMinMaxAvgData(data.isSerial(), data.getDurationNanos());

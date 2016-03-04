@@ -1,8 +1,9 @@
 package com.nsysmon.servlet.performance;
 
-
 import com.nsysmon.config.log.NSysMonLogger;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -16,22 +17,25 @@ public class AMinMaxAvgData {
     private final long avgNanos;
     private final long totalNanos;
 
-    private final ConcurrentHashMap<String, AMinMaxAvgData> children;
+    private final Map<String, AMinMaxAvgData> children;
 
     private static final NSysMonLogger log = NSysMonLogger.get(AMinMaxAvgData.class);
 
     public AMinMaxAvgData(boolean isSerial, long initialNanos) {
-        this(isSerial, 1, initialNanos, initialNanos, initialNanos, initialNanos, new ConcurrentHashMap<String, AMinMaxAvgData>());
+        this(isSerial, 1, initialNanos, initialNanos, initialNanos, initialNanos, new ConcurrentHashMap<>(0));
     }
 
-    public AMinMaxAvgData(boolean isSerial, int totalNumInContext, long minNanos, long maxNanos, long avgNanos, long totalNanos, ConcurrentHashMap<String, AMinMaxAvgData> children) {
+    public AMinMaxAvgData(boolean isSerial, int totalNumInContext, long minNanos, long maxNanos, long avgNanos, long totalNanos, Map<String, AMinMaxAvgData> children) {
         this.isSerial = isSerial;
         this.totalNumInContext = totalNumInContext;
         this.minNanos = minNanos;
         this.maxNanos = maxNanos;
         this.avgNanos = avgNanos;
         this.totalNanos = totalNanos;
-        this.children = children;
+        //use empty 0-size map for better memory management
+        Map<String, AMinMaxAvgData> tmpChildren = new HashMap<>(0);
+        tmpChildren.putAll(children);
+        this.children = new ConcurrentHashMap<>(tmpChildren);
     }
 
     public AMinMaxAvgData withDataPoint(boolean isSerial, long durationNanos) {
@@ -73,7 +77,7 @@ public class AMinMaxAvgData {
         return avgNanos;
     }
 
-    public ConcurrentHashMap<String, AMinMaxAvgData> getChildren() {
+    public Map<String, AMinMaxAvgData> getChildren() {
         return children;
     }
 }
