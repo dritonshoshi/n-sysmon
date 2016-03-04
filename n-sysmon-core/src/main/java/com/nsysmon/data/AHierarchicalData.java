@@ -1,7 +1,9 @@
 package com.nsysmon.data;
 
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -15,6 +17,7 @@ public class AHierarchicalData {
     private final long startTimeMillis;
     private final long durationNanos;
     private final String identifier;
+    private final boolean wasKilled;
 
     private final Map<String, String> parameters;
     private final List<AHierarchicalData> children;
@@ -29,13 +32,14 @@ public class AHierarchicalData {
      * @param identifier is used for aggregated rendering of results - measurements with equal identifiers are treated
      *                   as 'equivalent'.
      */
-    public AHierarchicalData(boolean isSerial, long startTimeMillis, long durationNanos, String identifier, Map<String, String> parameters, List<AHierarchicalData> children) {
+    public AHierarchicalData(boolean isSerial, long startTimeMillis, long durationNanos, String identifier, Map<String, String> parameters, List<AHierarchicalData> children, final boolean wasKilled) {
         this.isSerial = isSerial;
         this.startTimeMillis = startTimeMillis;
         this.durationNanos = durationNanos;
         this.identifier = identifier.intern();
-        this.parameters = Collections.unmodifiableMap(parameters);
-        this.children = Collections.unmodifiableList(children);
+        this.parameters = Collections.unmodifiableMap(new HashMap<>(parameters));
+        this.children = new ArrayList<>(Collections.unmodifiableList(children));
+        this.wasKilled = wasKilled;
     }
 
     public boolean isSerial() {
@@ -60,6 +64,11 @@ public class AHierarchicalData {
 
     public List<AHierarchicalData> getChildren() {
         return children;
+    }
+
+//TODO FOX088S add this to rest
+    public boolean isWasKilled() {
+        return wasKilled;
     }
 
     @Override

@@ -161,7 +161,7 @@ public class AMeasurementHierarchyImpl implements AMeasurementHierarchy {
 
         unfinished.pop();
         final List<AHierarchicalData> children = childrenStack.pop();
-        final AHierarchicalData newData = new AHierarchicalData(true, measurement.getStartTimeMillis(), finishedTimestamp - measurement.getStartTimeNanos(), measurement.getIdentifier(), measurement.getParameters(), children);
+        final AHierarchicalData newData = new AHierarchicalData(true, measurement.getStartTimeMillis(), finishedTimestamp - measurement.getStartTimeNanos(), measurement.getIdentifier(), measurement.getParameters(), children, killedDueSize);
 
         if(unfinished.isEmpty()) {
             // copy into a separate collection because the collection is modified in the loop
@@ -191,7 +191,7 @@ public class AMeasurementHierarchyImpl implements AMeasurementHierarchy {
         }
 
         final long finishedTimestamp = config.timer.getCurrentNanos();
-        m.getChildrenOfParent().add(new AHierarchicalData(false, m.getStartTimeMillis(), finishedTimestamp - m.getStartTimeNanos(), m.getIdentifier(), m.getParameters(), Collections.<AHierarchicalData>emptyList()));
+        m.getChildrenOfParent().add(new AHierarchicalData(false, m.getStartTimeMillis(), finishedTimestamp - m.getStartTimeNanos(), m.getIdentifier(), m.getParameters(), Collections.<AHierarchicalData>emptyList(), killedDueSize));
     }
 
     @Override
@@ -234,10 +234,10 @@ public class AMeasurementHierarchyImpl implements AMeasurementHierarchy {
         final List<AHierarchicalData> children = new ArrayList<AHierarchicalData>();
         for(String detailIdentifier: m.getDetails().keySet()) {
             final ACollectingMeasurement.Detail detail = m.getDetails().get(detailIdentifier);
-            children.add(new AHierarchicalData(true, m.getStartTimeMillis(), detail.getTotalNanos(), detailIdentifier, Collections.<String, String>emptyMap(), Collections.<AHierarchicalData>emptyList()));
+            children.add(new AHierarchicalData(true, m.getStartTimeMillis(), detail.getTotalNanos(), detailIdentifier, Collections.<String, String>emptyMap(), Collections.<AHierarchicalData>emptyList(), killedDueSize));
         }
 
-        final AHierarchicalData newData = new AHierarchicalData(m.isSerial(), m.getStartTimeMillis(), m.getTotalDurationNanos(), m.getIdentifier(), m.getParameters(), children);
+        final AHierarchicalData newData = new AHierarchicalData(m.isSerial(), m.getStartTimeMillis(), m.getTotalDurationNanos(), m.getIdentifier(), m.getParameters(), children, killedDueSize);
         m.getChildrenOfParent().add(newData);
         collectingMeasurements.remove(m);
     }
