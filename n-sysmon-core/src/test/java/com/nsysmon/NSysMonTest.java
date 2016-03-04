@@ -396,8 +396,8 @@ public class NSysMonTest {
             sysMon.start("a");
         }
 
-        assertEquals(100, dataSink.started);
-        assertEquals(99, dataSink.finished);
+        assertEquals(1, dataSink.started);
+        assertEquals(0, dataSink.finished);
         assertEquals(0, CountingLoggerFactory.logger.numError);
     }
 
