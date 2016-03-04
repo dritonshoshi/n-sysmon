@@ -147,10 +147,10 @@ angular.module('NSysMonApp').controller('CtrlAggregated', function($scope, $log,
         return columnDef.isPercentage;
     };
     $scope.isSubdued = function(node) {
-        return !node.isSerial;
+        return node.isNotSerial;
     };
     $scope.dataRowSubdued = function(node) {
-        return node.isSerial ? '' : 'data-row-subdued';
+        return !node.isNotSerial ? '' : 'data-row-subdued';
     };
     $scope.progressWidthStyle = function(value) {
         return 'background-size: ' + (value + 2) + '% 100%';
@@ -398,7 +398,7 @@ angular.module('NSysMonApp').controller('CtrlAggregated', function($scope, $log,
 
 
     function htmlForTreeNode(curNode) {
-        var dataRowSubdued = curNode.isSerial ? '' : 'data-row-subdued';
+        var dataRowSubdued = !curNode.isNotSerial ? '' : 'data-row-subdued';
 
         var dataCols = '';
         angular.forEach($scope.columnDefs, function(curCol, colIdx) {
@@ -407,7 +407,7 @@ angular.module('NSysMonApp').controller('CtrlAggregated', function($scope, $log,
             var formattedValue = $scope.formatNumber(curNode.data[revIdx(colIdx)], $scope.columnDefs[colIdx].numFracDigits);
 
             if(curCol.isPercentage) {
-                if(curNode.isSerial)
+                if(!curNode.isNotSerial)
                     dataCols += '<div class="aprogress-background"><div class="aprogress-bar" style="' + $scope.progressWidthStyle(curNode.data[revIdx(colIdx)]) + '">' + formattedValue + '</div></div>';
                 else
                     dataCols += '<div class="subdued-progress-background">' + formattedValue + '</div>';

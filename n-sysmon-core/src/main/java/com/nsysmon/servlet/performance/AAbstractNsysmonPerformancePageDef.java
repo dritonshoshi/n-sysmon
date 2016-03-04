@@ -1,6 +1,7 @@
 package com.nsysmon.servlet.performance;
 
 import com.ajjpj.afoundation.io.AJsonSerHelper;
+import com.nsysmon.NSysMon;
 import com.nsysmon.NSysMonApi;
 import com.nsysmon.config.presentation.APresentationPageDefinition;
 
@@ -70,8 +71,9 @@ public abstract class AAbstractNsysmonPerformancePageDef implements APresentatio
 
         json.writeKey("traces");
         json.startArray();
+        int nr = 0;
         for(TreeNode n: getData()) {
-            writeDataNode(json, n);
+            writeDataNode(json, n, nr++);
         }
         json.endArray();
 
@@ -96,22 +98,26 @@ public abstract class AAbstractNsysmonPerformancePageDef implements APresentatio
         json.endObject();
     }
 
-    private void writeDataNode(AJsonSerHelper json, TreeNode node) throws IOException {
+    private void writeDataNode(AJsonSerHelper json, TreeNode node, int nr) throws IOException {
         json.startObject();
 
         if(node.id != null) {
             json.writeKey("id");
-            json.writeStringLiteral(node.id);
+            //this is done to reduce the size of the json, because now we don'T send the 20 chars per id, but a smaller string
+            json.writeStringLiteral("n"+nr);
+            //json.writeStringLiteral(node.id);
         }
 
         json.writeKey("name");
         json.writeStringLiteral(node.label);
 
-        json.writeKey("wasKilled");
-        json.writeBooleanLiteral(node.wasKilled);
-        //System.out.println(node.wasKilled);
+        if (node.wasKilled) {
+            json.writeKey("wasKilled");
+            json.writeBooleanLiteral(node.wasKilled);
+            //System.out.println(node.wasKilled);
+        }
 
-        if(node.tooltip != null) {
+        if(node.tooltip != null && NSysMon.get().getConfig().collectTooltips) {
             json.writeKey("tooltip");
             json.startArray();
 
@@ -137,8 +143,11 @@ public abstract class AAbstractNsysmonPerformancePageDef implements APresentatio
             json.endArray();
         }
 
-        json.writeKey("isSerial");
-        json.writeBooleanLiteral(node.isSerial);
+        //tweek to reduce the size of the json file
+        if (!node.isSerial) {
+            json.writeKey("isNotSerial");
+            json.writeBooleanLiteral(true);
+        }
 
         json.writeKey("data");
         json.startArray();
@@ -151,7 +160,7 @@ public abstract class AAbstractNsysmonPerformancePageDef implements APresentatio
             json.writeKey("children");
             json.startArray();
             for(TreeNode child: node.children) {
-                writeDataNode(json, child);
+                writeDataNode(json, child, nr++);
             }
             json.endArray();
         }

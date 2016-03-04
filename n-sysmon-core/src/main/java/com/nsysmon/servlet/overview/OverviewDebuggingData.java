@@ -81,6 +81,7 @@ public class OverviewDebuggingData implements APresentationPageDefinition {
         addConfigEntry("measurementTimeoutNanos", sysMon.getConfig().measurementTimeoutNanos, json);
 
         addConfigEntry("collectSqlParameters", sysMon.getConfig().collectSqlParameters, json);
+        addConfigEntry("collectTooltips", sysMon.getConfig().collectTooltips, json);
 
         json.endArray();
     }

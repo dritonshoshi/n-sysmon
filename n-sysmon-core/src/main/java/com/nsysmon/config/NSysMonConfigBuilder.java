@@ -36,6 +36,7 @@ public class NSysMonConfigBuilder {
     private int maxNumDataSinkTimeouts = 3;
 
     private boolean collectSqlParameters = false;
+    private boolean collectTooltips = false;
 
     private ATimer timer = new ASystemNanoTimer();
     private AHttpRequestAnalyzer httpRequestAnalyzer = new ASimpleHttpRequestAnalyzer();
@@ -92,6 +93,14 @@ public class NSysMonConfigBuilder {
     public NSysMonConfigBuilder setMeasurementTimeoutNanos(long measurementTimeoutNanos) {
         this.measurementTimeoutNanos = measurementTimeoutNanos;
         return this;
+    }
+
+    public boolean isCollectTooltips() {
+        return collectTooltips;
+    }
+
+    public void setCollectTooltips(boolean collectTooltips) {
+        this.collectTooltips = collectTooltips;
     }
 
     public void setCollectSqlParameters(boolean collectSqlParameters) {
@@ -166,11 +175,13 @@ public class NSysMonConfigBuilder {
                 dataSinkTimeoutNanos, maxNumDataSinkTimeouts,
                 timer, httpRequestAnalyzer,
                 environmentMeasurers, scalarMeasurers, scalarTimedMeasurers, dataSinks,
-                defaultPage, presentationMenuEntries, additionalConfigurationParameters, collectSqlParameters
+                defaultPage, presentationMenuEntries, additionalConfigurationParameters,
+                collectSqlParameters, collectTooltips
                 );
     }
 
     public void setAdditionalConfigurationParameters(Map<String, String> additionalConfigurationParameters) {
         this.additionalConfigurationParameters = additionalConfigurationParameters;
     }
+
 }

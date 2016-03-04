@@ -59,6 +59,7 @@ public class ADefaultConfigFactory implements AConfigFactory {
     public static final String KEY_DURATION_OF_ONE_TIMED_SCALAR = "duration-of-one-timed-scalar";
 
     public static final String KEY_COLLECT_SQL_PARAMETERS = "collect-sql-parameters";
+    public static final String KEY_COLLECT_TOOLTIPS = "collect-tooltips";
 
     public static final String KEY_DATA_SINK_TIMEOUT_NANOS = "data-sink-timeout-nanos";
     public static final String KEY_MAX_NUM_DATA_SINK_TIMEOUTS = "max-num-data-sink-timeouts";
@@ -68,18 +69,15 @@ public class ADefaultConfigFactory implements AConfigFactory {
     private static volatile NSysMonLoggerFactory configuredLogger;
 
     public static AConfigFactory getConfigFactory() {
-        return AUnchecker.executeUnchecked(new AFunction0<AConfigFactory, Exception>() {
-            @Override
-            public AConfigFactory apply() throws Exception {
-                final Properties propsRaw = getProperties();
+        return AUnchecker.executeUnchecked((AFunction0<AConfigFactory, Exception>) () -> {
+            final Properties propsRaw = getProperties();
 
-                if (configuredLogger == null) {
-                    // allow API override for config file settings
-                    configuredLogger = extractLogger(propsRaw);
-                }
-                final ConfigPropsFile props = new ConfigPropsFile(propsRaw, extractLogger(propsRaw));
-                return props.get(KEY_CONFIG_FACTORY, AOption.some(new ADefaultConfigFactory()), AConfigFactory.class);
+            if (configuredLogger == null) {
+                // allow API override for config file settings
+                configuredLogger = extractLogger(propsRaw);
             }
+            final ConfigPropsFile props = new ConfigPropsFile(propsRaw, extractLogger(propsRaw));
+            return props.get(KEY_CONFIG_FACTORY, AOption.some(new ADefaultConfigFactory()), AConfigFactory.class);
         });
     }
 
@@ -168,6 +166,7 @@ public class ADefaultConfigFactory implements AConfigFactory {
         builder.setDurationOfOneTimedScalar(props.get(KEY_DURATION_OF_ONE_TIMED_SCALAR, Integer.TYPE));
 
         builder.setCollectSqlParameters(props.get(KEY_COLLECT_SQL_PARAMETERS, Boolean.TYPE));
+        builder.setCollectTooltips(props.get(KEY_COLLECT_TOOLTIPS, Boolean.TYPE));
 
         builder.setMaxNestedMeasurements(props.get(KEY_MAX_NESTED_MEASUREMENTS, Integer.TYPE));
         builder.setMaxNumMeasurementsPerHierarchy(props.get(KEY_MAX_NUM_MEASUREMENTS_PER_HIERARCHY, Integer.TYPE));
