@@ -443,7 +443,6 @@ angular.module('NSysMonApp').controller('CtrlAggregated', function($scope, $log,
         } else {
             rc += '<div data-toggle="data-tooltip" class="node-text" style="margin-right: ' + $scope.totalDataWidth + 'px;" ' + renderTooltipp(curNode) + '>' + escapeHtml(curNode.name) + '</div>';
         }
-        //rc += '<div>' + renderSql(curNode) + '</div>' +
         return rc;
     }
 
@@ -456,7 +455,6 @@ angular.module('NSysMonApp').controller('CtrlAggregated', function($scope, $log,
             rc = rc.replace('?', entry.value);
         }, this);
         return rc;
-    //TODO FOX088S
     }
 
     function renderTooltipp(curNode) {

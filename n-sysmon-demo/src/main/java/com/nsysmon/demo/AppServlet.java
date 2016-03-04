@@ -179,7 +179,7 @@ public class AppServlet extends HttpServlet {
         try {
             final Connection conn = getConnection();
             try {
-                final PreparedStatement ps = conn.prepareStatement("select * from A where oid < ? and oid < ? and oid < ? and 1=? and 2=? and 3=?");
+                final PreparedStatement ps = conn.prepareStatement("select * from A where oid < ? and oid < ? and oid < ? and 1=? and 2=? and 3=? and 4=? and 5=? and 6=?");
                 try {
                     ps.setLong(1, 25);
                     ps.setLong(2, 25);
@@ -187,6 +187,9 @@ public class AppServlet extends HttpServlet {
                     ps.setLong(4, 1);
                     ps.setLong(5, 2);
                     ps.setLong(6, 3);
+                    ps.setString(7, "str4");
+                    ps.setInt(8, 5);
+                    ps.setByte(9, (byte)6);
                     final ResultSet rs = ps.executeQuery();
                     while (rs.next()) {
                     }
