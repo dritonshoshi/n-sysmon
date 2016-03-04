@@ -162,7 +162,7 @@ public class NSysMonPreparedStatement extends NSysMonStatement implements Prepar
     }
 
     @Override public void setString(int parameterIndex, String x) throws SQLException {
-        setSysMonParam(parameterIndex, x);
+        setSysMonParam(parameterIndex, "'" + x + "'");
         inner.setString(parameterIndex, x);
     }
 

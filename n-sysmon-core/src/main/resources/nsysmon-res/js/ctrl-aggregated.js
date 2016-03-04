@@ -426,7 +426,7 @@ angular.module('NSysMonApp').controller('CtrlAggregated', function($scope, $log,
                 '<div class="node-icon ' + $scope.nodeIconClass(curNode.fqn) + '">&nbsp;</div>' +
                 '<div class="' + $scope.nodeIconClassWasKilled(curNode) + '">&nbsp;</div>' +
                 dataCols +
-                '<div data-toggle="data-tooltip" class="node-text" style="margin-right: ' + $scope.totalDataWidth + 'px;" ' + renderTooltipp(curNode) + '>' + escapeHtml(curNode.name) + '</div>' +
+                renderDisplayNameForNode(curNode) +
                 '</div>';
         //$log.log($scope.pickedTraces); // The Tooltips has to be sent from the server. See ABottomUpPageDefinition and ATracePageDefinition
         //$log.log("xx="+curNode.tooltip);
@@ -434,6 +434,29 @@ angular.module('NSysMonApp').controller('CtrlAggregated', function($scope, $log,
         result += htmlForChildrenDiv(curNode);
 
         return result;
+    }
+
+    function renderDisplayNameForNode(curNode){
+        var rc = '';
+        if (!curNode || !curNode.name || !curNode.tooltip || $scope.showDataTooltips != 1) {
+            rc += '<div data-toggle="data-tooltip" class="node-text" style="margin-right: ' + $scope.totalDataWidth + 'px;">' + renderSql(curNode) + '</div>';
+        } else {
+            rc += '<div data-toggle="data-tooltip" class="node-text" style="margin-right: ' + $scope.totalDataWidth + 'px;" ' + renderTooltipp(curNode) + '>' + escapeHtml(curNode.name) + '</div>';
+        }
+        //rc += '<div>' + renderSql(curNode) + '</div>' +
+        return rc;
+    }
+
+    function renderSql(curNode) {
+        if (!curNode || !curNode.name || !curNode.tooltip){
+            return escapeHtml(curNode.name);
+        }
+        var rc = curNode.name;
+        curNode.tooltip.forEach(function(entry) {
+            rc = rc.replace('?', entry.value);
+        }, this);
+        return rc;
+    //TODO FOX088S
     }
 
     function renderTooltipp(curNode) {

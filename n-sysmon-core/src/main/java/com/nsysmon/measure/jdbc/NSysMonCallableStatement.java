@@ -1,6 +1,7 @@
 package com.nsysmon.measure.jdbc;
 
 
+import com.nsysmon.NSysMon;
 import com.nsysmon.NSysMonApi;
 
 import java.io.InputStream;
@@ -26,7 +27,9 @@ public class NSysMonCallableStatement extends NSysMonPreparedStatement implement
     //--------------------- setting parameters
 
     private void setSysMonParam(String parameterName, Object value) {
-        m.addParameter(batchCount == 0 ? parameterName : "#" + batchCount + ": " + parameterName, String.valueOf(value));
+        if (NSysMon.get().getConfig().collectSqlParameters) {
+            m.addParameter(batchCount == 0 ? parameterName : "#" + batchCount + ": " + parameterName, String.valueOf(value));
+        }
     }
 
     @Override public void setURL(String parameterName, URL val) throws SQLException {
