@@ -78,7 +78,7 @@ public class AMeasurementHierarchyImpl implements AMeasurementHierarchy {
             if (!killedDueSize){
                 unfinished.push(result);
                 size += 1;
-                childrenStack.push(new ArrayList<AHierarchicalData>());
+                childrenStack.push(new ArrayList<>(0));
             }
             return result;
         }
@@ -231,7 +231,7 @@ public class AMeasurementHierarchyImpl implements AMeasurementHierarchy {
             return;
         }
 
-        final List<AHierarchicalData> children = new ArrayList<AHierarchicalData>();
+        final List<AHierarchicalData> children = new ArrayList<>(0);
         for(String detailIdentifier: m.getDetails().keySet()) {
             final ACollectingMeasurement.Detail detail = m.getDetails().get(detailIdentifier);
             children.add(new AHierarchicalData(true, m.getStartTimeMillis(), detail.getTotalNanos(), detailIdentifier, Collections.<String, String>emptyMap(), Collections.<AHierarchicalData>emptyList(), killedDueSize));

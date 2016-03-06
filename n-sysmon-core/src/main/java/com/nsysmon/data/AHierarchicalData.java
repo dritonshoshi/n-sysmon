@@ -1,11 +1,7 @@
 package com.nsysmon.data;
 
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 
 /**
@@ -37,15 +33,29 @@ public class AHierarchicalData {
         this.startTimeMillis = startTimeMillis;
         this.durationNanos = durationNanos;
         this.identifier = identifier.intern();
-        //use empty 0-size map for better memory management
-        Map<String, String> tmpParameters = new HashMap<>(0);
-        tmpParameters.putAll(parameters);
-        this.parameters = Collections.unmodifiableMap(tmpParameters);
-        //use empty 0-size map for better memory management
-        ArrayList<AHierarchicalData> tmpChildren = new ArrayList<>(0);
-        tmpChildren.addAll(children);
-        tmpChildren.trimToSize();
-        this.children = tmpChildren;
+
+        //use empty 0-size map or null for better memory management
+        if (parameters.size() == 0){
+            this.parameters = null;
+        } else {
+            Map<String, String> tmpParameters = new HashMap<>(0);
+            tmpParameters.putAll(parameters);
+            this.parameters = tmpParameters;
+        }
+
+        //TODO FOX088S check if it is save to change this to local array with new instance like below
+        // might be a problem, because the caller uses the children for other things, look out for childrenStack in caller-methods
+        //use empty 0-size map or null for better memory management
+//        if (children.size() == 0 && this.children == null){
+//            this.children = null;
+//        } else {
+//            ArrayList<AHierarchicalData> tmpChildren = new ArrayList<>(0);
+//            tmpChildren.addAll(children);
+//            tmpChildren.trimToSize();
+//            this.children = tmpChildren;
+//        }
+
+        this.children = children;
         this.wasKilled = wasKilled;
     }
 
@@ -66,11 +76,11 @@ public class AHierarchicalData {
     }
 
     public Map<String, String> getParameters() {
-        return parameters;
+        return parameters == null ? Collections.EMPTY_MAP : Collections.unmodifiableMap(parameters);
     }
 
     public List<AHierarchicalData> getChildren() {
-        return Collections.unmodifiableList(children);
+        return children == null ? Collections.EMPTY_LIST : Collections.unmodifiableList(children);
     }
 
 //TODO FOX088S add this to rest
@@ -80,6 +90,6 @@ public class AHierarchicalData {
 
     @Override
     public String toString() {
-        return "AHierarchicalData {" + identifier + " " + parameters + " : " + children + "}";
+        return "AHierarchicalData {" + identifier + " " + parameters + " : " + children + " " + wasKilled + "}";
     }
 }

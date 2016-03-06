@@ -7,7 +7,6 @@ import com.nsysmon.servlet.performance.AMinMaxAvgData;
 
 import java.text.Collator;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 
 
 /**
@@ -120,21 +119,19 @@ public class ADrillDownPageDefinition extends AAbstractNsysmonPerformancePageDef
         final List<Map.Entry<String, AMinMaxAvgData>> result = new ArrayList<>(raw.entrySet());
 
         if(selfNanos != 0 && !raw.isEmpty()) {
-            final AMinMaxAvgData selfData = new AMinMaxAvgData(true, numParent, 0, 0, selfNanos / numParent, selfNanos, new ConcurrentHashMap<String, AMinMaxAvgData>());
-            result.add(new AbstractMap.SimpleEntry<String, AMinMaxAvgData>("<self>", selfData));
+            final AMinMaxAvgData selfData = new AMinMaxAvgData(true, numParent, 0, 0, selfNanos / numParent, selfNanos, new HashMap<>(0));
+            result.add(new AbstractMap.SimpleEntry<>("<self>", selfData));
         }
 
-        Collections.sort(result, new Comparator<Map.Entry<String, AMinMaxAvgData>>() {
-            @Override public int compare(Map.Entry<String, AMinMaxAvgData> o1, Map.Entry<String, AMinMaxAvgData> o2) {
-                final long delta = o2.getValue().getTotalNanos() - o1.getValue().getTotalNanos();
-                if(delta > 0) {
-                    return 1;
-                }
-                if(delta < 0) {
-                    return -1;
-                }
-                return Collator.getInstance().compare(o1.getKey(), o2.getKey());
+        Collections.sort(result, (o1, o2) -> {
+            final long delta = o2.getValue().getTotalNanos() - o1.getValue().getTotalNanos();
+            if(delta > 0) {
+                return 1;
             }
+            if(delta < 0) {
+                return -1;
+            }
+            return Collator.getInstance().compare(o1.getKey(), o2.getKey());
         });
         return result;
     }

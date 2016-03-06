@@ -4,7 +4,6 @@ import com.nsysmon.config.log.NSysMonLogger;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author arno
@@ -22,7 +21,7 @@ public class AMinMaxAvgData {
     private static final NSysMonLogger log = NSysMonLogger.get(AMinMaxAvgData.class);
 
     public AMinMaxAvgData(boolean isSerial, long initialNanos) {
-        this(isSerial, 1, initialNanos, initialNanos, initialNanos, initialNanos, new ConcurrentHashMap<>(0));
+        this(isSerial, 1, initialNanos, initialNanos, initialNanos, initialNanos, new HashMap<>(0));
     }
 
     public AMinMaxAvgData(boolean isSerial, int totalNumInContext, long minNanos, long maxNanos, long avgNanos, long totalNanos, Map<String, AMinMaxAvgData> children) {
@@ -32,10 +31,11 @@ public class AMinMaxAvgData {
         this.maxNanos = maxNanos;
         this.avgNanos = avgNanos;
         this.totalNanos = totalNanos;
-        //use empty 0-size map for better memory management
-        Map<String, AMinMaxAvgData> tmpChildren = new HashMap<>(0);
-        tmpChildren.putAll(children);
-        this.children = new ConcurrentHashMap<>(tmpChildren);
+
+        this.children = children;
+        //TODO FOX088S check if it is save to change this to local array with new instance like below
+        //        this.children.clear();
+        //        this.children.putAll(children);
     }
 
     public AMinMaxAvgData withDataPoint(boolean isSerial, long durationNanos) {
