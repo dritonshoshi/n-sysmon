@@ -52,7 +52,7 @@ angular.module('NSysMonApp').controller('CtrlMemGc', function($scope, $log, Rest
     });
 
     function triggerAutoRefresh() {
-        if(! $scope.autoRefresh) {
+        if(! $scope.autoRefreshGC) {
             return;
         }
 
@@ -61,8 +61,9 @@ angular.module('NSysMonApp').controller('CtrlMemGc', function($scope, $log, Rest
             if(autoRefreshCounter !== oldCounter+1) {
                 return;
             }
+            console.log("refreshing memgc");
             $scope.refresh();
-        }, $scope.autoRefreshSeconds * 1000);
+        }, $scope.autoRefreshSecondsGC * 1000);
         autoRefreshCounter += 1;
     }
 
