@@ -14,7 +14,11 @@ angular.module('NSysMonApp').controller('NSysMonCtrl', function($scope, $route, 
     $scope.rc = {};
     $scope.configRaw = config.raw();
     $scope.curTitle = function() {
-        return config.forCurrentPage().fullLabel;
+        if (!config.forCurrentPage()){
+            return "<unknown>";
+        }else{
+            return config.forCurrentPage().fullLabel;
+        }
     };
 
     $scope.applicationIdentifier = function() {

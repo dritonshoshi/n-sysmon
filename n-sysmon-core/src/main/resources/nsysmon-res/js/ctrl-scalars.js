@@ -23,7 +23,11 @@ angular.module('NSysMonApp').controller('CtrlScalars', function($scope, $log, Re
                 $scope.miscScalars.push(s)
             }
         });
-        effectiveNumCpus = data.scalars['cpu:available'].value / 100;
+        if (data.scalars['cpu:available']){
+            effectiveNumCpus = data.scalars['cpu:available'].value / 100;
+        }else{
+            effectiveNumCpus = -99;
+        }
         $scope.cpuFreq = cpuFreq();
         render();
         triggerAutoRefresh();
@@ -96,7 +100,10 @@ angular.module('NSysMonApp').controller('CtrlScalars', function($scope, $log, Re
         if(!$scope.scalars) {
             return '';
         }
-        var raw = $scope.scalars['cpu:all-used'].value - $scope.scalars['cpu:self-user'].value - $scope.scalars['cpu:self-kernel'].value;
+        var raw = -100;
+        if ($scope.scalars['cpu:all-used'] && $scope.scalars['cpu:self-user'] && $scope.scalars['cpu:self-kernel']){
+            $scope.scalars['cpu:all-used'].value - $scope.scalars['cpu:self-user'].value - $scope.scalars['cpu:self-kernel'].value;
+        }
         return formatNumber(raw, 1);
     };
 
@@ -107,11 +114,19 @@ angular.module('NSysMonApp').controller('CtrlScalars', function($scope, $log, Re
             return '<div class="progress-bar ' + color + '" role="progressbar" aria-valuenow="' + value + '" aria-valuemin="0" aria-valuemax="' + max + '" style="width: ' + width + '%"></div>';
         }
 
-        return '<div class="progress scalar-load-progress">' +
-            segment('progress-bar-info', $scope.scalars['cpu:self-kernel'].value) +
-            segment('progress-bar-success', $scope.scalars['cpu:self-user'].value) +
-            segment('progress-bar-warning', $scope.scalars['cpu:all-used'].value - $scope.scalars['cpu:self-user'].value - $scope.scalars['cpu:self-kernel'].value) +
-            '</div>';
+        var rc = '';
+        rc += '<div class="progress scalar-load-progress">';
+        if ($scope.scalars['cpu:self-kernel']){
+            rc += segment('progress-bar-info', $scope.scalars['cpu:self-kernel'].value);
+        }
+        if ($scope.scalars['cpu:self-user']){
+            rc += segment('progress-bar-success', $scope.scalars['cpu:self-user'].value);
+        }
+        if ($scope.scalars['cpu:all-used'] && $scope.scalars['cpu:self-user'] && $scope.scalars['cpu:self-kernel']){
+            rc += segment('progress-bar-warning', $scope.scalars['cpu:all-used'].value - $scope.scalars['cpu:self-user'].value - $scope.scalars['cpu:self-kernel'].value);
+        }
+        rc += '</div>';
+        return rc;
     }
 
     function networkInterfaces() {
@@ -177,7 +192,11 @@ angular.module('NSysMonApp').controller('CtrlScalars', function($scope, $log, Re
 
     function htmlForLoad(loadScalar) {
         var numCpus = effectiveNumCpus;
-        return htmlForPercentageBar(100, 0, numCpus, loadScalar.value, 1, numCpus/2, numCpus, loadScalar.formattedValue);
+        if (!loadScalar){
+            return "";
+        }else {
+            return htmlForPercentageBar(100, 0, numCpus, loadScalar.value, 1, numCpus/2, numCpus, loadScalar.formattedValue);
+        }
     }
 
     function htmlForPercentageBar(width, min, max, value, thresholdInfo, thresholdWarning, thresholdDanger, formattedValue) {
