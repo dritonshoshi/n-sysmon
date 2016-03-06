@@ -27,7 +27,7 @@ public class NSysMonCallableStatement extends NSysMonPreparedStatement implement
     //--------------------- setting parameters
 
     private void setSysMonParam(String parameterName, Object value) {
-        if (NSysMon.get().getConfig().collectSqlParameters && NSysMon.get().getConfig().collectTooltips) {
+        if (NSysMon.get().getConfig().collectSqlParameters() && NSysMon.get().getConfig().collectTooltips()) {
             m.addParameter(batchCount == 0 ? parameterName : "#" + batchCount + ": " + parameterName, String.valueOf(value));
         }
     }

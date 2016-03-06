@@ -45,8 +45,11 @@ public class NSysMonConfig {
     public final List<APresentationMenuEntry> presentationMenuEntries;
     public final Map<String, String> additionalConfigurationParameters;
 
-    public final Boolean collectSqlParameters;
-    public final Boolean collectTooltips;
+    private final Boolean collectSqlParameters;
+    private final Boolean collectTooltips;
+
+    private Boolean overrideCollectSqlParameters = null;
+    private Boolean overrideCollectTooltips = null;
 
     public NSysMonConfig(AApplicationInfoProvider appInfo, int averagingDelayForScalarsMillis, int durationOfOneTimedScalar, int maxNestedMeasurements, int maxNumMeasurementsPerHierarchy, int maxNumMeasurementsPerTimedScalar,
                          long measurementTimeoutNanos, int maxNumMeasurementTimeouts, long dataSinkTimeoutNanos, int maxNumDataSinkTimeouts, ATimer timer, AHttpRequestAnalyzer httpRequestAnalyzer,
@@ -83,4 +86,43 @@ public class NSysMonConfig {
         final String s = System.getProperty(PROPNAME_GLOBALLY_DISABLED);
         return "true".equals(s);
     }
+
+    public boolean configuredCollectTooltips() {
+        return collectTooltips;
+    }
+
+    public boolean configuredCollectSqlParameters() {
+        return collectSqlParameters;
+    }
+
+    public boolean collectTooltips() {
+        if (overrideCollectTooltips != null){
+            return overrideCollectTooltips;
+        }
+        return collectTooltips;
+    }
+
+    public boolean collectSqlParameters() {
+        if (overrideCollectSqlParameters != null){
+            return overrideCollectSqlParameters;
+        }
+        return collectSqlParameters;
+    }
+
+    public void startOverrideSqlParameters() {
+        overrideCollectSqlParameters = true;
+    }
+
+    public void stopOverrideSqlParameters() {
+        overrideCollectSqlParameters = false;
+    }
+
+    public void startOverrideCollectTooltips() {
+        overrideCollectTooltips = true;
+    }
+
+    public void stopOverrideCollectTooltips() {
+        overrideCollectTooltips = false;
+    }
+
 }

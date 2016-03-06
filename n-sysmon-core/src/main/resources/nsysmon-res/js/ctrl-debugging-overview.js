@@ -1,16 +1,52 @@
 angular.module('NSysMonApp').controller('CtrlOverviewDebugging', function($scope, $log, Rest, escapeHtml, $timeout) {
 
+    $scope.currentCollectSqlParameters = false;
+    $scope.currentCollectTooltips = false;
+
     $scope.refresh = function() {
         Rest.call('getData', displayData);
     };
 
+    $scope.startOverrideCollectTooltips = function() {
+        Rest.call('startOverrideCollectTooltips', function(){$scope.refresh();});
+    };
+
+    $scope.stopOverrideCollectTooltips = function() {
+        Rest.call('stopOverrideCollectTooltips', function(){$scope.refresh();});
+    };
+
+    $scope.startOverrideSqlParameters = function() {
+        Rest.call('startOverrideSqlParameters', function(){$scope.refresh();});
+    };
+
+    $scope.stopOverrideSqlParameters = function() {
+        Rest.call('stopOverrideSqlParameters', function(){$scope.refresh();});
+    };
+
     $scope.refresh();
+
+    function configureButtons(data) {
+        //$scope.currentCollectTooltips = false;
+        //$scope.currentCollectSqlParameters = false;
+        data.configurationParameters.forEach(function(entry) {
+            if (entry.key == "current collectSqlParameters"){
+                $scope.currentCollectSqlParameters = entry.value;
+                //console.log("current collectSqlParameters");
+                //console.log($scope.currentCollectSqlParameters);
+            } else if (entry.key == "current collectTooltips"){
+                $scope.currentCollectTooltips = entry.value;
+                //console.log("current collectTooltips");
+                //console.log($scope.currentCollectTooltips);
+            }
+        }, this);
+    }
 
     function renderDataAsHtml(data) {
         //TODO FO088S formatting is wrong, look at the position of the refresh-button
         var htmlText = '';
         htmlText += renderConfigurationParametersAsHtml(data);
         htmlText += renderPageDefinitionsAsHtml(data);
+
         return htmlText;
     }
 
@@ -63,6 +99,8 @@ angular.module('NSysMonApp').controller('CtrlOverviewDebugging', function($scope
     }
 
     function displayData(data) {
+        configureButtons(data);
+
         var htmlToInsert = renderDataAsHtml(data);
 
         var myNode = document.getElementById("theData");

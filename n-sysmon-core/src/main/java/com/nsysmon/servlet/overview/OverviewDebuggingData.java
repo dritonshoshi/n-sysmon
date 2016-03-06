@@ -1,6 +1,7 @@
 package com.nsysmon.servlet.overview;
 
 import com.ajjpj.afoundation.io.AJsonSerHelper;
+import com.nsysmon.NSysMon;
 import com.nsysmon.NSysMonApi;
 import com.nsysmon.config.log.NSysMonLogger;
 import com.nsysmon.config.presentation.APresentationMenuEntry;
@@ -46,6 +47,22 @@ public class OverviewDebuggingData implements APresentationPageDefinition {
         if ("getData".equals(service)) {
             serveData(params, json);
             return true;
+        } else if ("startOverrideCollectTooltips".equals(service)) {
+            NSysMon.get().getConfig().startOverrideCollectTooltips();
+            serveData(params, json);
+            return true;
+        } else if ("stopOverrideCollectTooltips".equals(service)) {
+            NSysMon.get().getConfig().stopOverrideCollectTooltips();
+            serveData(params, json);
+            return true;
+        } else if ("startOverrideSqlParameters".equals(service)) {
+            NSysMon.get().getConfig().startOverrideSqlParameters();
+            serveData(params, json);
+            return true;
+        } else if ("stopOverrideSqlParameters".equals(service)) {
+            NSysMon.get().getConfig().stopOverrideSqlParameters();
+            serveData(params, json);
+            return true;
         }
         return false;
     }
@@ -80,8 +97,10 @@ public class OverviewDebuggingData implements APresentationPageDefinition {
         addConfigEntry("maxNumMeasurementTimeouts", sysMon.getConfig().maxNumMeasurementTimeouts, json);
         addConfigEntry("measurementTimeoutNanos", sysMon.getConfig().measurementTimeoutNanos, json);
 
-        addConfigEntry("collectSqlParameters", sysMon.getConfig().collectSqlParameters, json);
-        addConfigEntry("collectTooltips", sysMon.getConfig().collectTooltips, json);
+        addConfigEntry("collectSqlParameters (Configuration)", sysMon.getConfig().configuredCollectSqlParameters(), json);
+        addConfigEntry("collectTooltips (Configuration)", sysMon.getConfig().configuredCollectTooltips(), json);
+        addConfigEntry("current collectSqlParameters", sysMon.getConfig().collectSqlParameters(), json);
+        addConfigEntry("current collectTooltips", sysMon.getConfig().collectTooltips(), json);
 
         json.endArray();
     }

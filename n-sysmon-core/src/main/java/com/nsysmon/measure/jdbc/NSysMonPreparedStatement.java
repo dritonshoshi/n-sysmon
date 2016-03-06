@@ -111,7 +111,7 @@ public class NSysMonPreparedStatement extends NSysMonStatement implements Prepar
     }
 
     private void setSysMonParam(int index, Object value) {
-        if (NSysMon.get().getConfig().collectSqlParameters && NSysMon.get().getConfig().collectTooltips) {
+        if (NSysMon.get().getConfig().collectSqlParameters() && NSysMon.get().getConfig().collectTooltips()) {
             m.addParameter(keyForIndex(index), String.valueOf(value));
         }
     }
