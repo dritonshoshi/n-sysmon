@@ -13,6 +13,13 @@ import java.util.List;
  * @author arno
  */
 public interface APresentationPageDefinition {
+    String SERVICE_GET_DATA = "getData";
+    String SERVICE_GET_DATA_OVERVIEW = "getDataOverview";
+    String SERVICE_GET_DATA_DETAIL = "getDataDetail";
+    String SERVICE_DO_START = "doStart";
+    String SERVICE_DO_STOP = "doStop";
+    String SERVICE_DO_CLEAR = "doClear";
+
     /**
      * @return a logical ID that is used as a representation for this instance. It must be unique across all instances.
      *  It may contain only (ASCII) characters, digits, the underscore and the dash. It is case sensitive.

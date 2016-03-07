@@ -53,7 +53,7 @@ public abstract class ABottomUpPageDefinition extends AAbstractNsysmonPerformanc
         return COL_DEFS;
     }
 
-    @Override protected List<TreeNode> getData() {
+    @Override protected List<TreeNode> getAllData() {
         long totalJdbcNanos = 0;
         int totalJdbcCalls = 0;
         for(AMinMaxAvgData d: collector.getData().values()) {

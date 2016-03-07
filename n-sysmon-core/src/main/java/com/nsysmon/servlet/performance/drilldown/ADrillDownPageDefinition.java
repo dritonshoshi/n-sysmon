@@ -78,7 +78,7 @@ public class ADrillDownPageDefinition extends AAbstractNsysmonPerformancePageDef
         return colDefs;
     }
 
-    @Override protected List<TreeNode> getData() {
+    @Override protected List<TreeNode> getAllData() {
         long totalNanos = 0;
         for(AMinMaxAvgData d: collector.getData().values()) {
             totalNanos += d.getTotalNanos();

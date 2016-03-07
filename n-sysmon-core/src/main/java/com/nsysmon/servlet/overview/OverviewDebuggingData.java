@@ -44,7 +44,7 @@ public class OverviewDebuggingData implements APresentationPageDefinition {
 
     @Override
     public boolean handleRestCall(String service, List<String> params, AJsonSerHelper json) throws Exception {
-        if ("getData".equals(service)) {
+        if (SERVICE_GET_DATA.equals(service)) {
             serveData(params, json);
             return true;
         } else if ("startOverrideCollectTooltips".equals(service)) {

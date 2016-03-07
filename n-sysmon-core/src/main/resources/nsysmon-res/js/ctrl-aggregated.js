@@ -1,3 +1,4 @@
+//TODO FOX088S refactor excel-export to call getData because it won't work with the step-by-step-loading
 angular.module('NSysMonApp').controller('CtrlAggregated', function($scope, $log, Rest, escapeHtml, $timeout) {
 
     $('.button-segment').affix({
@@ -80,8 +81,48 @@ angular.module('NSysMonApp').controller('CtrlAggregated', function($scope, $log,
         Rest.call(cmd, initFromResponse);
     }
 
+    function fillFqnAndMarkAsExtended(data) {
+        if (!data.traces[0]){
+            return;
+        }
+        //console.log(data.traces);
+        var prefix = '';
+        var fqn = prefix + '\n' + (data.traces[0].id || data.traces[0].name);
+        data.traces[0].fqn = fqn;
+        data.traces[0].level = 0;
+        nodesByFqn[fqn] = data.traces[0];
+        $scope.expansionModel[fqn] = true;
+
+        initTraceNodes(data.traces[0].children, 1, fqn);
+    }
+
+    function getHtmlForNodeIncludingChildren(data) {
+        // render the html htmlForTreeNode(node)
+        var html = htmlForTreeNode(data.traces[0], true)
+        console.log(html);
+        // replace existing html with new rendered one
+        return html;
+    }
+
+    function loadDataForNode(htmlNode, node) {
+        // load data
+        Rest.call('getDataDetail/'+node.id, function (data){
+            if (!data.traces[0]){
+                //TODO FOX088S show this to the user
+                //TODO FOX088S store data which has been transmitted to the client in an additional list, so it can be accessed, when the user takes some time with analysis
+                console.log("data for this node doesn't exist in the server any more.");
+                return;
+            }
+            fillFqnAndMarkAsExtended(data);
+            var html = getHtmlForNodeIncludingChildren(data);
+            htmlNode.replaceWith(html);
+            $('.data-row.with-children').click(onClickNode);
+            toggleTreeNode(htmlNode, nodesByFqn[data.traces[0].fqn]);
+        });
+    }
+
     $scope.refresh = function() {
-        sendCommand('getData');
+        sendCommand('getDataOverview');
     };
     $scope.clear = function() {
         $scope.expansionModel = {};
@@ -123,16 +164,17 @@ angular.module('NSysMonApp').controller('CtrlAggregated', function($scope, $log,
         return s.indexOf(prefix) === 0;
     }
 
-    $scope.expandAll = function() {
-        function setExpanded(nodes) {
-            if(nodes) {
-                for(var i=0; i<nodes.length; i++) {
-                    $scope.expansionModel[nodes[i].fqn] = true;
-                    setExpanded(nodes[i].children);
-                }
+    function setExpanded(nodes) {
+        if(nodes) {
+            for(var i=0; i<nodes.length; i++) {
+            //TODO FOX088S this needs to be moved to a function-call
+                $scope.expansionModel[nodes[i].fqn] = true;
+                setExpanded(nodes[i].children);
             }
         }
+    }
 
+    $scope.expandAll = function() {
         setExpanded($scope.traces);
         renderTree();
     };
@@ -167,6 +209,9 @@ angular.module('NSysMonApp').controller('CtrlAggregated', function($scope, $log,
 
         if(node.children && node.children.length) {
             return $scope.isExpanded(node) ? 'node-icon-expanded' : 'node-icon-collapsed';
+        }
+        if (node.canLoadChildren){
+            return 'node-icon-collapsed';
         }
         return 'node-icon-empty';
     };
@@ -263,10 +308,12 @@ angular.module('NSysMonApp').controller('CtrlAggregated', function($scope, $log,
     };
 
     $scope.doImportJSON = function() {
+        console.log("doImportJSON");
         $scope.uploadFile();
     };
 
     $scope.uploadFile = function(){
+        console.log("uploadFile");
         var file = document.getElementById('file').files[0],
             reader = new FileReader();
             // block gui while uploading file
@@ -343,9 +390,21 @@ angular.module('NSysMonApp').controller('CtrlAggregated', function($scope, $log,
         $('#theTree').html(hhttmmll);
 
         $('.data-row.with-children').click(onClickNode);
+        $('.data-row.with-canLoadChildren').click(onClickCanLoadChildrenNode);
         if ($scope.showDataTooltips == 1){
             $("[data-toggle=data-tooltip]").tooltip();
         }
+    }
+
+    function onClickCanLoadChildrenNode() {
+        var fqn = $(this).children('.fqn-holder').text();
+        //TODO FOX088S
+//        if($scope.isInPickMode) {
+//            pickTreeNode(nodesByFqn[fqn]);
+//        }
+//        else {
+            loadDataForNode($(this).parent(), nodesByFqn[fqn]);
+//        }
     }
 
     function onClickNode() {
@@ -397,7 +456,7 @@ angular.module('NSysMonApp').controller('CtrlAggregated', function($scope, $log,
     }
 
 
-    function htmlForTreeNode(curNode) {
+    function htmlForTreeNode(curNode, shouldRender) {
         var dataRowSubdued = !curNode.isNotSerial ? '' : 'data-row-subdued';
 
         var dataCols = '';
@@ -420,8 +479,10 @@ angular.module('NSysMonApp').controller('CtrlAggregated', function($scope, $log,
         });
 
         var withChildrenClass = (curNode.children && curNode.children.length) ? ' with-children' : '';
+        var canLoadChildrenClass = (curNode.canLoadChildren) ? ' with-canLoadChildren' : '';
         var result =
-            '<div class="data-row data-row-' + (curNode.level - $scope.rootLevel) + withChildrenClass + ' ' + dataRowSubdued + '">' +
+            '<div class="data-row data-row-' + (curNode.level - $scope.rootLevel) + withChildrenClass + ' ' + canLoadChildrenClass + ' ' + dataRowSubdued + '">' +
+//                '<div class="">' + escapeHtml(curNode.fqn) + '</div>' + //TODO FOX088S just for debugging
                 '<div class="fqn-holder">' + escapeHtml(curNode.fqn) + '</div>' +
                 '<div class="node-icon ' + $scope.nodeIconClass(curNode.fqn) + '">&nbsp;</div>' +
                 '<div class="' + $scope.nodeIconClassWasKilled(curNode) + '">&nbsp;</div>' +
@@ -431,7 +492,7 @@ angular.module('NSysMonApp').controller('CtrlAggregated', function($scope, $log,
         //$log.log($scope.pickedTraces); // The Tooltips has to be sent from the server. See ABottomUpPageDefinition and ATracePageDefinition
         //$log.log("xx="+curNode.tooltip);
         //$log.log("xx="+curNode.wasKilled);
-        result += htmlForChildrenDiv(curNode);
+        result += htmlForChildrenDiv(curNode, shouldRender);
 
         return result;
     }

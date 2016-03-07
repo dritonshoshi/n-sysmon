@@ -73,7 +73,7 @@ public class ATracePageDefinition extends AAbstractNsysmonPerformancePageDef {
         return colDefs;
     }
 
-    @Override protected List<TreeNode> getData() {
+    @Override protected List<TreeNode> getAllData() {
         final List<TreeNode> result = new ArrayList<>();
 
         for(AHierarchicalDataRoot root: collector.getData()) {

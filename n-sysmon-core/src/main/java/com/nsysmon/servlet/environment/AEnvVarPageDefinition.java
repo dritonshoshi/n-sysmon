@@ -42,7 +42,7 @@ public class AEnvVarPageDefinition implements APresentationPageDefinition {
     }
 
     @Override public boolean handleRestCall(String service, List<String> params, AJsonSerHelper json) throws Exception {
-        if("getData".equals(service)) {
+        if(SERVICE_GET_DATA.equals(service)) {
             serveData(json);
             return true;
         }

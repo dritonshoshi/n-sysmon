@@ -41,7 +41,7 @@ public class AScalarPageDefinition implements APresentationPageDefinition {
     }
 
     @Override public boolean handleRestCall(String service, List<String> params, AJsonSerHelper json) throws IOException {
-        if("getData".equals(service)) {
+        if(SERVICE_GET_DATA.equals(service)) {
             serveData(json);
             return true;
         }

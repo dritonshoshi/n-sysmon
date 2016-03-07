@@ -13,6 +13,7 @@ import java.util.List;
  * @author arno
  */
 public abstract class AAbstractNsysmonPerformancePageDef implements APresentationPageDefinition {
+
     @Override public String getHtmlFileName() {
         return "aggregated.html";
     }
@@ -25,23 +26,26 @@ public abstract class AAbstractNsysmonPerformancePageDef implements APresentatio
     }
 
     @Override public boolean handleRestCall(String service, List<String> params, AJsonSerHelper json) throws IOException {
-        if("getData".equals(service)) {
-            serveData(json);
+        if (SERVICE_GET_DATA.equals(service)) {
+            serveAllData(json);
             return true;
-        }
-        if("doStart".equals(service)) {
+        } else if (SERVICE_DO_START.equals(service)) {
             doStartMeasurements();
-            serveData(json);
+            serveAllData(json);
             return true;
-        }
-        if("doStop".equals(service)) {
+        } else if (SERVICE_DO_STOP.equals(service)) {
             doStopMeasurements();
-            serveData(json);
+            serveAllData(json);
             return true;
-        }
-        if("doClear".equals(service)) {
+        } else if (SERVICE_DO_CLEAR.equals(service)) {
             doClearMeasurements();
-            serveData(json);
+            serveAllData(json);
+            return true;
+        } else if (SERVICE_GET_DATA_DETAIL.equals(service)) {
+            serveDataDetail(json, params);
+            return true;
+        } else if (SERVICE_GET_DATA_OVERVIEW.equals(service)) {
+            serveDataOverview(json);
             return true;
         }
 
@@ -54,9 +58,9 @@ public abstract class AAbstractNsysmonPerformancePageDef implements APresentatio
 
     protected abstract boolean isStarted();
     protected abstract List<ColDef> getColDefs();
-    protected abstract List<TreeNode> getData();
+    protected abstract List<TreeNode> getAllData();
 
-    private void serveData(AJsonSerHelper json) throws IOException {
+    private void serveDataOverview(AJsonSerHelper json) throws IOException {
         json.startObject();
 
         json.writeKey("isStarted");
@@ -71,9 +75,67 @@ public abstract class AAbstractNsysmonPerformancePageDef implements APresentatio
 
         json.writeKey("traces");
         json.startArray();
-        int nr = 0;
-        for(TreeNode n: getData()) {
-            writeDataNode(json, n, nr++);
+        //TODO FOX088S change this from getAllData to something not generating the children, because it would be way faster
+        for(TreeNode n: getAllData()) {
+            writeOverviewNode(json, n);
+        }
+        json.endArray();
+
+        json.endObject();
+    }
+
+    private void serveDataDetail(AJsonSerHelper json, List<String> params) throws IOException {
+        //System.out.println("serveDataDetail:"+params.size());
+        System.out.println("serveDataDetail:"+params);
+        json.startObject();
+
+        json.writeKey("isStarted");
+        json.writeBooleanLiteral(isStarted());
+
+        json.writeKey("columnDefs");
+        json.startArray();
+        for(ColDef colDef: getColDefs()) {
+            writeColDef(json, colDef);
+        }
+        json.endArray();
+
+        json.writeKey("traces");
+        json.startArray();
+        //TODO FOX088S change this from getAllData to something not generating the children, because it would be way faster
+        for(TreeNode n: getAllData()) {
+            params.forEach(s -> {
+                if (s.equalsIgnoreCase(n.id)) {
+                    try {
+                        writeAllDataNode(json, n);
+                    } catch (IOException e) {
+                        //TODO FOX088S
+                        e.printStackTrace();
+                    }
+                }
+            });
+        }
+        json.endArray();
+
+        json.endObject();
+    }
+
+    private void serveAllData(AJsonSerHelper json) throws IOException {
+        json.startObject();
+
+        json.writeKey("isStarted");
+        json.writeBooleanLiteral(isStarted());
+
+        json.writeKey("columnDefs");
+        json.startArray();
+        for(ColDef colDef: getColDefs()) {
+            writeColDef(json, colDef);
+        }
+        json.endArray();
+
+        json.writeKey("traces");
+        json.startArray();
+        for(TreeNode n: getAllData()) {
+            writeAllDataNode(json, n);
         }
         json.endArray();
 
@@ -98,14 +160,75 @@ public abstract class AAbstractNsysmonPerformancePageDef implements APresentatio
         json.endObject();
     }
 
-    private void writeDataNode(AJsonSerHelper json, TreeNode node, int nr) throws IOException {
+    private void writeOverviewNode(AJsonSerHelper json, TreeNode node) throws IOException {
         json.startObject();
 
         if(node.id != null) {
             json.writeKey("id");
-            //this is done to reduce the size of the json, because now we don'T send the 20 chars per id, but a smaller string
-            json.writeStringLiteral("n"+nr);
-            //json.writeStringLiteral(node.id);
+            json.writeStringLiteral(node.id);
+        }
+
+        json.writeKey("name");
+        json.writeStringLiteral(node.label);
+
+        if (node.wasKilled) {
+            json.writeKey("wasKilled");
+            json.writeBooleanLiteral(node.wasKilled);
+            //System.out.println(node.wasKilled);
+        }
+
+        if(node.tooltip != null && NSysMon.get().getConfig().collectTooltips()) {
+            json.writeKey("tooltip");
+            json.startArray();
+
+            for(List<String> row: node.tooltip) {
+
+                if (row.size() == 2){
+                    json.startObject();
+                    json.writeKey("id");
+                    json.writeStringLiteral(row.get(0));
+                    json.writeKey("value");
+                    json.writeStringLiteral(row.get(1));
+                    json.endObject();
+                }else{
+                    json.startArray();
+                    for(String cell: row) {
+                        json.writeStringLiteral(cell);
+                    }
+                    json.endArray();
+                }
+
+            }
+
+            json.endArray();
+        }
+
+        json.writeKey("data");
+        json.startArray();
+        for(int i=0; i<node.colDataRaw.length; i++) {
+            json.writeNumberLiteral(node.colDataRaw[i], getColDefs().get(i).numFracDigits);
+        }
+        json.endArray();
+
+        if (!node.isSerial) {
+            json.writeKey("isNotSerial");
+            json.writeBooleanLiteral(true);
+        }
+
+        if (!node.children.isEmpty()) {
+            json.writeKey("canLoadChildren");
+            json.writeBooleanLiteral(true);
+        }
+
+        json.endObject();
+    }
+
+    private void writeAllDataNode(AJsonSerHelper json, TreeNode node) throws IOException {
+        json.startObject();
+
+        if(node.id != null) {
+            json.writeKey("id");
+            json.writeStringLiteral(node.id);
         }
 
         json.writeKey("name");
@@ -160,7 +283,7 @@ public abstract class AAbstractNsysmonPerformancePageDef implements APresentatio
             json.writeKey("children");
             json.startArray();
             for(TreeNode child: node.children) {
-                writeDataNode(json, child, nr++);
+                writeAllDataNode(json, child);
             }
             json.endArray();
         }
