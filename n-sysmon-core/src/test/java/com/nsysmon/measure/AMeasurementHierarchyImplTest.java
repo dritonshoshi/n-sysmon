@@ -91,30 +91,30 @@ public class AMeasurementHierarchyImplTest {
     private void performMeasurement(final NSysMonApi sysMon) {
         sysMon.measure("A11", m -> {
             sysMon.measure("B11", m1 -> {
-                sysMon.measure("C11", m1 -> {
+                sysMon.measure("C11", m2 -> {
                     //nothing to do
                 });
-                sysMon.measure("C21", m1 -> {
+                sysMon.measure("C21", m2 -> {
                     //nothing to do
                 });
-                sysMon.measure("C31", m1 -> {
+                sysMon.measure("C31", m2 -> {
                     //nothing to do
                 });
-                sysMon.measure("C41", m1 -> {
+                sysMon.measure("C41", m2 -> {
                     //nothing to do
                 });
             });
             sysMon.measure("B12", m1 -> {
-                sysMon.measure("C12", m1 -> {
+                sysMon.measure("C12", m3 -> {
                     //nothing to do
                 });
-                sysMon.measure("C22", m1 -> {
+                sysMon.measure("C22", m3 -> {
                     //nothing to do
                 });
-                sysMon.measure("C32", m1 -> {
+                sysMon.measure("C32", m3 -> {
                     //nothing to do
                 });
-                sysMon.measure("C42", m1 -> {
+                sysMon.measure("C42", m3 -> {
                     //nothing to do
                 });
             });
