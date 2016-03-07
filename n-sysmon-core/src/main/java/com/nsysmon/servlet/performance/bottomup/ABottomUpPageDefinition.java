@@ -65,7 +65,7 @@ public abstract class ABottomUpPageDefinition extends AAbstractNsysmonPerformanc
     }
 
     private List<TreeNode> getDataRec(Map<String, AMinMaxAvgData> map, int level, double jdbcTimeInParent, double totalJdbcTime, int totalNumCallsInContext) {
-        final List<TreeNode> result = new ArrayList<TreeNode>();
+        final List<TreeNode> result = new ArrayList<>();
 
         for(Map.Entry<String, AMinMaxAvgData> entry: getSorted(map, level == 0)) {
             final AMinMaxAvgData inputData = entry.getValue();
@@ -95,20 +95,17 @@ public abstract class ABottomUpPageDefinition extends AAbstractNsysmonPerformanc
     }
 
     private List<Map.Entry<String, AMinMaxAvgData>> getSorted(Map<String, AMinMaxAvgData> raw, final boolean rootLevel) {
-        final List<Map.Entry<String, AMinMaxAvgData>> result = new ArrayList<Map.Entry<String, AMinMaxAvgData>>(raw.entrySet());
+        final List<Map.Entry<String, AMinMaxAvgData>> result = new ArrayList<>(raw.entrySet());
 
-        Collections.sort(result, new Comparator<Map.Entry<String, AMinMaxAvgData>>() {
-            @Override
-            public int compare(Map.Entry<String, AMinMaxAvgData> o1, Map.Entry<String, AMinMaxAvgData> o2) {
-                final long delta = rootLevel ? (o2.getValue().getTotalNanos() - o1.getValue().getTotalNanos()) : (o2.getValue().getTotalNumInContext() - o1.getValue().getTotalNumInContext());
-                if (delta > 0) {
-                    return 1;
-                }
-                if (delta < 0) {
-                    return -1;
-                }
-                return Collator.getInstance().compare(o1.getKey(), o2.getKey());
+        Collections.sort(result, (o1, o2) -> {
+            final long delta = rootLevel ? (o2.getValue().getTotalNanos() - o1.getValue().getTotalNanos()) : (o2.getValue().getTotalNumInContext() - o1.getValue().getTotalNumInContext());
+            if (delta > 0) {
+                return 1;
             }
+            if (delta < 0) {
+                return -1;
+            }
+            return Collator.getInstance().compare(o1.getKey(), o2.getKey());
         });
         return result;
     }

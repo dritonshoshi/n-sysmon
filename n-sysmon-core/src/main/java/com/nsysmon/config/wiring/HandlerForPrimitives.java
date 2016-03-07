@@ -9,7 +9,7 @@ import java.util.Set;
  * @author arno
  */
 class HandlerForPrimitives implements ConfigTypeHandler {
-    private static final Set<Class<?>> types = new HashSet<Class<?>>(Arrays.asList(
+    private static final Set<Class<?>> types = new HashSet<>(Arrays.asList(
             Boolean.class,
             Byte.class, Short.class, Character.class, Integer.class, Long.class,
             Float.class, Double.class,

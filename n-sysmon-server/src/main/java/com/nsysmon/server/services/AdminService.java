@@ -11,5 +11,5 @@ import com.nsysmon.server.util.json.ListWrapper;
 public interface AdminService {
     ListWrapper<String> getMonitoredApplicationNames();
 
-    public AOption<ScalarMetaData> get(String name);
+    AOption<ScalarMetaData> get(String name);
 }

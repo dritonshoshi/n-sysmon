@@ -116,11 +116,7 @@ public class AMeasurementHierarchyImpl implements AMeasurementHierarchy {
     }
 
     private void logWasKilled() {
-        log.debug (new AFunction0NoThrow<String> () {
-            @Override public String apply () {
-                return "Interacting with a forcefully killed measurement. This is a consequence of N-SysMon cleaning up a (suspected) memory leak. It has no consequences aside from potentially weird measurements being reported.";
-            }
-        });
+        log.debug ((AFunction0NoThrow<String>) () -> "Interacting with a forcefully killed measurement. This is a consequence of N-SysMon cleaning up a (suspected) memory leak. It has no consequences aside from potentially weird measurements being reported.");
     }
 
     @Override public void finish(ASimpleSerialMeasurementImpl measurement) {
@@ -165,9 +161,7 @@ public class AMeasurementHierarchyImpl implements AMeasurementHierarchy {
 
         if(unfinished.isEmpty()) {
             // copy into a separate collection because the collection is modified in the loop
-            for(ACollectingMeasurement m: new ArrayList<>(collectingMeasurements)) {
-                finish(m);
-            }
+            new ArrayList<>(collectingMeasurements).forEach(this::finish);
             isFinished = true;
             dataSink.onFinishedHierarchicalMeasurement(new AHierarchicalDataRoot(newData, startedFlows, joinedFlows, killedDueSize));
             //System.out.println("killedDueSize="+killedDueSize);
@@ -203,11 +197,7 @@ public class AMeasurementHierarchyImpl implements AMeasurementHierarchy {
         if(unfinished.isEmpty()) {
             // A collection measurement can never be top-level. To be on the safe side, we just ignore this, losing measurement data rather than risking non-robust code.
             // Declarative transactions can cause this if the start and especially the end of a transaction are not surrounded by an NSysMon measurement
-            log.debug (new AFunction0NoThrow<String> () {
-                @Override public String apply () {
-                    return "Trying to start a collectiong mesaurement outside of a measurement hierarchy: " + identifier;
-                }
-            });
+            log.debug ((AFunction0NoThrow<String>) () -> "Trying to start a collectiong mesaurement outside of a measurement hierarchy: " + identifier);
             return ACollectingMeasurement.createDisabled ();
         }
         else {

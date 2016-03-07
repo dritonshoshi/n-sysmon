@@ -22,7 +22,7 @@ public class AMemInfoEnvironmentMeasurer implements AEnvironmentMeasurer {
     }
 
     public Map<String, String> read() throws IOException {
-        final Map<String, String> result = new HashMap<String, String>();
+        final Map<String, String> result = new HashMap<>();
         final BufferedReader br = new BufferedReader(new FileReader(new File("/proc/meminfo")));
         try {
             String line;

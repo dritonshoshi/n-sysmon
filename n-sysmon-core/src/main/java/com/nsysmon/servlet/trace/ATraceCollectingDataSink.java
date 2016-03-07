@@ -15,7 +15,7 @@ class ATraceCollectingDataSink implements ADataSink {
 
     ATraceCollectingDataSink(ATraceFilter traceFilter, int bufferSize) {
         this.traceFilter = traceFilter;
-        this.data = new ARingBuffer<AHierarchicalDataRoot>(AHierarchicalDataRoot.class, bufferSize);
+        this.data = new ARingBuffer<>(AHierarchicalDataRoot.class, bufferSize);
     }
 
     @Override public void onStartedHierarchicalMeasurement(String identifier) {

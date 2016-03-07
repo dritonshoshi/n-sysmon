@@ -54,8 +54,8 @@ public class AHttpJsonOffloadingDataSink implements ADataSink {
         this.sender = sender;
         this.senderInstance = senderInstance;
 
-        this.traceQueue = new ASoftlyLimitedQueue<AHierarchicalDataRoot>(traceQueueSize, new DiscardedLogger("trace queue overflow - discarding oldest trace"));
-        this.scalarQueue = new ASoftlyLimitedQueue<AScalarDataPoint>(scalarQueueSize, new DiscardedLogger("environment queue overflow - discarding oldest data"));
+        this.traceQueue = new ASoftlyLimitedQueue<>(traceQueueSize, new DiscardedLogger("trace queue overflow - discarding oldest trace"));
+        this.scalarQueue = new ASoftlyLimitedQueue<>(scalarQueueSize, new DiscardedLogger("environment queue overflow - discarding oldest data"));
 
         offloadingThreadPool = Executors.newFixedThreadPool(numOffloadingThreads);
         for(int i=0; i<numOffloadingThreads; i++) {
@@ -63,12 +63,10 @@ public class AHttpJsonOffloadingDataSink implements ADataSink {
         }
 
         scalarMeasurementPool = Executors.newSingleThreadScheduledExecutor();
-        scalarMeasurementPool.scheduleAtFixedRate(new Runnable() {
-            @Override public void run() {
-                //TODO introduce 'AScalarProvider' interface for callbacks like this
-                for(AScalarDataPoint scalar: sysMon.getScalarMeasurements().values()) { //TODO ensure that this NSysMon call will never throw exceptions
-                    scalarQueue.add(scalar);
-                }
+        scalarMeasurementPool.scheduleAtFixedRate((Runnable) () -> {
+            //TODO introduce 'AScalarProvider' interface for callbacks like this
+            for(AScalarDataPoint scalar: sysMon.getScalarMeasurements().values()) { //TODO ensure that this NSysMon call will never throw exceptions
+                scalarQueue.add(scalar);
             }
         }, 0, scalarMeasurementFrequencyMillis, TimeUnit.MILLISECONDS);
     }
@@ -85,13 +83,13 @@ public class AHttpJsonOffloadingDataSink implements ADataSink {
     }
 
     private void doOffload() throws Exception {
-        final List<AHierarchicalDataRoot> traces = new ArrayList<AHierarchicalDataRoot>();
+        final List<AHierarchicalDataRoot> traces = new ArrayList<>();
         AHierarchicalDataRoot candidate;
         while ((candidate = traceQueue.poll()) != null) { //TODO limit number per HTTP request?!
             traces.add(candidate);
         }
 
-        final List<AScalarDataPoint> scalars = new ArrayList<AScalarDataPoint>();
+        final List<AScalarDataPoint> scalars = new ArrayList<>();
         AScalarDataPoint scalar;
         while ((scalar = scalarQueue.poll()) != null) { //TODO limit number per HTTP request?
             scalars.add(scalar);

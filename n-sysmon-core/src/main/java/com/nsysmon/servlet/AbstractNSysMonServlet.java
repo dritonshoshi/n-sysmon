@@ -34,7 +34,7 @@ public abstract class AbstractNSysMonServlet extends HttpServlet {
             if(uri.contains(NSYSMON_MARKER_REST)) {
                 try {
                     final String[] restPart = substringAfter(uri, NSYSMON_MARKER_REST).split("/");
-                    if(!handleRestCall(new ArrayList<String>(Arrays.asList(restPart)), resp)) {
+                    if(!handleRestCall(new ArrayList<>(Arrays.asList(restPart)), resp)) {
                         throw new IllegalArgumentException("unsupported REST call: " + uri);
                     }
                     return;
@@ -54,7 +54,7 @@ public abstract class AbstractNSysMonServlet extends HttpServlet {
 
             if(uri.contains(NSYSMON_MARKER_SEGMENT)) {
                 final String[] dynamicPart = substringAfter(uri, NSYSMON_MARKER_SEGMENT).split("/");
-                if(! handleDynamic(new ArrayList<String>(Arrays.asList(dynamicPart)), resp)) {
+                if(! handleDynamic(new ArrayList<>(Arrays.asList(dynamicPart)), resp)) {
                     resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
                 }
                 return;
@@ -67,16 +67,9 @@ public abstract class AbstractNSysMonServlet extends HttpServlet {
 
             serveStaticResource(getDefaultHtmlName(), resp);
         }
-        catch (RuntimeException exc) {
+        catch (RuntimeException | ServletException | IOException exc) {
             throw exc;
-        }
-        catch (IOException exc) {
-            throw exc;
-        }
-        catch (ServletException exc) {
-            throw exc;
-        }
-        catch(Exception exc) {
+        } catch(Exception exc) {
             throw new ServletException(exc);
         }
     }
@@ -139,7 +132,7 @@ public abstract class AbstractNSysMonServlet extends HttpServlet {
         final OutputStream out = resp.getOutputStream();
 
         final byte[] buf = new byte[4096];
-        int numRead=0;
+        int numRead;
         while((numRead = in.read(buf)) > 0) {
             out.write(buf, 0, numRead);
         }

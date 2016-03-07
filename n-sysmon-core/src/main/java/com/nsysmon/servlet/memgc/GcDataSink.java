@@ -21,7 +21,7 @@ class GcDataSink implements ADataSink {
     private final ARingBuffer<GcDetails> dataBuffer;
 
     GcDataSink(int maxNumDetails) {
-        dataBuffer = new ARingBuffer<GcDetails>(GcDetails.class, maxNumDetails);
+        dataBuffer = new ARingBuffer<>(GcDetails.class, maxNumDetails);
     }
 
     @Override public void onFinishedHierarchicalMeasurement(AHierarchicalDataRoot data) {
@@ -56,7 +56,7 @@ class GcDataSink implements ADataSink {
     }
 
     private Set<String> memKinds (Collection<String> paramKeys) {
-        final Set<String> result = new HashSet<String>();
+        final Set<String> result = new HashSet<>();
 
         for(String key: paramKeys) {
             if(! key.startsWith(AJmxGcMeasurer.KEY_PREFIX_MEM)) {

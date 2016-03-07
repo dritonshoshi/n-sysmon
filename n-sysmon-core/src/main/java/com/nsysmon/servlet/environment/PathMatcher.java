@@ -14,7 +14,7 @@ class PathMatcher {
     private static final String WILDCARD_SUFFIX = "$NSYSMON$*";
 
     static List<PathMatcher> create(String raw) {
-        final List<PathMatcher> result = new ArrayList<PathMatcher>();
+        final List<PathMatcher> result = new ArrayList<>();
 
         for(String pathRaw: raw.split("\\|\\|")) {
             final String path = pathRaw.trim();

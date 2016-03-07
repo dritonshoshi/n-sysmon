@@ -88,7 +88,7 @@ public class NSysMonJdbcDriver implements Driver {
     }
 
     private Map<String, String> parseParams(String paramString) {
-        final Map<String, String> result = new HashMap<String, String>();
+        final Map<String, String> result = new HashMap<>();
 
         if(paramString.trim().isEmpty()) {
             return result;

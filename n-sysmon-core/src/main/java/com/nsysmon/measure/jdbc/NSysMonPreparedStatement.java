@@ -3,8 +3,6 @@ package com.nsysmon.measure.jdbc;
 import com.nsysmon.NSysMon;
 import com.nsysmon.NSysMonApi;
 import com.nsysmon.measure.ACollectingMeasurement;
-import com.nsysmon.measure.AMeasureCallback;
-import com.nsysmon.measure.AWithParameters;
 
 import java.io.InputStream;
 import java.io.Reader;
@@ -54,30 +52,17 @@ public class NSysMonPreparedStatement extends NSysMonStatement implements Prepar
 
     @Override
     public ResultSet executeQuery() throws SQLException {
-        return m.detail(IDENT_EXECUTE, new AMeasureCallback<ResultSet, SQLException>() {
-            @Override
-            public ResultSet call(AWithParameters m) throws SQLException {
-                return wrap(inner.executeQuery(), (ACollectingMeasurement) m);
-            }
-        });
+        return m.detail(IDENT_EXECUTE, m1 -> wrap(inner.executeQuery(), (ACollectingMeasurement) m1));
     }
 
     @Override
     public int executeUpdate() throws SQLException {
-        return m.detail(IDENT_EXECUTE, new AMeasureCallback<Integer, SQLException>() {
-            @Override public Integer call(AWithParameters m) throws SQLException {
-                return inner.executeUpdate();
-            }
-        });
+        return m.detail(IDENT_EXECUTE, m1 -> inner.executeUpdate());
     }
 
     @Override
     public boolean execute() throws SQLException {
-        return m.detail(IDENT_EXECUTE, new AMeasureCallback<Boolean, SQLException>() {
-            @Override public Boolean call(AWithParameters m) throws SQLException {
-                return inner.execute();
-            }
-        });
+        return m.detail(IDENT_EXECUTE, m1 -> inner.execute());
     }
 
 
@@ -91,12 +76,7 @@ public class NSysMonPreparedStatement extends NSysMonStatement implements Prepar
 
     @Override
     public int[] executeBatch() throws SQLException {
-        return m.detail(IDENT_EXECUTE, new AMeasureCallback<int[], SQLException>() {
-            @Override
-            public int[] call(AWithParameters m) throws SQLException {
-                return inner.executeBatch();
-            }
-        });
+        return m.detail(IDENT_EXECUTE, m1 -> inner.executeBatch());
     }
 
     //--------------------------- setting parameters

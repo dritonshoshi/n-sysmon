@@ -89,58 +89,36 @@ public class AMeasurementHierarchyImplTest {
     }
 
     private void performMeasurement(final NSysMonApi sysMon) {
-        sysMon.measure("A11", new AMeasureCallbackVoidNoThrow() {
-            @Override public void call(AWithParameters m) {
-                sysMon.measure("B11", new AMeasureCallbackVoidNoThrow() {
-                    @Override public void call(AWithParameters m) {
-                        sysMon.measure("C11", new AMeasureCallbackVoidNoThrow() {
-                            @Override public void call(AWithParameters m) {
-                                //nothing to do
-                            }
-                        });
-                        sysMon.measure("C21", new AMeasureCallbackVoidNoThrow() {
-                            @Override public void call(AWithParameters m) {
-                                //nothing to do
-                            }
-                        });
-                        sysMon.measure("C31", new AMeasureCallbackVoidNoThrow() {
-                            @Override public void call(AWithParameters m) {
-                                //nothing to do
-                            }
-                        });
-                        sysMon.measure("C41", new AMeasureCallbackVoidNoThrow() {
-                            @Override public void call(AWithParameters m) {
-                                //nothing to do
-                            }
-                        });
-                    }
+        sysMon.measure("A11", m -> {
+            sysMon.measure("B11", m1 -> {
+                sysMon.measure("C11", m1 -> {
+                    //nothing to do
                 });
-                sysMon.measure("B12", new AMeasureCallbackVoidNoThrow() {
-                    @Override public void call(AWithParameters m) {
-                        sysMon.measure("C12", new AMeasureCallbackVoidNoThrow() {
-                            @Override public void call(AWithParameters m) {
-                                //nothing to do
-                            }
-                        });
-                        sysMon.measure("C22", new AMeasureCallbackVoidNoThrow() {
-                            @Override public void call(AWithParameters m) {
-                                //nothing to do
-                            }
-                        });
-                        sysMon.measure("C32", new AMeasureCallbackVoidNoThrow() {
-                            @Override public void call(AWithParameters m) {
-                                //nothing to do
-                            }
-                        });
-                        sysMon.measure("C42", new AMeasureCallbackVoidNoThrow() {
-                            @Override public void call(AWithParameters m) {
-                                //nothing to do
-                            }
-                        });
-                    }
+                sysMon.measure("C21", m1 -> {
+                    //nothing to do
                 });
+                sysMon.measure("C31", m1 -> {
+                    //nothing to do
+                });
+                sysMon.measure("C41", m1 -> {
+                    //nothing to do
+                });
+            });
+            sysMon.measure("B12", m1 -> {
+                sysMon.measure("C12", m1 -> {
+                    //nothing to do
+                });
+                sysMon.measure("C22", m1 -> {
+                    //nothing to do
+                });
+                sysMon.measure("C32", m1 -> {
+                    //nothing to do
+                });
+                sysMon.measure("C42", m1 -> {
+                    //nothing to do
+                });
+            });
 
-            }
         });
     }
 }

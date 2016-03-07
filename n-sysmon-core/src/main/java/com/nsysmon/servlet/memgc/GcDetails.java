@@ -14,7 +14,7 @@ class GcDetails {
     final String cause;
     final String algorithm;
 
-    final List<GcMemDetails> memDetails = new ArrayList<GcMemDetails>();
+    final List<GcMemDetails> memDetails = new ArrayList<>();
 
     GcDetails(long startMillis, long durationNanos, String gcType, String cause, String algorithm) {
         this.startMillis = startMillis;

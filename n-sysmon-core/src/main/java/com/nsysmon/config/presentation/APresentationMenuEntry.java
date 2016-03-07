@@ -14,6 +14,6 @@ public class APresentationMenuEntry {
 
     public APresentationMenuEntry(String label, List<APresentationPageDefinition> presentationPageDefinitions) {
         this.label = label;
-        this.pageDefinitions = Collections.unmodifiableList(new ArrayList<APresentationPageDefinition>(presentationPageDefinitions));
+        this.pageDefinitions = Collections.unmodifiableList(new ArrayList<>(presentationPageDefinitions));
     }
 }

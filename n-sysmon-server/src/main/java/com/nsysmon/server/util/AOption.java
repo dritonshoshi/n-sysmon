@@ -5,7 +5,7 @@ package com.nsysmon.server.util;
  */
 public abstract class AOption<T> {
     public static <T> AOption<T> some(T value) {
-        return new ASome<T>(value);
+        return new ASome<>(value);
     }
 
     @SuppressWarnings("unchecked")

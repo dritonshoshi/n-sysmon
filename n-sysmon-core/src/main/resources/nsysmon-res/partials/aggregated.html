@@ -20,7 +20,7 @@
             <a class="btn btn-default" ng-click="doExportAsJSON()" data-toggle="tooltip" title="Export currently visible data as JSON">JSON Export</a>
             <a class="btn btn-default" data-toggle="tooltip" title="Import JSON Data" onclick="$('#file').click();">JSON Import</a>
         </div>
-    </div>
+    <div>
         <input type="checkbox" ng-model="hideTitleRows" ng-checked="true">Hide titles between trees<br>
         <input type="checkbox" ng-model="showDataTooltips" ng-checked="false">Show data in tooltips<br>
         <input type="file" id="file" onchange="angular.element(this).scope().doImportJSON()" style="visibility:hidden;">

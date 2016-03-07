@@ -15,11 +15,7 @@ import javax.servlet.ServletContextListener;
  */
 public class AShutdownServletContextListener implements ServletContextListener {
     @Override public void contextDestroyed(ServletContextEvent sce) {
-        AUnchecker.executeUnchecked(new AStatement0<Exception>() {
-            @Override public void apply() throws Exception {
-                ((AShutdownable) NSysMon.get()).shutdown();
-            }
-        });
+        AUnchecker.executeUnchecked((AStatement0<Exception>) () -> ((AShutdownable) NSysMon.get()).shutdown());
     }
 
     @Override public void contextInitialized(ServletContextEvent sce) {

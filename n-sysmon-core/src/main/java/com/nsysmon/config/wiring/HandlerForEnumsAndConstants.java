@@ -11,10 +11,7 @@ class HandlerForEnumsAndConstants implements ConfigTypeHandler {
     @Override public boolean canHandle(Class<?> type, Class<?>[] paramTypes, String value) {
         try {
             final Field f = type.getField(value);
-            if(!Modifier.isStatic(f.getModifiers())) {
-                return false;
-            }
-            return type.isAssignableFrom(f.getType());
+            return Modifier.isStatic(f.getModifiers()) && type.isAssignableFrom(f.getType());
         }
         catch(Exception exc) {
             return false;

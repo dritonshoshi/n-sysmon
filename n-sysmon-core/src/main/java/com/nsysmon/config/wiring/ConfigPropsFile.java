@@ -37,7 +37,7 @@ public class ConfigPropsFile {
     }
 
     public List<String> getListRaw(String key) {
-        final List<String> result = new ArrayList<String>();
+        final List<String> result = new ArrayList<>();
         final String raw = props.getProperty(key);
         if(raw == null || raw.trim().isEmpty()) {
             return result;

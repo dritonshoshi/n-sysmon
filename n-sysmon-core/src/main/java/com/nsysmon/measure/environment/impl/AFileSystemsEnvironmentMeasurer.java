@@ -50,7 +50,7 @@ public class AFileSystemsEnvironmentMeasurer implements AEnvironmentMeasurer {
     }
 
     public static Map<String, String> getMountPoints() throws Exception {
-        final Map<String, String> result = new HashMap<String, String>();
+        final Map<String, String> result = new HashMap<>();
 
         for(String line: new CliCommand("df", "-P").getOutput()) {
             if(! line.startsWith("/dev/")) {

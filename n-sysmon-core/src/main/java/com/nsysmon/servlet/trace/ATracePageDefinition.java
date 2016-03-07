@@ -12,7 +12,6 @@ import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -81,11 +80,7 @@ public class ATracePageDefinition extends AAbstractNsysmonPerformancePageDef {
             result.add(asTreeNode(root.getRootNode(), root.getUuid().toString(), System.currentTimeMillis(), root.getRootNode().getDurationNanos(), 0, root.isKilled()));
         }
 
-        Collections.sort(result, new Comparator<TreeNode>() {
-            @Override public int compare(TreeNode o1, TreeNode o2) {
-                return (int) (o2.colDataRaw[3] - o1.colDataRaw[3]);
-            }
-        });
+        Collections.sort(result, (o1, o2) -> (int) (o2.colDataRaw[3] - o1.colDataRaw[3]));
 
         return result;
     }

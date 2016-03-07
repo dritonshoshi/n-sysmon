@@ -70,8 +70,7 @@ public class BufferingPersistenceProcessorImpl implements BufferingPersistencePr
         }
     };
 
-    private final Runnable traceWorker = new Runnable() {
-        @Override public void run() {
+    private final Runnable traceWorker = () -> {
 //            while (!isShutDown) {
 //                try {
 //                    persister.storeTraceData(traceQueue.take());
@@ -79,11 +78,9 @@ public class BufferingPersistenceProcessorImpl implements BufferingPersistencePr
 //                    log.error("exception storing trace", e);
 //                }
 //            }
-        }
     };
 
-    private final Runnable environmentWorker = new Runnable() {
-        @Override public void run() {
+    private final Runnable environmentWorker = () -> {
 //            while (!isShutDown) {
 //                try {
 //                    persister.storeEnvironmentData(environmentQueue.take());
@@ -91,7 +88,6 @@ public class BufferingPersistenceProcessorImpl implements BufferingPersistencePr
 //                    log.warn("exception storing environment", e);
 //                }
 //            }
-        }
     };
 
 

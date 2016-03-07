@@ -19,7 +19,7 @@ public class AJarFileEnvironmentMeasurer implements AEnvironmentMeasurer {
     public static final String KEY_PREFIX_JAR_VERSION = "jar-version";
 
     @Override public void contributeMeasurements(EnvironmentCollector data) throws Exception {
-        collectJars(Thread.currentThread().getContextClassLoader(), new HashSet<URL>(), data);
+        collectJars(Thread.currentThread().getContextClassLoader(), new HashSet<>(), data);
     }
 
     private void collectJars(ClassLoader cl, Set<URL> alreadyVisited, EnvironmentCollector data) throws Exception {

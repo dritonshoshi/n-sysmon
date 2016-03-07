@@ -85,7 +85,7 @@ public class AEnvVarPageDefinition implements APresentationPageDefinition {
 
     private Collection<EnvData> getData() throws Exception {
         final List<AEnvironmentData> raw = sysMon.getEnvironmentMeasurements();
-        final SortedSet<EnvData> result = new TreeSet<EnvData>();
+        final SortedSet<EnvData> result = new TreeSet<>();
 
         for(AEnvironmentData data: raw) {
             mergeIntoExisting(result, data.getName(), data.getValue(), AList.<String>nil());
@@ -136,7 +136,7 @@ public class AEnvVarPageDefinition implements APresentationPageDefinition {
         public final Collection<EnvData> children;
 
         private EnvData(String segment, boolean sorted) {
-            children = sorted ? new TreeSet<EnvData>() : new ArrayList<EnvData>();
+            children = sorted ? new TreeSet<>() : new ArrayList<>();
             this.segment = segment;
         }
 

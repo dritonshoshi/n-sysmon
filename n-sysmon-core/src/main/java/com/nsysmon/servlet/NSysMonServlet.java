@@ -22,7 +22,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class NSysMonServlet extends AbstractNSysMonServlet {
     public static final String CONFIG_JS = "config.js";
 
-    private final Map<String, APresentationPageDefinition> pageDefs = new ConcurrentHashMap<String, APresentationPageDefinition>();
+    private final Map<String, APresentationPageDefinition> pageDefs = new ConcurrentHashMap<>();
 
     @Override
     public void init() throws ServletException {

@@ -11,16 +11,12 @@ import java.util.*;
  * @author arno
  */
 class AThreadDumper {
-    static final Comparator<ThreadInfo> threadNameComparator = new Comparator<ThreadInfo>() {
-        @Override public int compare(ThreadInfo o1, ThreadInfo o2) {
-            return Collator.getInstance().compare(o1.getThreadName(), o2.getThreadName());
-        }
-    };
+    static final Comparator<ThreadInfo> threadNameComparator = (o1, o2) -> Collator.getInstance().compare(o1.getThreadName(), o2.getThreadName());
 
     private static final ThreadMXBean mxBean = ManagementFactory.getThreadMXBean();
 
     public static Collection<ThreadInfo> getThreadInfo() {
-        final Collection<ThreadInfo> result = new TreeSet<ThreadInfo>(threadNameComparator);
+        final Collection<ThreadInfo> result = new TreeSet<>(threadNameComparator);
 
         result.addAll(Arrays.asList(mxBean.dumpAllThreads(mxBean.isObjectMonitorUsageSupported(), mxBean.isSynchronizerUsageSupported())));
 
@@ -33,7 +29,7 @@ class AThreadDumper {
     }
 
     public static Collection<Long> getDeadlockedThreads() {
-        final Collection<Long> result = new HashSet<Long>();
+        final Collection<Long> result = new HashSet<>();
 
         if(mxBean != null) { // may happen, depending on JVM version
             for(long threadId: nullToEmpty(mxBean.findDeadlockedThreads())) {

@@ -1,10 +1,7 @@
 package com.nsysmon.demo;
 
 import com.nsysmon.NSysMon;
-import com.nsysmon.measure.AMeasureCallback;
-import com.nsysmon.measure.AMeasureCallbackVoidNoThrow;
 import com.nsysmon.measure.ASimpleMeasurement;
-import com.nsysmon.measure.AWithParameters;
 import com.nsysmon.measure.jdbc.NSysMonDataSource;
 
 import javax.servlet.ServletException;
@@ -47,85 +44,46 @@ public class AppServlet extends HttpServlet {
         final ASimpleMeasurement parMeasurement = NSysMon.get().start("parallel", false);
         sleep();
 
-        NSysMon.get().measure("a", new AMeasureCallback<Object, RuntimeException>() {
-            @Override
-            public Object call(AWithParameters m) {
-                return sleep();
-            }
+        NSysMon.get().measure("a", m -> {
+            return sleep();
         });
-        NSysMon.get().measure("b", new AMeasureCallback<Object, RuntimeException>() {
-            @Override
-            public Object call(AWithParameters m) {
-                doQuery(); doQuery(); doQuery(); return sleep();
-            }
+        NSysMon.get().measure("b", m -> {
+            doQuery(); doQuery(); doQuery(); return sleep();
         });
-        NSysMon.get().measure("q", new AMeasureCallback<Object, RuntimeException>() {
-            @Override
-            public Object call(AWithParameters m) {
-                doQuery(); doQuery(); doQuery(); doQuery(); doQuery(); doQuery(); doQuery(); doQuery(); return sleep();
-            }
+        NSysMon.get().measure("q", m -> {
+            doQuery(); doQuery(); doQuery(); doQuery(); doQuery(); doQuery(); doQuery(); doQuery(); return sleep();
         });
-        NSysMon.get().measure("b", new AMeasureCallback<Object, RuntimeException>() {
-            @Override
-            public Object call(AWithParameters m) {
-                return sleep();
-            }
+        NSysMon.get().measure("b", m -> {
+            return sleep();
         });
-        NSysMon.get().measure("b", new AMeasureCallback<Object, RuntimeException>() {
-            @Override
-            public Object call(AWithParameters m) {
-                return sleep();
-            }
+        NSysMon.get().measure("b", m -> {
+            return sleep();
         });
-        NSysMon.get().measure("b", new AMeasureCallback<Object, RuntimeException>() {
-            @Override
-            public Object call(AWithParameters m) {
-                return sleep();
-            }
+        NSysMon.get().measure("b", m -> {
+            return sleep();
         });
-        NSysMon.get().measure("b", new AMeasureCallback<Object, RuntimeException>() {
-            @Override
-            public Object call(AWithParameters m) {
-                return sleep();
-            }
+        NSysMon.get().measure("b", m -> {
+            return sleep();
         });
-        NSysMon.get().measure("a", new AMeasureCallback<Object, RuntimeException>() {
-            @Override
-            public Object call(AWithParameters m) {
-                return sleep();
-            }
+        NSysMon.get().measure("a", m -> {
+            return sleep();
         });
-        NSysMon.get().measure("a", new AMeasureCallback<Object, RuntimeException>() {
-            @Override
-            public Object call(AWithParameters m) {
+        NSysMon.get().measure("a", m -> {
+            doQuery(); return sleep();
+        });
+        NSysMon.get().measure("b", m -> {
+            NSysMon.get().measure("x", m1 -> {
                 doQuery(); return sleep();
-            }
-        });
-        NSysMon.get().measure("b", new AMeasureCallback<Object, RuntimeException>() {
-            @Override
-            public Object call(AWithParameters m) {
-                NSysMon.get().measure("x", new AMeasureCallback<Object, RuntimeException>() {
-                    @Override
-                    public Object call(AWithParameters m) {
-                        doQuery(); return sleep();
-                    }
-                });
-                doQuery(); return sleep();
-            }
+            });
+            doQuery(); return sleep();
         });
         parMeasurement.finish();
-        NSysMon.get().measure("c", new AMeasureCallback<Object, RuntimeException>() {
-            @Override
-            public Object call(AWithParameters m) {
-                return sleep();
-            }
+        NSysMon.get().measure("c", m -> {
+            return sleep();
         });
-        NSysMon.get().measure("d", new AMeasureCallback<Object, RuntimeException>() {
-            @Override
-            public Object call(AWithParameters m) {
-                doQueryWithMultipleParameters();
-                return sleep();
-            }
+        NSysMon.get().measure("d", m -> {
+            doQueryWithMultipleParameters();
+            return sleep();
         });
 
         hugeTree(8, 6);
@@ -134,10 +92,8 @@ public class AppServlet extends HttpServlet {
     private void hugeTree(final int width, final int depth) {
         for(int i=0; i<width; i++) {
             if(depth > 0) {
-                NSysMon.get().measure("Q-" + depth + "-" + i, new AMeasureCallbackVoidNoThrow() {
-                    @Override public void call(AWithParameters m) {
-                        hugeTree(width, depth-1);
-                    }
+                NSysMon.get().measure("Q-" + depth + "-" + i, m -> {
+                    hugeTree(width, depth-1);
                 });
             }
         }
@@ -161,6 +117,7 @@ public class AppServlet extends HttpServlet {
                     ps.setLong(1, 25);
                     final ResultSet rs = ps.executeQuery();
                     while (rs.next()) {
+                        //Just ignore the result, goal is only to generat the sql
                     }
                 }
                 finally {
@@ -192,6 +149,7 @@ public class AppServlet extends HttpServlet {
                     ps.setByte(9, (byte)6);
                     final ResultSet rs = ps.executeQuery();
                     while (rs.next()) {
+                        //Just ignore the result, goal is only to generat the sql
                     }
                 }
                 finally {

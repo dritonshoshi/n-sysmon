@@ -42,7 +42,7 @@ public class AdminServiceImpl implements AdminService {
     @Path("allApps")
     @Produces(MediaType.APPLICATION_JSON)
     public ListWrapper<String> getMonitoredApplicationNames() {
-        return new ListWrapper<String>(monitoredApplicationDao.getMonitoredApplicationNames());
+        return new ListWrapper<>(monitoredApplicationDao.getMonitoredApplicationNames());
     }
 
     private void checkRefresh() {

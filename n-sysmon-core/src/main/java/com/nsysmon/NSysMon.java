@@ -3,7 +3,7 @@ package com.nsysmon;
 import com.nsysmon.config.ADefaultConfigFactory;
 import com.nsysmon.config.NSysMonConfig;
 import com.nsysmon.impl.NSysMonImpl;
-import com.ajjpj.afoundation.function.AFunction0;;
+import com.ajjpj.afoundation.function.AFunction0;
 import com.ajjpj.afoundation.util.AUnchecker;
 
 
@@ -33,11 +33,7 @@ public class NSysMon {
         public static final NSysMonApi INSTANCE = new NSysMonImpl(getConfig());
 
         private static NSysMonConfig getConfig() {
-            return AUnchecker.executeUnchecked(new AFunction0<NSysMonConfig, Exception>() {
-                @Override public NSysMonConfig apply() throws Exception {
-                    return ADefaultConfigFactory.getConfigFactory().getConfig();
-                }
-            });
+            return AUnchecker.executeUnchecked((AFunction0<NSysMonConfig, Exception>) () -> ADefaultConfigFactory.getConfigFactory().getConfig());
         }
     }
 }

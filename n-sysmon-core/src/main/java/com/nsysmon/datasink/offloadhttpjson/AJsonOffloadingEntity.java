@@ -22,8 +22,8 @@ class AJsonOffloadingEntity extends AbstractHttpEntity {
     private final String sender;
     private final String senderInstance;
 
-    private final List<AHierarchicalDataRoot> traces = new ArrayList<AHierarchicalDataRoot>();
-    private final List<AScalarDataPoint> scalarData = new ArrayList<AScalarDataPoint>();
+    private final List<AHierarchicalDataRoot> traces = new ArrayList<>();
+    private final List<AScalarDataPoint> scalarData = new ArrayList<>();
 
     AJsonOffloadingEntity(List<AHierarchicalDataRoot> traces, Collection<AScalarDataPoint> scalarData, String sender, String senderInstance) {
         setChunked(true);

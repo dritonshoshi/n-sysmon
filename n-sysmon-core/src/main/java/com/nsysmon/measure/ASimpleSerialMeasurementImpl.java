@@ -17,7 +17,7 @@ class ASimpleSerialMeasurementImpl implements ASimpleMeasurement {
     private final long startTimeNanos; // this number has no absolute meaning and is useful only for measuring differences
     private final String identifier;
 
-    private final Map<String, String> parameters = new TreeMap<String, String>();
+    private final Map<String, String> parameters = new TreeMap<>();
 
     private boolean isFinished = false;
 

@@ -2,8 +2,6 @@ package com.nsysmon.measure.http;
 
 import com.nsysmon.NSysMon;
 import com.nsysmon.NSysMonApi;
-import com.nsysmon.measure.AMeasureCallbackVoidNoThrow;
-import com.nsysmon.measure.AWithParameters;
 import com.ajjpj.afoundation.collection.immutable.AOption;
 import com.ajjpj.afoundation.function.AStatement0;
 import com.ajjpj.afoundation.util.AUnchecker;
@@ -54,20 +52,13 @@ public class AHttpRequestMeasuringFilter implements Filter {
 
         final AOption<String> optIdentifier = details.getIdentifier();
         if(optIdentifier.isDefined()) {
-            getSysMon().measure(optIdentifier.get(), new AMeasureCallbackVoidNoThrow() {
-                @Override public void call(AWithParameters m) {
-                    for(Map.Entry<String, String> entry: details.getParameters().entrySet()) {
-                        m.addParameter(entry.getKey(), entry.getValue());
-                    }
-
-                    AUnchecker.executeUnchecked(new AStatement0<Exception>() {
-                        @Override
-                        public void apply() throws Exception {
-                            filterChain.doFilter(servletRequest, servletResponse);
-                        }
-});
-
+            getSysMon().measure(optIdentifier.get(), m -> {
+                for(Map.Entry<String, String> entry: details.getParameters().entrySet()) {
+                    m.addParameter(entry.getKey(), entry.getValue());
                 }
+
+                AUnchecker.executeUnchecked((AStatement0<Exception>) () -> filterChain.doFilter(servletRequest, servletResponse));
+
             });
         }
         else {

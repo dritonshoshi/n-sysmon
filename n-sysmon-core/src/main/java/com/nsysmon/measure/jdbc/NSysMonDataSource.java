@@ -85,12 +85,7 @@ public class NSysMonDataSource implements DataSource {
                 m.finish ();
             }
             catch (final Exception exc) {
-                NSysMonLogger.get(NSysMonDataSource.class).debug(new AFunction0NoThrow<String>() {
-                    @Override
-                    public String apply() {
-                        return "exception when finishing a JDBC connection measurement: " + exc;
-                    }
-                });
+                NSysMonLogger.get(NSysMonDataSource.class).debug((AFunction0NoThrow<String>) () -> "exception when finishing a JDBC connection measurement: " + exc);
                 // Silently ignore - this means that the fetching and closing of the connection did not happen at the same level in the call hierarchy. While such
                 //  a symmetry is common and often desirable, it is by no means the only valid mode of using JDBC - so NSysMon needs to deal with it in a robust fashion.
             }

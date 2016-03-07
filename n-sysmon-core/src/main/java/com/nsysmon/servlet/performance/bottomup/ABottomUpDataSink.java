@@ -21,7 +21,7 @@ public class ABottomUpDataSink implements ADataSink {
      * Leaf node - e.g. JDBC call - at the top, service calls 'below' that, with the entry points as leaves. Statistics are collected
      *  per context, i.e. per parent in this tree.
      */
-    private final ConcurrentHashMap<String, AMinMaxAvgData> rootMap = new ConcurrentHashMap<String, AMinMaxAvgData>();
+    private final ConcurrentHashMap<String, AMinMaxAvgData> rootMap = new ConcurrentHashMap<>();
 
     private final ABottomUpLeafFilter leafFilter;
 
@@ -57,7 +57,7 @@ public class ABottomUpDataSink implements ADataSink {
     }
 
     private synchronized void synchronizedCollect(AHierarchicalData newData) { //TODO change this to a non-blocking implementation
-        recCollect(newData, new ArrayStack<AHierarchicalData>());
+        recCollect(newData, new ArrayStack<>());
     }
 
     private void recCollect(AHierarchicalData newData, ArrayStack<AHierarchicalData> callStack) {

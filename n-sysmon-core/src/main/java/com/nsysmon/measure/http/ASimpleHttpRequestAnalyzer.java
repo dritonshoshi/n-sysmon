@@ -31,7 +31,7 @@ public class ASimpleHttpRequestAnalyzer implements AHttpRequestAnalyzer {
     }
 
     protected Map<String, String> extractParameters(HttpServletRequest request) {
-        final Map<String, String> result = new HashMap<String, String>();
+        final Map<String, String> result = new HashMap<>();
 
         result.put(PARAM_FULL_URL, request.getRequestURL().toString());
         result.put(PARAM_REMOTE_ADDR, request.getRemoteAddr());

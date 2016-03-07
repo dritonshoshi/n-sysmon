@@ -22,7 +22,7 @@ class ARunningThreadTrackingDataSink implements ADataSink {
     private static final NSysMonLogger log = NSysMonLogger.get(ARunningThreadTrackingDataSink.class);
 
     private static final int MAX_NUM_THREADS = 100*1000;
-    private final Map<String, Long> startTimestamps = new ConcurrentHashMap<String, Long>();
+    private final Map<String, Long> startTimestamps = new ConcurrentHashMap<>();
 
     private void ensureAgainstMemoryLeaks() {
         // Using NSysMon without closing measurements could cause a memory leak here. This method acts as a safeguard
@@ -45,7 +45,7 @@ class ARunningThreadTrackingDataSink implements ADataSink {
 
     public Map<String, Long> getStartTimestamps() {
         // return a stable snapshot
-        return new HashMap<String, Long>(startTimestamps);
+        return new HashMap<>(startTimestamps);
     }
 
     @Override public void shutdown() throws Exception {

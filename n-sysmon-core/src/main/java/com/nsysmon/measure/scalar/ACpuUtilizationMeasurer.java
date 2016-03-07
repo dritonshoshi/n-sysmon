@@ -77,7 +77,7 @@ public class ACpuUtilizationMeasurer implements AScalarMeasurer {
     }
 
     private void contributeFreq(Map<String, AScalarDataPoint> data, long timestamp) throws IOException {
-        final Map<String, AtomicInteger> counter = new HashMap<String, AtomicInteger>();
+        final Map<String, AtomicInteger> counter = new HashMap<>();
 
         for(String line: PROC_CPUINFO_FILE.lines()) {
             if(! line.contains("MHz")) {
@@ -97,23 +97,21 @@ public class ACpuUtilizationMeasurer implements AScalarMeasurer {
     }
 
     private Map<String, Snapshot> createSnapshot() throws IOException {
-        return PROC_STAT_FILE.iterate(new AFunction1<Iterator<String>, Map<String, Snapshot>, RuntimeException>() { //TODO nothrow
-            @Override public Map<String, Snapshot> apply(Iterator<String> iter) {
-                final Map<String, Snapshot> result = new HashMap<String, Snapshot>();
+        return PROC_STAT_FILE.iterate((AFunction1<Iterator<String>, Map<String, Snapshot>, RuntimeException>) iter -> {
+            final Map<String, Snapshot> result = new HashMap<>();
 
-                while(iter.hasNext()) {
-                    final String line = iter.next();
-                    final String[] split = line.split("\\s+");
+            while(iter.hasNext()) {
+                final String line = iter.next();
+                final String[] split = line.split("\\s+");
 
-                    if(split[0].startsWith("cpu")) {
-                        final long idle = Long.valueOf(split[4]);
-                        final long stolen = split.length >= 8 ? Long.valueOf(split[8]) : 0;
-                        result.put(split[0], new Snapshot(idle, stolen));
-                    }
+                if(split[0].startsWith("cpu")) {
+                    final long idle = Long.valueOf(split[4]);
+                    final long stolen = split.length >= 8 ? Long.valueOf(split[8]) : 0;
+                    result.put(split[0], new Snapshot(idle, stolen));
                 }
-
-                return result;
             }
+
+            return result;
         });
     }
 

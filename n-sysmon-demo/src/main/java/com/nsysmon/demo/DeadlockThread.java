@@ -1,8 +1,6 @@
 package com.nsysmon.demo;
 
 
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 
 /**
@@ -16,22 +14,15 @@ public class DeadlockThread extends Thread {
 
     @Override public void run() {
         synchronized(LOCK_A) {
-            final Runnable r = new Runnable() {
-                @Override public void run() {
-                    synchronized(LOCK_B) {
-                        synchronized(LOCK_A) {
-                            System.out.println("..."); // should never happen
-                        }
+            final Runnable r = () -> {
+                synchronized(LOCK_B) {
+                    synchronized(LOCK_A) {
+                        System.out.println("..."); // should never happen
                     }
                 }
             };
 
-            final Runnable wrapped = (Runnable) Proxy.newProxyInstance(Thread.currentThread().getContextClassLoader(), new Class<?>[]{Runnable.class}, new InvocationHandler() {
-                @Override
-                public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-                    return method.invoke(r, args);
-                }
-            });
+            final Runnable wrapped = (Runnable) Proxy.newProxyInstance(Thread.currentThread().getContextClassLoader(), new Class<?>[]{Runnable.class}, (proxy, method, args) -> method.invoke(r, args));
 
             new Thread(wrapped).start();
 

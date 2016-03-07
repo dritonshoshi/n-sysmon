@@ -61,25 +61,17 @@ public class NSysMonImpl implements AShutdownable, NSysMonApi {
     public NSysMonImpl(NSysMonConfig config) {
         this.config = config;
 
-        for(AScalarMeasurer m: config.initialScalarMeasurers) {
-            addScalarMeasurer(m);
-        }
+        config.initialScalarMeasurers.forEach(this::addScalarMeasurer);
 
         ScheduledExecutorService scheduledPool = Executors.newSingleThreadScheduledExecutor(new DaemonThreadFactory());
 
         timedScalarMeasureRunnable = new TimedScalarDataWrapper(config.maxNumMeasurementsPerTimedScalar);
         scheduledPool.scheduleAtFixedRate(timedScalarMeasureRunnable, 0, config.durationOfOneTimedScalar, TimeUnit.SECONDS);
-        for(AScalarMeasurer m: config.initialTimedScalarMeasurers) {
-            addTimedScalarMeasurer(m);
-        }
+        config.initialTimedScalarMeasurers.forEach(this::addTimedScalarMeasurer);
 
-        for(ADataSink h: config.initialDataSinks) {
-            addDataSink(h);
-        }
+        config.initialDataSinks.forEach(this::addDataSink);
 
-        for(AEnvironmentMeasurer m: config.initialEnvironmentMeasurers) {
-            addEnvironmentMeasurer(m);
-        }
+        config.initialEnvironmentMeasurers.forEach(this::addEnvironmentMeasurer);
 
         for(APresentationMenuEntry menuEntry: config.presentationMenuEntries) {
             for(APresentationPageDefinition pageDef: menuEntry.pageDefinitions) {
@@ -221,12 +213,12 @@ public class NSysMonImpl implements AShutdownable, NSysMonApi {
     }
 
     @Override public Map<String, AScalarDataPoint> getScalarMeasurements(int averagingDelayForScalarsMillis) {
-        final Map<String, AScalarDataPoint> result = new TreeMap<String, AScalarDataPoint>();
+        final Map<String, AScalarDataPoint> result = new TreeMap<>();
         if(NSysMonConfig.isGloballyDisabled()) {
             return result;
         }
 
-        final Map<String, Object> mementos = new TreeMap<String, Object>();
+        final Map<String, Object> mementos = new TreeMap<>();
         for(RobustScalarMeasurerWrapper measurer: scalarMeasurers) {
             measurer.prepareMeasurements(mementos);
         }
@@ -259,7 +251,7 @@ public class NSysMonImpl implements AShutdownable, NSysMonApi {
     }
 
     @Override public List<AEnvironmentData> getEnvironmentMeasurements() {
-        final List<AEnvironmentData> result = new ArrayList<AEnvironmentData>();
+        final List<AEnvironmentData> result = new ArrayList<>();
         if(NSysMonConfig.isGloballyDisabled()) {
             return result;
         }

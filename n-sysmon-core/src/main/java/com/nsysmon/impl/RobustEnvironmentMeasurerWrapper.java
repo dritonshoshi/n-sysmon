@@ -70,9 +70,7 @@ class RobustEnvironmentMeasurerWrapper {
         }
     };
 
-    private final Strategy DISABLED = new Strategy() {
-        @Override public void contributeMeasurements(AEnvironmentMeasurer.EnvironmentCollector data) {
-        }
+    private final Strategy DISABLED = data -> {
     };
 
     private volatile Strategy strategy = ENABLED;

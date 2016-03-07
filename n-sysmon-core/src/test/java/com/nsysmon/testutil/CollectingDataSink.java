@@ -11,7 +11,7 @@ import java.util.List;
  */
 public class CollectingDataSink implements ADataSink {
     public int numStarted = 0;
-    public List<AHierarchicalDataRoot> data = new ArrayList<AHierarchicalDataRoot>();
+    public List<AHierarchicalDataRoot> data = new ArrayList<>();
 
     @Override public void onStartedHierarchicalMeasurement(String identifier) {
         if("Garbage Collection".equals(identifier)) {

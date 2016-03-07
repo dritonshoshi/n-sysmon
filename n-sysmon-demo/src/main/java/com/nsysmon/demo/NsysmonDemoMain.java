@@ -39,37 +39,33 @@ public class NsysmonDemoMain {
     }
 
     private static void generateArtificialGcs() {
-        Executors.newSingleThreadExecutor().submit(new Runnable() {
-            @Override public void run() {
-                while (true) {
-                    System.gc();
-                    try {
-                        Thread.sleep(10000 + new Random().nextInt(20000));
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
+        Executors.newSingleThreadExecutor().submit((Runnable) () -> {
+            while (true) {
+                System.gc();
+                try {
+                    Thread.sleep(10000 + new Random().nextInt(20000));
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
             }
         });
 
-        Executors.newSingleThreadExecutor().submit(new Runnable() {
-            @Override public void run() {
-                final List<Object> l = new ArrayList<>();
+        Executors.newSingleThreadExecutor().submit((Runnable) () -> {
+            final List<Object> l = new ArrayList<>();
 
-                while (true) {
-                    l.clear();
-                    for(int i=0; i<10000 + new Random().nextInt(10000); i++) {
-                        l.add(new GregorianCalendar());
-                    }
-
-                    try {
-                        Thread.sleep(500 + new Random().nextInt(500));
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
+            while (true) {
+                l.clear();
+                for(int i=0; i<10000 + new Random().nextInt(10000); i++) {
+                    l.add(new GregorianCalendar());
                 }
 
+                try {
+                    Thread.sleep(500 + new Random().nextInt(500));
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
+
         });
     }
 }

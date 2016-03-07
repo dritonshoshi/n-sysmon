@@ -181,21 +181,13 @@ public class ADefaultConfigFactory implements AConfigFactory {
 
         builder.setAdditionalConfigurationParameters(additionalConfigurations);
 
-        for(AEnvironmentMeasurer m: props.getList(KEY_ENV_MEASURERS, AEnvironmentMeasurer.class)) {
-            builder.addEnvironmentMeasurer(m);
-        }
+        props.getList(KEY_ENV_MEASURERS, AEnvironmentMeasurer.class).forEach(builder::addEnvironmentMeasurer);
 
-        for(AScalarMeasurer m: props.getList(KEY_SCALAR_MEASURERS, AScalarMeasurer.class)) {
-            builder.addScalarMeasurer(m);
-        }
+        props.getList(KEY_SCALAR_MEASURERS, AScalarMeasurer.class).forEach(builder::addScalarMeasurer);
 
-        for(AScalarMeasurer m: props.getList(KEY_TIMED_SCALAR_MEASURERS, AScalarMeasurer.class)) {
-            builder.addScalarTimedMeasurer(m);
-        }
+        props.getList(KEY_TIMED_SCALAR_MEASURERS, AScalarMeasurer.class).forEach(builder::addScalarTimedMeasurer);
 
-        for(ADataSink h: props.getList(KEY_DATA_SINKS, ADataSink.class)) {
-            builder.addDataSink(h);
-        }
+        props.getList(KEY_DATA_SINKS, ADataSink.class).forEach(builder::addDataSink);
 
         for(String menuEntryRaw: props.getListRaw(KEY_PRESENTATION_MENUS)) {
             final String menuEntry = menuEntryRaw.trim();

@@ -31,7 +31,9 @@ public class JdbcTest {
         stmt.execute("create table A (oid number primary key)");
         stmt.execute("insert into A (oid) values (1)");
         final ResultSet rs = conn.createStatement().executeQuery("select * from A");
-        while(rs.next());
+        while(rs.next()){
+            //Just ignore the result, goal is only to generat the sql
+        }
         rs.close();
         stmt.close();
         conn.close();
@@ -54,7 +56,9 @@ public class JdbcTest {
             stmt.execute("create table A (oid number primary key)");
             stmt.execute("insert into A (oid) values (1)");
             final ResultSet rs = conn.createStatement().executeQuery("select * from A");
-            while(rs.next());
+            while(rs.next()){
+                //Just ignore the result, goal is only to generat the sql
+            }
         }
 
         assertEquals(1, dataSink.data.size());

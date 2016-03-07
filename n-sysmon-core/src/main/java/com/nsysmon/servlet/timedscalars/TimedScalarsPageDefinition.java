@@ -9,7 +9,6 @@ import com.nsysmon.data.AScalarDataPoint;
 
 import java.io.IOException;
 import java.net.URLDecoder;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -115,9 +114,8 @@ public class TimedScalarsPageDefinition implements APresentationPageDefinition {
     }
 
     private void writeRingBufferIntoJson(final AJsonSerHelper json, final ARingBuffer buffer) throws IOException {
-        Iterator iterator = buffer.iterator();
-        while (iterator.hasNext()) {
-            AScalarDataPoint scalarDataPoint = (AScalarDataPoint) iterator.next();
+        for (Object aBuffer : buffer) {
+            AScalarDataPoint scalarDataPoint = (AScalarDataPoint) aBuffer;
             try {
                 json.startObject();
 
@@ -128,7 +126,7 @@ public class TimedScalarsPageDefinition implements APresentationPageDefinition {
 
                 json.endObject();
             } catch (IOException e) {
-                System.err.println(e);
+                LOG.error(e);
             }
         }
 
