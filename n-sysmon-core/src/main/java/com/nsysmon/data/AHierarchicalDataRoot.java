@@ -1,16 +1,15 @@
 package com.nsysmon.data;
 
-import com.ajjpj.afoundation.util.AUUID;
-
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.UUID;
 
 
 /**
  * @author arno
  */
 public class AHierarchicalDataRoot {
-    private final AUUID uuid = AUUID.createRandom();
+    private final UUID uuid = UUID.randomUUID();
     private final Collection<ACorrelationId> startedFlows;
     private final Collection<ACorrelationId> joinedFlows;
     private final AHierarchicalData root;
@@ -27,7 +26,7 @@ public class AHierarchicalDataRoot {
         this.wasKilled = wasKilled;
     }
 
-    public AUUID getUuid() {
+    public UUID getUuid() {
         return uuid;
     }
 

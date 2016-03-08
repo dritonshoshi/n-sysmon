@@ -1,7 +1,8 @@
 package com.nsysmon.measure.environment;
 
 import com.ajjpj.afoundation.collection.immutable.AList;
-import com.ajjpj.afoundation.util.AUUID;
+
+import java.util.UUID;
 
 
 /**
@@ -14,7 +15,7 @@ import com.ajjpj.afoundation.util.AUUID;
  * @author arno
  */
 public class AEnvironmentData {
-    private final AUUID uuid = AUUID.createRandom();
+    private final UUID uuid = UUID.randomUUID();
     private final AList<String> name;
     private final String value;
 
@@ -23,7 +24,7 @@ public class AEnvironmentData {
         this.value = value;
     }
 
-    public AUUID getUuid() {
+    public UUID getUuid() {
         return uuid;
     }
 

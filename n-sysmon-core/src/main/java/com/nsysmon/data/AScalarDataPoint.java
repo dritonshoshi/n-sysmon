@@ -1,9 +1,8 @@
 package com.nsysmon.data;
 
-import com.ajjpj.afoundation.util.AUUID;
-
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.util.UUID;
 
 
 /**
@@ -17,7 +16,7 @@ public class AScalarDataPoint {
             "#,##0.0000000", "#,##0.00000000", "#,##0.000000000",
             "#,##0.0000000000"};
 
-    private final AUUID uuid = AUUID.createRandom();
+    private final UUID uuid = UUID.randomUUID();
     private final long timestamp;
     private final String name;
     private final long value;
@@ -30,7 +29,7 @@ public class AScalarDataPoint {
         this.numFracDigits = numFracDigits;
     }
 
-    public AUUID getUuid() {
+    public UUID getUuid() {
         return uuid;
     }
 
