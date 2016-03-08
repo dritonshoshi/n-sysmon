@@ -61,17 +61,7 @@ public abstract class AAbstractNsysmonPerformancePageDef implements APresentatio
     protected abstract List<TreeNode> getAllData();
 
     private void serveDataOverview(AJsonSerHelper json) throws IOException {
-        json.startObject();
-
-        json.writeKey("isStarted");
-        json.writeBooleanLiteral(isStarted());
-
-        json.writeKey("columnDefs");
-        json.startArray();
-        for(ColDef colDef: getColDefs()) {
-            writeColDef(json, colDef);
-        }
-        json.endArray();
+        addHeaderData(json);
 
         json.writeKey("traces");
         json.startArray();
@@ -87,17 +77,7 @@ public abstract class AAbstractNsysmonPerformancePageDef implements APresentatio
     private void serveDataDetail(AJsonSerHelper json, List<String> params) throws IOException {
         //System.out.println("serveDataDetail:"+params.size());
         System.out.println("serveDataDetail:"+params);
-        json.startObject();
-
-        json.writeKey("isStarted");
-        json.writeBooleanLiteral(isStarted());
-
-        json.writeKey("columnDefs");
-        json.startArray();
-        for(ColDef colDef: getColDefs()) {
-            writeColDef(json, colDef);
-        }
-        json.endArray();
+        addHeaderData(json);
 
         json.writeKey("traces");
         json.startArray();
@@ -108,7 +88,7 @@ public abstract class AAbstractNsysmonPerformancePageDef implements APresentatio
                     try {
                         writeAllDataNode(json, n);
                     } catch (IOException e) {
-                        //TODO FOX088S
+                        //TODO FOX088S send this to the user
                         e.printStackTrace();
                     }
                 }
@@ -119,7 +99,7 @@ public abstract class AAbstractNsysmonPerformancePageDef implements APresentatio
         json.endObject();
     }
 
-    private void serveAllData(AJsonSerHelper json) throws IOException {
+    private void addHeaderData(AJsonSerHelper json) throws IOException {
         json.startObject();
 
         json.writeKey("isStarted");
@@ -131,6 +111,10 @@ public abstract class AAbstractNsysmonPerformancePageDef implements APresentatio
             writeColDef(json, colDef);
         }
         json.endArray();
+    }
+
+    private void serveAllData(AJsonSerHelper json) throws IOException {
+        addHeaderData(json);
 
         json.writeKey("traces");
         json.startArray();

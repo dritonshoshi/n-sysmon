@@ -167,7 +167,6 @@ angular.module('NSysMonApp').controller('CtrlAggregated', function($scope, $log,
     function setExpanded(nodes) {
         if(nodes) {
             for(var i=0; i<nodes.length; i++) {
-            //TODO FOX088S this needs to be moved to a function-call
                 $scope.expansionModel[nodes[i].fqn] = true;
                 setExpanded(nodes[i].children);
             }
@@ -398,13 +397,12 @@ angular.module('NSysMonApp').controller('CtrlAggregated', function($scope, $log,
 
     function onClickCanLoadChildrenNode() {
         var fqn = $(this).children('.fqn-holder').text();
-        //TODO FOX088S
-//        if($scope.isInPickMode) {
-//            pickTreeNode(nodesByFqn[fqn]);
-//        }
-//        else {
+        if($scope.isInPickMode) {
+            pickTreeNode(nodesByFqn[fqn]);
+        }
+        else {
             loadDataForNode($(this).parent(), nodesByFqn[fqn]);
-//        }
+        }
     }
 
     function onClickNode() {
@@ -482,7 +480,6 @@ angular.module('NSysMonApp').controller('CtrlAggregated', function($scope, $log,
         var canLoadChildrenClass = (curNode.canLoadChildren) ? ' with-canLoadChildren' : '';
         var result =
             '<div class="data-row data-row-' + (curNode.level - $scope.rootLevel) + withChildrenClass + ' ' + canLoadChildrenClass + ' ' + dataRowSubdued + '">' +
-//                '<div class="">' + escapeHtml(curNode.fqn) + '</div>' + //TODO FOX088S just for debugging
                 '<div class="fqn-holder">' + escapeHtml(curNode.fqn) + '</div>' +
                 '<div class="node-icon ' + $scope.nodeIconClass(curNode.fqn) + '">&nbsp;</div>' +
                 '<div class="' + $scope.nodeIconClassWasKilled(curNode) + '">&nbsp;</div>' +
