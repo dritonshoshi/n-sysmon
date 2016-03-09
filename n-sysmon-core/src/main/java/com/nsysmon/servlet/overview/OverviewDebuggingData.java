@@ -8,12 +8,11 @@ import com.nsysmon.config.presentation.APresentationMenuEntry;
 import com.nsysmon.config.presentation.APresentationPageDefinition;
 
 import java.io.IOException;
-import java.io.OutputStream;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class OverviewDebuggingData implements APresentationPageDefinition, DataFileGeneratorSupporter {
+public class OverviewDebuggingData implements APresentationPageDefinition {
     private volatile NSysMonApi sysMon;
     private static final NSysMonLogger LOG = NSysMonLogger.get(OverviewDebuggingData.class);
 
@@ -159,8 +158,4 @@ public class OverviewDebuggingData implements APresentationPageDefinition, DataF
         json.endArray();
     }
 
-    @Override public void getDataForExport(OutputStream os) throws IOException {
-        AJsonSerHelper aJsonSerHelper = new AJsonSerHelper(os);
-        serveData(aJsonSerHelper);
-    }
 }
