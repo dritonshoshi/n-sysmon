@@ -10,5 +10,8 @@
 
 <ul>
     <!-- TODO FOX088S sorting -->
-    <li ng-repeat="file in files">{{file.name}}</li>
+    <li ng-repeat="file in files">
+        <a ng-if="file && file.processor" href="#/{{file.processor}}?loadfile={{file.name}}">{{file.name}}</a>
+        <a ng-if="!file || !file.processor" >{{file.name}} - not loadable</a>
+    </li>
 </ul>

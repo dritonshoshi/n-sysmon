@@ -23,12 +23,13 @@ public class DataFileGeneratorThread implements Runnable {
         this.outputPath = outputPath;
     }
 
-    @Override public void run() {
+    @Override
+    public void run() {
         lastExport = LocalDateTime.now();
         for (APresentationMenuEntry menuEntry : NSysMon.get().getConfig().presentationMenuEntries) {
             for (APresentationPageDefinition pageDef : menuEntry.pageDefinitions) {
-                for (String pageClassName : pagesToStore) {
-                    if (pageDef.getClass().getCanonicalName().equals(pageClassName)) {
+                for (String pageIdToStore : pagesToStore) {
+                    if (pageDef.getId().equalsIgnoreCase(pageIdToStore)) {
                         exportDataAsFile(pageDef);
                     }
                 }
@@ -43,14 +44,13 @@ public class DataFileGeneratorThread implements Runnable {
         }
 
         try {
-            String filename = outputPath.toString() + "/" + "tkt_" + pageDef.getId() + "_" + lastExport.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME); //TODO FOX088S
+            String filename = new DataFileTools().toFilename(outputPath.toString(), pageDef.getId(), lastExport);
             LOG.info("exporting to " + filename);
             FileOutputStream fos = new FileOutputStream(filename);
             ((DataFileGeneratorSupporter) pageDef).getDataForExport(fos);
             fos.flush();
             fos.close();
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }

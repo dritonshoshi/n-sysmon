@@ -42,7 +42,7 @@ public class DataFileGenerator implements APresentationPageDefinition {
     private ScheduledExecutorService scheduledPool;
     private int minutesToWait = 30; //TODO FOX088S move this to config
     private final DataFileGeneratorThread thread;
-    private final Path outputPath = Paths.get("/tmp");//TODO FOX088S move this to config
+    private final Path outputPath = Paths.get(System.getenv("TMP"));//TODO FOX088S move this to config
 
     public DataFileGenerator(String pagesToStoreAsString) {
         for (String pageClassName : pagesToStoreAsString.trim().split(",")) {
@@ -65,7 +65,7 @@ public class DataFileGenerator implements APresentationPageDefinition {
 
     private void serveData(List<String> params, AJsonSerHelper json) throws IOException {
         //TODO List files which can be generated and timestamp when last generation was
-        //TODO list configured paths + filenamepatterns
+        //TODO list configured paths + filename-patterns
         json.startObject();
         json.writeKey("lastExportTimestamp");
         json.writeStringLiteral(thread.getLastExportTimestamp());
@@ -74,8 +74,9 @@ public class DataFileGenerator implements APresentationPageDefinition {
         json.startArray();
         for (APresentationMenuEntry menuEntry : NSysMon.get().getConfig().presentationMenuEntries) {
             for (APresentationPageDefinition pageDef : menuEntry.pageDefinitions) {
-                for (String pageClassName : pagesToStore) {
-                    if (pageDef.getClass().getCanonicalName().equals(pageClassName)) {
+                for (String pageIdToStore : pagesToStore) {
+                    //TODO do not use only the classname, better to use the key from the properties, because classname may be used multiple times with diffrent configs
+                    if (pageDef.getId().equalsIgnoreCase(pageIdToStore)) {
                         addDataToJson(pageDef, json);
                     }
                 }
