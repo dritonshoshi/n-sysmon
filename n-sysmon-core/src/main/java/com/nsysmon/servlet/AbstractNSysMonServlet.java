@@ -1,6 +1,7 @@
 package com.nsysmon.servlet;
 
 import com.ajjpj.afoundation.io.AJsonSerHelper;
+import org.apache.http.entity.ContentType;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -32,6 +33,7 @@ public abstract class AbstractNSysMonServlet extends HttpServlet {
             }
 
             if(uri.contains(NSYSMON_MARKER_REST)) {
+                resp.setContentType(String.valueOf(ContentType.APPLICATION_JSON));
                 try {
                     final String[] restPart = substringAfter(uri, NSYSMON_MARKER_REST).split("/");
                     if(!handleRestCall(new ArrayList<>(Arrays.asList(restPart)), resp)) {
