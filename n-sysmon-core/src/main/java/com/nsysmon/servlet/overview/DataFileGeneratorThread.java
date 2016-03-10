@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.zip.GZIPOutputStream;
 
 public class DataFileGeneratorThread implements Runnable {
     private static final NSysMonLogger LOG = NSysMonLogger.get(DataFileGeneratorThread.class);
@@ -47,11 +48,14 @@ public class DataFileGeneratorThread implements Runnable {
         try {
             String serverName = InetAddress.getLocalHost().getHostName(); //TODO FOX088S check if this is ok
             String market = "TODO";
-            String filename = new DataFileTools().toFilename(NSysMon.get().getConfig().pathDatafiles.toString(), pageDef.getId(), lastExport, serverName, market);
+            String filename = new DataFileTools().toGzipFilename(NSysMon.get().getConfig().pathDatafiles, pageDef.getId(), lastExport, serverName, market);
             LOG.info("exporting to " + filename);
             FileOutputStream fos = new FileOutputStream(filename);
-            ((DataFileGeneratorSupporter) pageDef).getDataForExport(fos);
+            GZIPOutputStream gzipOut = new GZIPOutputStream(fos);
+            ((DataFileGeneratorSupporter) pageDef).getDataForExport(gzipOut);
+            gzipOut.flush();
             fos.flush();
+            gzipOut.close();
             fos.close();
         } catch (IOException e) {
             e.printStackTrace();

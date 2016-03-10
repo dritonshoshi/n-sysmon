@@ -1,19 +1,22 @@
+<div style="clear: both;"></div>
 
 <div class="options-header">
     <div class="button-box">
         <div class="btn-group">
-            <a class="btn btn-default" ng-click="refresh()" data-toggle="tooltip" title="Fetch fresh data from the server">Refresh</a>
+            <a class="btn btn-default" ng-click="refresh()" data-toggle="tooltip"
+               title="Fetch fresh data from the server">Refresh</a>
         </div>
     </div>
 </div>
-<div class="affix-placeholder"></div>
+<!--<div class="affix-placeholder"></div>-->
 
-<div ng-repeat="file in files">
+<div ng-repeat="page in pages">
+    {{page.page}}:<br/>
     <ul>
         <!-- TODO FOX088S sorting -->
-        <li ng-repeat="file in files">
-            <a ng-if="file && file.processor" href="#/{{file.processor}}?loadfile={{file.name}}">{{file.name}}</a>
-            <a ng-if="!file || !file.processor" >{{file.name}} - not loadable</a>
+        <li ng-repeat="file in page.files">
+            <a ng-if="file && file.processor" href="#/{{file.processor}}?loadfile={{file.name}}">{{file.market}} {{file.server}} {{file.date}} {{file.time}} ({{file.size}} byte)</a>
+            <a ng-if="!file || !file.processor">{{file.name}} - not loadable</a>
         </li>
     </ul>
 </div>

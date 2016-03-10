@@ -10,9 +10,8 @@ angular.module('NSysMonApp').controller('CtrlLoadableServerDataFiles', function(
     }
 
     function initFromResponse(data) {
-        $scope.files = data.files;
-        console.log(data);
+        $scope.pages = data.pages;
+        //console.log(data);
     }
-
 
 });
