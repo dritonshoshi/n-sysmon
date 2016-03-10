@@ -5,12 +5,19 @@ import com.nsysmon.NSysMon;
 import com.nsysmon.NSysMonApi;
 import com.nsysmon.config.presentation.APresentationPageDefinition;
 
-import java.io.*;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.Reader;
+import java.io.Writer;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class LoadableServerDataFiles implements APresentationPageDefinition {
 
@@ -73,34 +80,47 @@ public class LoadableServerDataFiles implements APresentationPageDefinition {
     }
 
     private void getFilesAsJson(List<String> params, AJsonSerHelper json) throws IOException {
-        json.startObject();
-        json.writeKey("files");
-        json.startArray();
+        HashMap<String, Set<Path>> files = new HashMap<>();
+
         try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(Paths.get(NSysMon.get().getConfig().pathDatafiles))) {
             for (Path path : directoryStream) {
                 if (!path.getFileName().toString().startsWith(DataFileGeneratorSupporter.DATAFILE_PREFIX)) {
                     continue;
                 }
-                json.startObject();
-                json.writeKey("name");
-                json.writeStringLiteral(path.getFileName().toString());
-                fillJavaScriptInfos(json, path.getFileName().toString());
-                json.endObject();
+                String pageId = path.getFileName().toString();
+                files.putIfAbsent(pageId, new HashSet<>());
+                files.get(pageId).add(path);
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
-        json.endArray();
-        json.endObject();
 
+        for (Map.Entry<String, Set<Path>> entry : files.entrySet()) {
+            json.startObject();
+            json.writeKey("page");
+            json.writeStringLiteral(entry.getKey());
+            json.writeKey("files");
+            json.startArray();
+            for (Path path : entry.getValue()) {
+                json.startObject();
+                fillJavaScriptInfos(json, path);
+                json.endObject();
+            }
+            json.endArray();
+            json.endObject();
+        }
     }
 
-    private void fillJavaScriptInfos(AJsonSerHelper json, String filename) throws IOException {
-        String linkString = new DataFileTools().getNsysmonControllerIdFromFilename(filename);
+    private void fillJavaScriptInfos(AJsonSerHelper json, Path path) throws IOException {
+        json.writeKey("name");
+        json.writeStringLiteral(path.getFileName().toString());
+        String linkString = new DataFileTools().getNsysmonControllerIdFromFilename(path.getFileName().toString());
         if (linkString != null) {
             json.writeKey("processor");
             json.writeStringLiteral(linkString);
         }
+        json.writeKey("size");
+        json.writeNumberLiteral(Files.size(path), 0);
     }
 
     @Override

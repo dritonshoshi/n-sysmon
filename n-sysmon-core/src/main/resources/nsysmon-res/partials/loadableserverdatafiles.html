@@ -8,10 +8,12 @@
 </div>
 <div class="affix-placeholder"></div>
 
-<ul>
-    <!-- TODO FOX088S sorting -->
-    <li ng-repeat="file in files">
-        <a ng-if="file && file.processor" href="#/{{file.processor}}?loadfile={{file.name}}">{{file.name}}</a>
-        <a ng-if="!file || !file.processor" >{{file.name}} - not loadable</a>
-    </li>
-</ul>
+<div ng-repeat="file in files">
+    <ul>
+        <!-- TODO FOX088S sorting -->
+        <li ng-repeat="file in files">
+            <a ng-if="file && file.processor" href="#/{{file.processor}}?loadfile={{file.name}}">{{file.name}}</a>
+            <a ng-if="!file || !file.processor" >{{file.name}} - not loadable</a>
+        </li>
+    </ul>
+</div>
