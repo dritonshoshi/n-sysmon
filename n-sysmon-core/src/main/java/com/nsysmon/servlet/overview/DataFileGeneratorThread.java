@@ -7,34 +7,34 @@ import com.nsysmon.config.presentation.APresentationPageDefinition;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
 
 public class DataFileGeneratorThread implements Runnable {
     private static final NSysMonLogger LOG = NSysMonLogger.get(DataFileGeneratorThread.class);
-    private final List<String> pagesToStore;
-    private final Path outputPath;
+    private final String pageId;
     private LocalDateTime lastExport;
+    private final int timeToWait;
+    private APresentationPageDefinition page = null;
 
-    public DataFileGeneratorThread(List<String> pagesToStore, Path outputPath) {
-        this.pagesToStore = pagesToStore;
-        this.outputPath = outputPath;
+    public DataFileGeneratorThread(String pageId, int timeToWait) {
+        this.pageId = pageId;
+        this.timeToWait = timeToWait;
     }
 
     @Override
     public void run() {
-        lastExport = LocalDateTime.now();
+        // this cannot be done in the constructor, because the NSysMonConfig isn't initialized at that moment
         for (APresentationMenuEntry menuEntry : NSysMon.get().getConfig().presentationMenuEntries) {
             for (APresentationPageDefinition pageDef : menuEntry.pageDefinitions) {
-                for (String pageIdToStore : pagesToStore) {
-                    if (pageDef.getId().equalsIgnoreCase(pageIdToStore)) {
-                        exportDataAsFile(pageDef);
-                    }
+                if (pageDef.getId().equalsIgnoreCase(pageId)) {
+                    this.page = pageDef;
                 }
             }
         }
+
+        lastExport = LocalDateTime.now();
+        exportDataAsFile(page);
     }
 
     private void exportDataAsFile(APresentationPageDefinition pageDef) {
@@ -44,7 +44,7 @@ public class DataFileGeneratorThread implements Runnable {
         }
 
         try {
-            String filename = new DataFileTools().toFilename(outputPath.toString(), pageDef.getId(), lastExport);
+            String filename = new DataFileTools().toFilename(NSysMon.get().getConfig().pathDatafiles.toString(), pageDef.getId(), lastExport);
             LOG.info("exporting to " + filename);
             FileOutputStream fos = new FileOutputStream(filename);
             ((DataFileGeneratorSupporter) pageDef).getDataForExport(fos);
@@ -57,5 +57,33 @@ public class DataFileGeneratorThread implements Runnable {
 
     public String getLastExportTimestamp() {
         return lastExport.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+    }
+
+    public int getTimeToWait() {
+        return timeToWait;
+    }
+
+    public String getPageId() {
+        return pageId;
+    }
+
+    public APresentationPageDefinition getPage() {
+        return page;
+    }
+
+    @Override public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("DataFileGeneratorThread[");
+        sb.append("page=");
+        sb.append(pageId);
+        sb.append(" ,");
+        sb.append("timeToWait=");
+        sb.append(timeToWait);
+        sb.append(" ,");
+        sb.append("lastExport=");
+        sb.append(lastExport);
+        sb.append(",");
+        sb.append("]");
+        return sb.toString();
     }
 }

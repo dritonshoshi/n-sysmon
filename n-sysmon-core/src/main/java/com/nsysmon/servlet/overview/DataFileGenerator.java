@@ -1,15 +1,12 @@
 package com.nsysmon.servlet.overview;
 
 import com.ajjpj.afoundation.io.AJsonSerHelper;
-import com.nsysmon.NSysMon;
 import com.nsysmon.NSysMonApi;
-import com.nsysmon.config.presentation.APresentationMenuEntry;
+import com.nsysmon.config.log.NSysMonLogger;
 import com.nsysmon.config.presentation.APresentationPageDefinition;
 import com.nsysmon.util.DaemonThreadFactory;
 
 import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executors;
@@ -17,6 +14,8 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 public class DataFileGenerator implements APresentationPageDefinition {
+
+    private static final NSysMonLogger LOG = NSysMonLogger.get(DataFileGenerator.class);
 
     @Override public String getId() {
         return "dataFileGenerator";
@@ -38,21 +37,21 @@ public class DataFileGenerator implements APresentationPageDefinition {
         return "CtrlDataFileGenerator";
     }
 
-    private List<String> pagesToStore = new ArrayList<>();
+    private List<DataFileGeneratorThread> pageStorer = new ArrayList<>();
     private ScheduledExecutorService scheduledPool;
-    private int minutesToWait = 30; //TODO FOX088S move this to config
-    private final DataFileGeneratorThread thread;
-    private final Path outputPath = Paths.get(System.getenv("TMP"));//TODO FOX088S move this to config
 
     public DataFileGenerator(String pagesToStoreAsString) {
-        for (String pageClassName : pagesToStoreAsString.trim().split(",")) {
-            pagesToStore.add(pageClassName.trim());
-        }
-
         scheduledPool = Executors.newSingleThreadScheduledExecutor(new DaemonThreadFactory());
-        thread = new DataFileGeneratorThread(pagesToStore, outputPath);
-        scheduledPool.scheduleAtFixedRate(thread, 0, minutesToWait, TimeUnit.SECONDS);//TODO FOX088S change this to minutes
-
+        for (String pageClassName : pagesToStoreAsString.trim().split(",")) {
+            String pageId = pageClassName.trim().split(":")[0];
+            if (null != pageId && pageId.trim().length() != 0){
+                int minutesToWait = Integer.valueOf(pageClassName.trim().split(":")[1]); //TODO FOX088S validation if this is a number
+                DataFileGeneratorThread thread = new DataFileGeneratorThread(pageId, minutesToWait);
+                LOG.info(thread.toString());
+                pageStorer.add(thread);
+                scheduledPool.scheduleAtFixedRate(thread, 0, minutesToWait, TimeUnit.SECONDS);//TODO FOX088S change this to minutes
+            }
+        }
     }
 
     @Override public boolean handleRestCall(String service, List<String> params, AJsonSerHelper json) throws Exception {
@@ -63,36 +62,31 @@ public class DataFileGenerator implements APresentationPageDefinition {
         return false;
     }
 
+    /** Lists files which can be generated and timestamp when last generation was */
     private void serveData(List<String> params, AJsonSerHelper json) throws IOException {
-        //TODO List files which can be generated and timestamp when last generation was
         //TODO list configured paths + filename-patterns
         json.startObject();
-        json.writeKey("lastExportTimestamp");
-        json.writeStringLiteral(thread.getLastExportTimestamp());
         json.writeKey("pages");
 
         json.startArray();
-        for (APresentationMenuEntry menuEntry : NSysMon.get().getConfig().presentationMenuEntries) {
-            for (APresentationPageDefinition pageDef : menuEntry.pageDefinitions) {
-                for (String pageIdToStore : pagesToStore) {
-                    //TODO do not use only the classname, better to use the key from the properties, because classname may be used multiple times with diffrent configs
-                    if (pageDef.getId().equalsIgnoreCase(pageIdToStore)) {
-                        addDataToJson(pageDef, json);
-                    }
-                }
-            }
+        for (DataFileGeneratorThread thread : pageStorer) {
+            addDataToJson(thread, json);
         }
         json.endArray();
 
         json.endObject();
     }
 
-    private void addDataToJson(APresentationPageDefinition pageDef, AJsonSerHelper json) throws IOException {
+    private void addDataToJson(DataFileGeneratorThread thread, AJsonSerHelper json) throws IOException {
         json.startObject();
         json.writeKey("id");
-        json.writeStringLiteral(pageDef.getId());
+        json.writeStringLiteral(thread.getPageId());
         json.writeKey("fullLabel");
-        json.writeStringLiteral(pageDef.getFullLabel());
+        json.writeStringLiteral(thread.getPage().getFullLabel());
+        json.writeKey("timeToWait");
+        json.writeNumberLiteral(thread.getTimeToWait(), 0);
+        json.writeKey("lastExportTimestamp");
+        json.writeStringLiteral(thread.getLastExportTimestamp());
         json.endObject();
     }
 

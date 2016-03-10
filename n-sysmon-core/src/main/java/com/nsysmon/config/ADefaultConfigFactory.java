@@ -65,6 +65,7 @@ public class ADefaultConfigFactory implements AConfigFactory {
     public static final String KEY_MAX_NUM_DATA_SINK_TIMEOUTS = "max-num-data-sink-timeouts";
 
     public static final String KEY_TOMCAT_GLOBAL_REQUEST_PROCESSOR = "tomcat-global-request-processor";
+    public static final String KEY_DATAFILE_PATH = "datafile-path";
 
     private static volatile NSysMonLoggerFactory configuredLogger;
 
@@ -174,6 +175,7 @@ public class ADefaultConfigFactory implements AConfigFactory {
 
         builder.setDataSinkTimeoutNanos (props.get (KEY_DATA_SINK_TIMEOUT_NANOS, Long.TYPE));
         builder.setMaxNumDataSinkTimeouts(props.get(KEY_MAX_NUM_DATA_SINK_TIMEOUTS, Integer.TYPE));
+        builder.setPathDatafiles(props.get(KEY_DATAFILE_PATH, String.class));
 
         //TODO this need to be refactored, so measurements can be configured
         Map<String, String> additionalConfigurations = new HashMap<>();

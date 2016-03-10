@@ -1,6 +1,7 @@
 package com.nsysmon.servlet.overview;
 
 import com.ajjpj.afoundation.io.AJsonSerHelper;
+import com.nsysmon.NSysMon;
 import com.nsysmon.NSysMonApi;
 import com.nsysmon.config.presentation.APresentationPageDefinition;
 
@@ -38,8 +39,6 @@ public class LoadableServerDataFiles implements APresentationPageDefinition {
         return "CtrlLoadableServerDataFiles";
     }
 
-    private final Path inputPath = Paths.get(System.getenv("TMP"));//TODO FOX088S move this to config
-
     @Override
     public boolean handleRestCall(String service, List<String> params, AJsonSerHelper json) throws Exception {
         if ("getFiles".equals(service)) {
@@ -56,7 +55,7 @@ public class LoadableServerDataFiles implements APresentationPageDefinition {
         //TODO FOX088S error-handling
         //TODO FOX088S security, check params.get(0)
 
-        Path path = Paths.get(inputPath.toString(), params.get(0));
+        Path path = Paths.get(Paths.get(NSysMon.get().getConfig().pathDatafiles).toString(), params.get(0));
         FileReader fr = new FileReader(path.toFile());
 
         copyData(fr, json.getOut());
@@ -77,7 +76,7 @@ public class LoadableServerDataFiles implements APresentationPageDefinition {
         json.startObject();
         json.writeKey("files");
         json.startArray();
-        try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(inputPath)) {
+        try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(Paths.get(NSysMon.get().getConfig().pathDatafiles))) {
             for (Path path : directoryStream) {
                 if (!path.getFileName().toString().startsWith(DataFileGeneratorSupporter.DATAFILE_PREFIX)) {
                     continue;
