@@ -49,7 +49,7 @@ public class DataFileGenerator implements APresentationPageDefinition {
                 DataFileGeneratorThread thread = new DataFileGeneratorThread(pageId, minutesToWait);
                 LOG.info(thread.toString());
                 pageStorer.add(thread);
-                scheduledPool.scheduleAtFixedRate(thread, 0, minutesToWait, TimeUnit.SECONDS);//TODO FOX088S change this to minutes
+                scheduledPool.scheduleAtFixedRate(thread, 1, minutesToWait, TimeUnit.MINUTES);
             }
         }
     }

@@ -91,7 +91,7 @@ public class LoadableServerDataFiles implements APresentationPageDefinition {
                 String dateAsString = dataTools.getDateFromFilename(path.getFileName().toString());
 
                 json.startObject();
-                fillFileInfosAsJson(json, dataTools, path, server, market, dateAsString);
+                fillFileDataAsJson(json, dataTools, path, server, market, dateAsString);
                 json.endObject();
             }
         } catch (IOException e) {
@@ -103,11 +103,11 @@ public class LoadableServerDataFiles implements APresentationPageDefinition {
 
     }
 
-    private void fillFileInfosAsJson(AJsonSerHelper json, DataFileTools dataTools, Path path, String server, String market, String dateAsString) throws IOException {
+    private void fillFileDataAsJson(AJsonSerHelper json, DataFileTools dataTools, Path path, String server, String market, String dateAsString) throws IOException {
         json.writeKey("name");
         json.writeStringLiteral(path.getFileName().toString());
 
-        String pageId = new DataFileTools().getNsysmonControllerIdFromFilename(path.toString()); //TODO FOX088S change this to other data
+        String pageId = new DataFileTools().getNsysmonControllerIdFromFilename(path.toString());
         json.writeKey("page");
         json.writeStringLiteral(pageId);
 

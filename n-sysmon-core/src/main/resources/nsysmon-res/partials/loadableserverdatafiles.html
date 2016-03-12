@@ -30,8 +30,8 @@
         <option ng-repeat="file in files | unique:'date'| orderBy:'date'" value="{{file.date}}">{{file.date}}</option>
     </select>
 </div>
-<!-- TODO FOX088S sorting -->
-<li ng-repeat="file in files | filter:marketSearch | filter:serverSearch | filter:dateSearch">
+
+<li ng-repeat="file in files | filter:marketSearch | filter:serverSearch | filter:dateSearch | orderBy:'name'">
     <a ng-if="file && file.processor" href="#/{{file.processor}}?loadfile={{file.name}}">{{file.market}} {{file.server}} {{file.date}} {{file.time}} ({{file.size}} byte)</a>
     <a ng-if="!file || !file.processor">{{file.name}} - not loadable</a>
 </li>
