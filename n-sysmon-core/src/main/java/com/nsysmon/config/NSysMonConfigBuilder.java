@@ -22,7 +22,7 @@ import java.util.Map;
 public class NSysMonConfigBuilder {
     private AApplicationInfoProvider appInfo;
 
-    private int averagingDelayForScalarsMillis = 1000;
+    private int averagingDelayForScalarsMillis = 1_000;
 
     private int maxNestedMeasurements = 100;
     private int maxNumMeasurementsPerHierarchy = 100_000;
@@ -37,6 +37,8 @@ public class NSysMonConfigBuilder {
 
     private boolean collectSqlParameters = false;
     private boolean collectTooltips = false;
+
+    private String pathDatafiles = "/tmp";
 
     private ATimer timer = new ASystemNanoTimer();
     private AHttpRequestAnalyzer httpRequestAnalyzer = new ASimpleHttpRequestAnalyzer();
@@ -161,6 +163,14 @@ public class NSysMonConfigBuilder {
         return this;
     }
 
+    public String getPathDatafiles() {
+        return pathDatafiles;
+    }
+
+    public void setPathDatafiles(String pathDatafiles) {
+        this.pathDatafiles = pathDatafiles;
+    }
+
     @SuppressWarnings("unused")
     public NSysMonConfigBuilder addPresentationMenuEntry(String label, APresentationPageDefinition... entries) {
         return addPresentationMenuEntry(label, Arrays.asList(entries));
@@ -176,7 +186,7 @@ public class NSysMonConfigBuilder {
                 timer, httpRequestAnalyzer,
                 environmentMeasurers, scalarMeasurers, scalarTimedMeasurers, dataSinks,
                 defaultPage, presentationMenuEntries, additionalConfigurationParameters,
-                collectSqlParameters, collectTooltips
+                collectSqlParameters, collectTooltips, pathDatafiles
                 );
     }
 

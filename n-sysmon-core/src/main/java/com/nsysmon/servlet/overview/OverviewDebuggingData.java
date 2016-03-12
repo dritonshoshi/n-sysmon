@@ -45,23 +45,23 @@ public class OverviewDebuggingData implements APresentationPageDefinition {
     @Override
     public boolean handleRestCall(String service, List<String> params, AJsonSerHelper json) throws Exception {
         if ("getData".equals(service)) {
-            serveData(params, json);
+            serveData(json);
             return true;
         } else if ("startOverrideCollectTooltips".equals(service)) {
             NSysMon.get().getConfig().startOverrideCollectTooltips();
-            serveData(params, json);
+            serveData(json);
             return true;
         } else if ("stopOverrideCollectTooltips".equals(service)) {
             NSysMon.get().getConfig().stopOverrideCollectTooltips();
-            serveData(params, json);
+            serveData(json);
             return true;
         } else if ("startOverrideSqlParameters".equals(service)) {
             NSysMon.get().getConfig().startOverrideSqlParameters();
-            serveData(params, json);
+            serveData(json);
             return true;
         } else if ("stopOverrideSqlParameters".equals(service)) {
             NSysMon.get().getConfig().stopOverrideSqlParameters();
-            serveData(params, json);
+            serveData(json);
             return true;
         }
         return false;
@@ -74,7 +74,7 @@ public class OverviewDebuggingData implements APresentationPageDefinition {
     }
 
     //Test at http://localhost:8181/nsysmon/_$_nsysmon_$_/rest/overviewDebuggingData/getData
-    private void serveData(final List<String> params, final AJsonSerHelper json) throws IOException {
+    private void serveData(final AJsonSerHelper json) throws IOException {
         json.startObject();
 
         addPageDefinitions(json);
@@ -157,4 +157,5 @@ public class OverviewDebuggingData implements APresentationPageDefinition {
         }
         json.endArray();
     }
+
 }

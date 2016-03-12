@@ -1,4 +1,4 @@
-angular.module('NSysMonApp').controller('CtrlAggregated', function($scope, $log, Rest, escapeHtml, $timeout) {
+angular.module('NSysMonApp').controller('CtrlAggregated', function($scope, $log, Rest, escapeHtml, $timeout, $location) {
 
     $('.button-segment').affix({
         offset: {
@@ -99,6 +99,17 @@ angular.module('NSysMonApp').controller('CtrlAggregated', function($scope, $log,
     };
 
     //disabled getData on load $scope.refresh();
+
+    // check if data from other sources should be loaded
+    function loadExternalData() {
+        var loadfileParam = $location.search().loadfile;
+        if (loadfileParam) {
+            // block gui for long calls
+            blockGui(true);
+            Rest.callOther("loadableServerDataFiles", "loadFromFile" + "/" + loadfileParam, initFromResponse);
+        }
+    }
+    loadExternalData();
 
     function revIdx(idx) {
         return $scope.columnDefs.length - idx - 1;

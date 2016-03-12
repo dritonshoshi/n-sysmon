@@ -56,7 +56,7 @@ public abstract class AAbstractNsysmonPerformancePageDef implements APresentatio
     protected abstract List<ColDef> getColDefs();
     protected abstract List<TreeNode> getData();
 
-    private void serveData(AJsonSerHelper json) throws IOException {
+    protected void serveData(AJsonSerHelper json) throws IOException {
         json.startObject();
 
         json.writeKey("isStarted");

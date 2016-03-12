@@ -1,5 +1,5 @@
 
-angular.module('NSysMonApp', ['ngRoute', 'nsysmon', 'nvd3'], function($routeProvider, configRaw) {
+angular.module('NSysMonApp', ['ngRoute', 'nsysmon', 'nvd3', 'angular.filter'], function($routeProvider, configRaw) {
 
     angular.forEach(configRaw.menuEntries, function(menuEntry) {
         angular.forEach(menuEntry.entries, function(pageDef) {

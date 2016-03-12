@@ -46,6 +46,11 @@
             <name>Driton Shoshi</name>
             <email>dritonshoshi@gmail.com</email>
         </developer>
+        <developer>
+            <id>sjurwareagle</id>
+            <name>Torsten Kunkel</name>
+            <email>github@tkunkel.de</email>
+        </developer>
     </developers>
 
     <properties>

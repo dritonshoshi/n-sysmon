@@ -51,10 +51,14 @@ public class NSysMonConfig {
     private Boolean overrideCollectSqlParameters = null;
     private Boolean overrideCollectTooltips = null;
 
+    public final String pathDatafiles;
+
     public NSysMonConfig(AApplicationInfoProvider appInfo, int averagingDelayForScalarsMillis, int durationOfOneTimedScalar, int maxNestedMeasurements, int maxNumMeasurementsPerHierarchy, int maxNumMeasurementsPerTimedScalar,
-                         long measurementTimeoutNanos, int maxNumMeasurementTimeouts, long dataSinkTimeoutNanos, int maxNumDataSinkTimeouts, ATimer timer, AHttpRequestAnalyzer httpRequestAnalyzer,
-                         List<AEnvironmentMeasurer> environmentMeasurers, List<AScalarMeasurer> initialScalarMeasurers, List<AScalarMeasurer> initialTimedScalarMeasurers, List<ADataSink> initialDataSinks,
-                         String defaultPage, List<APresentationMenuEntry> presentationMenuEntries, Map<String, String> additionalConfigurationParameters, Boolean collectSqlParameters, boolean collectTooltips) {
+            long measurementTimeoutNanos, int maxNumMeasurementTimeouts, long dataSinkTimeoutNanos, int maxNumDataSinkTimeouts, ATimer timer, AHttpRequestAnalyzer httpRequestAnalyzer,
+            List<AEnvironmentMeasurer> environmentMeasurers, List<AScalarMeasurer> initialScalarMeasurers, List<AScalarMeasurer> initialTimedScalarMeasurers, List<ADataSink> initialDataSinks,
+            String defaultPage,
+            List<APresentationMenuEntry> presentationMenuEntries, Map<String, String> additionalConfigurationParameters, Boolean collectSqlParameters, boolean collectTooltips,
+            String pathDatafiles) {
         this.appInfo = appInfo;
         this.averagingDelayForScalarsMillis = averagingDelayForScalarsMillis;
         this.durationOfOneTimedScalar = durationOfOneTimedScalar;
@@ -76,6 +80,7 @@ public class NSysMonConfig {
         this.additionalConfigurationParameters = additionalConfigurationParameters;
         this.collectSqlParameters = collectSqlParameters;
         this.collectTooltips = collectTooltips;
+        this.pathDatafiles = pathDatafiles;
     }
 
     /**

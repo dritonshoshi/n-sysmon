@@ -472,3 +472,12 @@ div.env-value {
     top: 0;
     z-index: 1000000;
 }
+.input-group > .input-group-btn:last-child > .selectpicker {
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 5px;
+}
+
+.input-group > .input-group-btn:first-child > .selectpicker {
+    border-top-left-radius: 5px;
+    border-bottom-left-radius: 5px;
+}

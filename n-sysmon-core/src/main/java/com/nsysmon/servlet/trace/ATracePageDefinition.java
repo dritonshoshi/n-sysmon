@@ -1,25 +1,24 @@
 package com.nsysmon.servlet.trace;
 
+import com.ajjpj.afoundation.io.AJsonSerHelper;
 import com.nsysmon.NSysMonApi;
 import com.nsysmon.data.AHierarchicalData;
 import com.nsysmon.data.AHierarchicalDataRoot;
 import com.nsysmon.impl.NSysMonConfigurer;
 import com.nsysmon.measure.scalar.AJmxGcMeasurer;
+import com.nsysmon.servlet.overview.DataFileGeneratorSupporter;
 import com.nsysmon.servlet.performance.AAbstractNsysmonPerformancePageDef;
 
+import java.io.IOException;
+import java.io.OutputStream;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.*;
 
 /**
  * @author arno
  */
-public class ATracePageDefinition extends AAbstractNsysmonPerformancePageDef {
+public class ATracePageDefinition extends AAbstractNsysmonPerformancePageDef implements DataFileGeneratorSupporter {
     private final ATraceFilter filter;
     private final ATraceCollectingDataSink collector;
 
@@ -167,5 +166,11 @@ public class ATracePageDefinition extends AAbstractNsysmonPerformancePageDef {
 
     private boolean isGarbageCollectionNode(AHierarchicalData node) {
         return node.getParameters().containsKey(AJmxGcMeasurer.KEY_ID);
+    }
+
+    @Override
+    public void getDataForExport(OutputStream os) throws IOException {
+        AJsonSerHelper aJsonSerHelper = new AJsonSerHelper(os);
+        serveData(aJsonSerHelper);
     }
 }

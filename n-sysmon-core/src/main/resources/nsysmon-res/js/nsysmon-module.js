@@ -26,6 +26,18 @@
                     }
                 });
         };
+        this.callOther = function(identifier, service, onSuccess, onError) {
+            $http
+                .get('_$_nsysmon_$_/rest/' + identifier + '/' + service)
+                .success(onSuccess)
+                .error(function(data, status, headers, config) {
+                    Modal.error('Server or Network Error', htmlForErrorDialog(data, status, headers, config));
+
+                    if(onError) {
+                        onError(data, status, headers, config);
+                    }
+                });
+        };
     }]);
 
     function htmlForErrorDialog(data, status, headers, config) {
