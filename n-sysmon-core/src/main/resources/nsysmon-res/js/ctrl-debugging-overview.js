@@ -42,7 +42,6 @@ angular.module('NSysMonApp').controller('CtrlOverviewDebugging', function($scope
     }
 
     function renderDataAsHtml(data) {
-        //TODO FO088S formatting is wrong, look at the position of the refresh-button
         var htmlText = '';
         htmlText += renderConfigurationParametersAsHtml(data);
         htmlText += renderPageDefinitionsAsHtml(data);

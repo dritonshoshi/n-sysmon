@@ -114,7 +114,6 @@ public abstract class AAbstractNsysmonPerformancePageDef implements APresentatio
         if (node.wasKilled) {
             json.writeKey("wasKilled");
             json.writeBooleanLiteral(node.wasKilled);
-            //System.out.println(node.wasKilled);
         }
 
         if(node.tooltip != null && NSysMon.get().getConfig().collectTooltips()) {

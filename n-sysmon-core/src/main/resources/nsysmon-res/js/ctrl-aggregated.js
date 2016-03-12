@@ -61,8 +61,8 @@ angular.module('NSysMonApp').controller('CtrlAggregated', function($scope, $log,
         blockGui(false);
     }
 
-    function initTraceNodes(nodes, level, prefix) {
     // TODO : Analyse this why it computes so long. Firefox causes an Script error.
+    function initTraceNodes(nodes, level, prefix) {
         if(nodes) {
             for(var i=0; i<nodes.length; i++) {
                 nodes[i].level = level;
@@ -126,13 +126,6 @@ angular.module('NSysMonApp').controller('CtrlAggregated', function($scope, $log,
         parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, thousandsSeparator);
         return parts.join(decimalSeparator);
     };
-
-    function startsWith(s, prefix) {
-        s = s || '';
-        prefix = prefix || '';
-
-        return s.indexOf(prefix) === 0;
-    }
 
     $scope.expandAll = function() {
         function setExpanded(nodes) {
@@ -300,7 +293,7 @@ angular.module('NSysMonApp').controller('CtrlAggregated', function($scope, $log,
         }else{
             element.classList.remove("blocker");
         }
-    };
+    }
 
     $scope.doExport = function() {
         function pad2(n) {
