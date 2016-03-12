@@ -98,6 +98,7 @@ div.button-box {
     float: right;
     margin-top: 8px;
     pointer-events: auto;
+    white-space: nowrap;
 }
 
 .button-segment.affix {

@@ -24,6 +24,8 @@ angular.module('NSysMonApp').controller('CtrlAggregated', function($scope, $log,
     $scope.rootLevel = 0;
     $scope.hideTitleRows = 1;
     $scope.showDataTooltips = 0;
+    //$scope.nodeSearchText = "Garbage";
+    $scope.$watch('nodeSearchText', renderTree);
 
     var nodesByFqn = {};
 
@@ -381,25 +383,51 @@ angular.module('NSysMonApp').controller('CtrlAggregated', function($scope, $log,
         if ($scope.hideTitleRows) {
             result += '<div>' + htmlForTableHeader + '</div>';
             angular.forEach($scope.pickedTraces, function(rootNode) {
-                result +=
-                    '<div>' +
-                    htmlForTreeNode(rootNode) +
-                    '</div>';
+                if (shouldRenderNode(rootNode, $scope.nodeSearchText)){
+                    result +=
+                        '<div>' +
+                        htmlForTreeNode(rootNode) +
+                        '</div>';
+                }
             });
         }
         else {
             angular.forEach($scope.pickedTraces, function(rootNode) {
-                result +=
-                    '<div>' +
-                    htmlForTableHeader +
-                    htmlForTreeNode(rootNode) +
-                    '</div>';
+                if (shouldRenderNode(rootNode, $scope.nodeSearchText)) {
+                    result +=
+                        '<div>' +
+                        htmlForTableHeader +
+                        htmlForTreeNode(rootNode) +
+                        '</div>';
+                }
             });
         }
 
         return result;
     }
 
+    /*
+        Checks if this node should be displayed, used e.g. for the search-filter
+     */
+    function shouldRenderNode(curNode, stringToSearchFor) {
+        var display = false;
+        if (!stringToSearchFor){
+            display = true;
+            return true;
+        }
+        if (curNode.name.indexOf(stringToSearchFor) > -1) {
+            display = true;
+            return true;
+        }
+        angular.forEach(curNode.children, function(child) {
+            if (child.name.indexOf(stringToSearchFor) > -1) {
+                display = true;
+                return true;
+            }
+            display |= shouldRenderNode(child, stringToSearchFor);
+        });
+        return display;
+    }
 
     function htmlForTreeNode(curNode) {
         var dataRowSubdued = !curNode.isNotSerial ? '' : 'data-row-subdued';
