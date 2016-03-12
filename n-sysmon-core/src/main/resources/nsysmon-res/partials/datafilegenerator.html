@@ -8,12 +8,9 @@
 </div>
 <div class="affix-placeholder"></div>
 
-Last export: {{lastExportTimestamp}}<br/>
-<br/>
 Exporting data for:<br>
 <ul>
-    <!-- TODO FOX088S sorting -->
-    <li ng-repeat="page in pages">{{page.fullLabel}}</li>
+    <li ng-repeat="page in pages | orderBy:'fullLabel'">{{page.fullLabel}} - (Last export: {{page.lastExportTimestamp}})</li>
 </ul>
 
 
