@@ -10,13 +10,9 @@ import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import java.util.zip.GZIPInputStream;
-
+// http://localhost:8181/nsysmon/_$_nsysmon_$_/rest/loadableServerDataFiles/getFiles
 public class LoadableServerDataFiles implements APresentationPageDefinition {
 
     @Override
@@ -64,7 +60,6 @@ public class LoadableServerDataFiles implements APresentationPageDefinition {
         FileInputStream fis = new FileInputStream(path.toFile());
         GZIPInputStream gzipIn = new GZIPInputStream(fis);
 
-//        FileReader fr = new FileReader(path.toFile());
         copyData(new InputStreamReader(gzipIn), json.getOut());
 
         json.getOut().flush();
@@ -81,47 +76,40 @@ public class LoadableServerDataFiles implements APresentationPageDefinition {
     }
 
     private void getFilesAsJson(List<String> params, AJsonSerHelper json) throws IOException {
-        HashMap<String, Set<Path>> files = new HashMap<>();
+        DataFileTools dataTools = new DataFileTools();
 
+        json.startObject();
+        json.writeKey("files");
+        json.startArray();
         try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(Paths.get(NSysMon.get().getConfig().pathDatafiles))) {
             for (Path path : directoryStream) {
                 if ((!path.getFileName().toString().startsWith(DataFileGeneratorSupporter.DATAFILE_PREFIX))||(!path.getFileName().toString().endsWith(".gz"))) {
                     continue;
                 }
+                String server = dataTools.getServerNameFromFilename(path.getFileName().toString());
+                String market = dataTools.getMarketFromFilename(path.getFileName().toString());
+                String dateAsString = dataTools.getDateFromFilename(path.getFileName().toString());
 
-                String pageId = new DataFileTools().getNsysmonControllerIdFromFilename(path.toString()); //TODO FOX088S change this to other data
-                files.putIfAbsent(pageId, new HashSet<>());
-                files.get(pageId).add(path);
+                json.startObject();
+                fillFileInfosAsJson(json, dataTools, path, server, market, dateAsString);
+                json.endObject();
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-        json.startObject();
-        json.writeKey("pages");
-        json.startArray();
-        for (Map.Entry<String, Set<Path>> entry : files.entrySet()) {
-            json.startObject();
-            json.writeKey("page");
-            json.writeStringLiteral(entry.getKey());
-            json.writeKey("files");
-            json.startArray();
-            for (Path path : entry.getValue()) {
-                json.startObject();
-                fillJavaScriptInfos(json, path);
-                json.endObject();
-            }
-            json.endArray();
-            json.endObject();
-        }
         json.endArray();
+
         json.endObject();
+
     }
 
-    private void fillJavaScriptInfos(AJsonSerHelper json, Path path) throws IOException {
+    private void fillFileInfosAsJson(AJsonSerHelper json, DataFileTools dataTools, Path path, String server, String market, String dateAsString) throws IOException {
         json.writeKey("name");
         json.writeStringLiteral(path.getFileName().toString());
-        DataFileTools dataTools = new DataFileTools();
+
+        String pageId = new DataFileTools().getNsysmonControllerIdFromFilename(path.toString()); //TODO FOX088S change this to other data
+        json.writeKey("page");
+        json.writeStringLiteral(pageId);
 
         json.writeKey("processor");
         json.writeStringLiteral(dataTools.getNsysmonControllerIdFromFilename(path.getFileName().toString()));
@@ -130,16 +118,16 @@ public class LoadableServerDataFiles implements APresentationPageDefinition {
         json.writeNumberLiteral(Files.size(path), 0);
 
         json.writeKey("date");
-        json.writeStringLiteral(dataTools.getDateFromFilename(path.getFileName().toString()));
+        json.writeStringLiteral(dateAsString);
 
         json.writeKey("time");
         json.writeStringLiteral(dataTools.getTimeFromFilename(path.getFileName().toString()));
 
         json.writeKey("market");
-        json.writeStringLiteral(dataTools.getMarketFromFilename(path.getFileName().toString()));
+        json.writeStringLiteral(market);
 
         json.writeKey("server");
-        json.writeStringLiteral(dataTools.getServerNameFromFilename(path.getFileName().toString()));
+        json.writeStringLiteral(server);
     }
 
     @Override

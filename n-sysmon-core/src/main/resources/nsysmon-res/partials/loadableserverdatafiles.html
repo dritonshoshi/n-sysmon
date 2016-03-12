@@ -8,15 +8,32 @@
         </div>
     </div>
 </div>
-<!--<div class="affix-placeholder"></div>-->
 
-<div ng-repeat="page in pages">
-    {{page.page}}:<br/>
-    <ul>
-        <!-- TODO FOX088S sorting -->
-        <li ng-repeat="file in page.files">
-            <a ng-if="file && file.processor" href="#/{{file.processor}}?loadfile={{file.name}}">{{file.market}} {{file.server}} {{file.date}} {{file.time}} ({{file.size}} byte)</a>
-            <a ng-if="!file || !file.processor">{{file.name}} - not loadable</a>
-        </li>
-    </ul>
+<div style="clear: both;"></div>
+
+<div class="input-group" style="margin: 2em;">
+    <span class="input-group-addon glyphicon glyphicon-globe" class="input-group-addon"></span>
+    <select class="selectpicker form-control" name="marketSelect" id="marketSelect" ng-model="marketSearch.market">
+        <option value="">All</option>
+        <option ng-repeat="file in files | unique:'market' | orderBy:'market'" value="{{file.market}}">{{file.market}}</option>
+    </select>
+
+    <span class="input-group-addon glyphicon glyphicon-hdd" class="input-group-addon"></span>
+    <select class="selectpicker form-control" name="serverSelect" id="serverSelect" ng-model="serverSearch.server">
+        <option value="">All</option>
+        <option ng-repeat="file in files | unique:'server' | filter:marketSearch | unique:'server'| orderBy:'server'" value="{{file.server}}">{{file.server}}</option>
+    </select>
+
+    <span class="input-group-addon glyphicon glyphicon-calendar" class="input-group-addon"></span>
+    <select class="selectpicker form-control" name="dateSelect" id="dateSelect" ng-model="dateSearch.date">
+        <option value="">All</option>
+        <option ng-repeat="file in files | unique:'date'| orderBy:'date'" value="{{file.date}}">{{file.date}}</option>
+    </select>
+</div>
+<!-- TODO FOX088S sorting -->
+<li ng-repeat="file in files | filter:marketSearch | filter:serverSearch | filter:dateSearch">
+    <a ng-if="file && file.processor" href="#/{{file.processor}}?loadfile={{file.name}}">{{file.market}} {{file.server}} {{file.date}} {{file.time}} ({{file.size}} byte)</a>
+    <a ng-if="!file || !file.processor">{{file.name}} - not loadable</a>
+</li>
+
 </div>

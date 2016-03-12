@@ -1,8 +1,10 @@
 angular.module('NSysMonApp').controller('CtrlLoadableServerDataFiles', function($scope, $log, Rest, escapeHtml, $timeout) {
+
     $scope.refresh = function() {
         sendCommand('getFiles');
     };
-    //getData on load
+
+    //load data in load of page
     $scope.refresh();
 
     function sendCommand(cmd) {
@@ -10,7 +12,7 @@ angular.module('NSysMonApp').controller('CtrlLoadableServerDataFiles', function(
     }
 
     function initFromResponse(data) {
-        $scope.pages = data.pages;
+        $scope.files = data.files;
         //console.log(data);
     }
 
