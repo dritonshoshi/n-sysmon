@@ -20,6 +20,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 import java.net.UnknownHostException;
+import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 
 import static org.junit.Assert.*;
@@ -407,26 +408,26 @@ public class NSysMonTest {
         final NSysMonApi sysMon = createSysMon(dataSink);
 
 //        try {
-            sysMon.startFlow(new ACorrelationId("a", "a"));
+            sysMon.startFlow(new ACorrelationId("a", "a", "0"));
 //            fail("exception expected");
 //        } catch (IllegalStateException e) {
 //        }
 
 //        try {
-            sysMon.joinFlow(new ACorrelationId("a", "a"));
+            sysMon.joinFlow(new ACorrelationId("a", "a", "0"));
 //            fail("exception expected");
 //        } catch (IllegalStateException e) {
 //        }
 
         final ASimpleMeasurement m = sysMon.start("m");
 
-        sysMon.startFlow(new ACorrelationId("a", "a"));
-        sysMon.startFlow(new ACorrelationId("b", "b"));
-        sysMon.startFlow(new ACorrelationId("a", "a"));
+        sysMon.startFlow(new ACorrelationId("a", "a", "0"));
+        sysMon.startFlow(new ACorrelationId("b", "b", "0"));
+        sysMon.startFlow(new ACorrelationId("a", "a", "0"));
 
-        sysMon.joinFlow(new ACorrelationId("c", "c"));
-        sysMon.joinFlow(new ACorrelationId("d", "d"));
-        sysMon.joinFlow(new ACorrelationId("c", "c"));
+        sysMon.joinFlow(new ACorrelationId("c", "c", "0"));
+        sysMon.joinFlow(new ACorrelationId("d", "d", "0"));
+        sysMon.joinFlow(new ACorrelationId("c", "c", "0"));
 
         m.finish();
 
@@ -436,11 +437,11 @@ public class NSysMonTest {
         assertEquals(2, root.getStartedFlows().size());
         assertEquals(2, root.getJoinedFlows().size());
 
-        assertTrue(root.getStartedFlows().contains(new ACorrelationId("a", "a")));
-        assertTrue(root.getStartedFlows().contains(new ACorrelationId("b", "b")));
+        assertTrue(root.getStartedFlows().contains(new ACorrelationId("a", "a", "0")));
+        assertTrue(root.getStartedFlows().contains(new ACorrelationId("b", "b", "0")));
 
-        assertTrue(root.getJoinedFlows().contains(new ACorrelationId("c", "c")));
-        assertTrue(root.getJoinedFlows().contains(new ACorrelationId("d", "d")));
+        assertTrue(root.getJoinedFlows().contains(new ACorrelationId("c", "c", "0")));
+        assertTrue(root.getJoinedFlows().contains(new ACorrelationId("d", "d", "0")));
     }
 
     @Test
@@ -481,6 +482,39 @@ public class NSysMonTest {
             }
         }
     }
-}
 
+    @Test
+    public void testCorrelation() {
+//TODO FOX088S
+        final CollectingDataSink dataSink = new CollectingDataSink();
+        final NSysMonApi sysMon = createSysMon(dataSink);
+
+        // mainReason -> subReason -> subReason
+        String parentId = UUID.randomUUID().toString();
+        String child1 = UUID.randomUUID().toString();
+        String child2 = UUID.randomUUID().toString();
+        String nameOfStartingNode = "Node";
+        sysMon.measure(nameOfStartingNode + 0, m1 -> {
+            sysMon.startFlow(new ACorrelationId("mainReason", "flow0", parentId));
+            sysMon.measure(nameOfStartingNode + 1, m2 -> {
+                sysMon.joinFlow(new ACorrelationId("subReason", "flow0", child1));
+                sysMon.measure(nameOfStartingNode + 2, m3 -> {
+                    sysMon.joinFlow(new ACorrelationId("subReason", "flow0", child2));
+                });
+            });
+        });
+
+        assertEquals(1, dataSink.data.size());
+
+        final AHierarchicalDataRoot root = dataSink.data.get(0);
+        assertEquals(1, root.getStartedFlows().size());
+        assertEquals(2, root.getJoinedFlows().size());
+
+//        assertTrue(root.getStartedFlows().contains(new ACorrelationId("a", "a", 0)));
+//        assertTrue(root.getStartedFlows().contains(new ACorrelationId("b", "b", 0)));
+//
+//        assertTrue(root.getJoinedFlows().contains(new ACorrelationId("c", "c", 0)));
+//        assertTrue(root.getJoinedFlows().contains(new ACorrelationId("d", "d", 0)));
+    }
+}
 //TODO test top-level parallel measurement: should be rejected

@@ -1,6 +1,7 @@
 package com.nsysmon.demo;
 
 import com.nsysmon.NSysMon;
+import com.nsysmon.data.ACorrelationId;
 import com.nsysmon.measure.ASimpleMeasurement;
 import com.nsysmon.measure.jdbc.NSysMonDataSource;
 
@@ -13,6 +14,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.*;
 import java.util.Random;
+import java.util.UUID;
 import java.util.logging.Logger;
 
 /**
@@ -86,7 +88,45 @@ public class AppServlet extends HttpServlet {
             return sleep();
         });
 
+        correlations("e");
+
         hugeTree(8, 6);
+    }
+
+    private void correlations(String nameOfStartingNode) {
+        // mainReason -> subReason -> subReason
+        final String parentId = UUID.randomUUID().toString();
+        final String child1 = UUID.randomUUID().toString();
+        final String child2 = UUID.randomUUID().toString();
+
+        final String mainId = UUID.randomUUID().toString();
+        NSysMon.get().measure(nameOfStartingNode + 0, m1 -> {
+            NSysMon.get().startFlow(new ACorrelationId("mainReason", mainId, null));
+            NSysMon.get().measure(nameOfStartingNode + 1, m2 -> {
+                NSysMon.get().joinFlow(new ACorrelationId("subReason", child1, parentId));
+                NSysMon.get().measure(nameOfStartingNode + 2, m3 -> {
+                    NSysMon.get().joinFlow(new ACorrelationId("subReason", child2, child1));
+                });
+            });
+        });
+
+        // mainReason -> subReason -> subReason1
+        //                         -> subReason2
+        final String parentId_2 = UUID.randomUUID().toString();
+        final String child1_2 = UUID.randomUUID().toString();
+        final String child2_2 = UUID.randomUUID().toString();
+        final String child3_2 = UUID.randomUUID().toString();
+
+        NSysMon.get().measure(nameOfStartingNode + 1, m1 -> {
+            NSysMon.get().startFlow(new ACorrelationId("mainReason", parentId_2, null));
+            NSysMon.get().measure(nameOfStartingNode + 2, m2 -> {
+                NSysMon.get().joinFlow(new ACorrelationId("subReason", child1_2, parentId_2));
+                NSysMon.get().measure(nameOfStartingNode + 3, m3 -> {
+                    NSysMon.get().joinFlow(new ACorrelationId("subReason1", child2_2, child1_2));
+                    NSysMon.get().joinFlow(new ACorrelationId("subReason2", child3_2, child1_2));
+                });
+            });
+        });
     }
 
     private void hugeTree(final int width, final int depth) {
