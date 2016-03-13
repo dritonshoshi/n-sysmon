@@ -66,20 +66,26 @@ public class CorrelationFlowPage implements APresentationPageDefinition {
         json.writeKey("tree");
         json.startArray();
         Map<ACorrelationId, List<ACorrelationId>> data = dataSink.getData();
-        for (Map.Entry<ACorrelationId, List<ACorrelationId>> entry : data.entrySet()) {
-            if (entry.getKey().getIdParent() != null){
-                //only root-nodes as starting point
-                continue;
-            }
-            json.startObject();
-            json.writeKey("text");
-            json.writeStringLiteral(entry.getKey().getQualifier());
-            addNumberOfChildren(json, entry.getValue(), data);
+        data.entrySet().stream()
+                .sorted((o1, o2) -> o1.getKey().getQualifier().compareTo(o2.getKey().getQualifier()))
+                .forEach(entry -> {
+                    if (entry.getKey().getIdParent() == null) {
+                        //only root-nodes as starting point
+                        try {
+                            json.startObject();
+                            json.writeKey("text");
+                            json.writeStringLiteral(entry.getKey().getQualifier());
+                            addNumberOfChildren(json, entry.getValue(), data);
 
-            writeChildren(json, entry.getValue(), data);
+                            writeChildren(json, entry.getValue(), data);
 
-            json.endObject();
-        }
+                            json.endObject();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+        );
         json.endArray();
         json.endObject();
     }
@@ -92,14 +98,21 @@ public class CorrelationFlowPage implements APresentationPageDefinition {
 
         json.writeKey("nodes");
         json.startArray();
-        for (ACorrelationId child : children) {
-            json.startObject();
-            json.writeKey("text");
-            json.writeStringLiteral(child.getQualifier());
-            addNumberOfChildren(json, data.get(child), data);
-            writeChildren(json, data.get(child), data);
-            json.endObject();
-        }
+        children.stream()
+                .sorted((o1, o2) -> o1.getQualifier().compareTo(o2.getQualifier()))
+                .forEach(child -> {
+                    try {
+                        json.startObject();
+                        json.writeKey("text");
+                        json.writeStringLiteral(child.getQualifier());
+                        addNumberOfChildren(json, data.get(child), data);
+                        writeChildren(json, data.get(child), data);
+                        json.endObject();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
+                });
         json.endArray();
     }
 
