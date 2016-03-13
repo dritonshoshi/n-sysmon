@@ -9,13 +9,11 @@ angular.module('NSysMonApp').controller('CtrlTimedScalars', function($scope, $ti
               "bottom": 60,
               "left": 60
             },
-//            x: function(d){ return d[0]; },
-//            y: function(d){ return d[1]/100; },
             color: d3.scale.category10().range(),
             useInteractiveGuideline: true,
-            clipVoronoi: false,
+            clipVoronoi: true,
             objectEquality : false,
-            "transitionDuration": 500,
+            "transitionDuration": 1000,
             "xAxis": {
                tickFormat: function(d) {
                     return d3.time.format('%m.%d %H:%M:%S')(new Date(d))
@@ -54,7 +52,7 @@ angular.module('NSysMonApp').controller('CtrlTimedScalars', function($scope, $ti
     var autoRefreshCounter = 0; // to invalidate auto-refresh if there was a manual refresh in between
 
     function initGraphDataFromResponse(data) {
-        $scope.graphData = data;
+        //$scope.graphData = data;
         $scope.rc.api.updateWithData(data);
         triggerAutoRefresh();
     }
