@@ -33,7 +33,7 @@ public class AMinMaxAvgData {
         this.totalNanos = totalNanos;
 
         this.children = children;
-        //TODO FOX088S check if it is save to change this to local array with new instance like below
+        //TODO check if it is save to change this to local array with new instance like below
         //        this.children.clear();
         //        this.children.putAll(children);
     }

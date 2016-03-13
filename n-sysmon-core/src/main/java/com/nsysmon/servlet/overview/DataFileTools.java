@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 class DataFileTools {
-
+    //TODO FOX088S use YYYYMMDD instead of DateTimeFormatter.ISO_LOCAL_DATE_TIME
     public String toGzipFilename(String outputPath, String pageDef, LocalDateTime fileDate, String serverName, String market) {
         StringBuilder rc = new StringBuilder();
 

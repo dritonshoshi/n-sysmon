@@ -62,8 +62,6 @@ public class TimedScalarsPageDefinition implements APresentationPageDefinition {
     }
 
     private void serveGraphData(final AJsonSerHelper json, List<String> params) throws IOException {
-        //TODO FOX088S why is this called twice at start?
-        //LOG.info(params.toString());
         if (params == null || params.size() < 1){
             return;
         }

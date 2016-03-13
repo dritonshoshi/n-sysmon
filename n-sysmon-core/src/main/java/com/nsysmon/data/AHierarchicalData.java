@@ -43,7 +43,7 @@ public class AHierarchicalData {
             this.parameters = tmpParameters;
         }
 
-        //TODO FOX088S check if it is save to change this to local array with new instance like below
+        //TODO check if it is save to change this to local array with new instance like below
         // might be a problem, because the caller uses the children for other things, look out for childrenStack in caller-methods
         //use empty 0-size map or null for better memory management
 //        if (children.size() == 0 && this.children == null){
@@ -83,7 +83,7 @@ public class AHierarchicalData {
         return children == null ? Collections.EMPTY_LIST : Collections.unmodifiableList(children);
     }
 
-//TODO FOX088S add this to rest
+    //TODO FOX088S add this to rest
     public boolean isWasKilled() {
         return wasKilled;
     }

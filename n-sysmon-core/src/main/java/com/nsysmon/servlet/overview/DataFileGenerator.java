@@ -45,11 +45,15 @@ public class DataFileGenerator implements APresentationPageDefinition {
         for (String pageClassName : pagesToStoreAsString.trim().split(",")) {
             String pageId = pageClassName.trim().split(":")[0];
             if (null != pageId && pageId.trim().length() != 0){
-                int minutesToWait = Integer.valueOf(pageClassName.trim().split(":")[1]); //TODO FOX088S validation if this is a number
-                DataFileGeneratorThread thread = new DataFileGeneratorThread(pageId, minutesToWait);
-                LOG.info(thread.toString());
-                pageStorer.add(thread);
-                scheduledPool.scheduleAtFixedRate(thread, 1, minutesToWait, TimeUnit.MINUTES);
+                try{
+                    int minutesToWait = Integer.valueOf(pageClassName.trim().split(":")[1]);
+                    DataFileGeneratorThread thread = new DataFileGeneratorThread(pageId, minutesToWait);
+                    LOG.info(thread.toString());
+                    pageStorer.add(thread);
+                    scheduledPool.scheduleAtFixedRate(thread, 1, minutesToWait, TimeUnit.MINUTES);
+                }catch (Exception e){
+                    LOG.error("Export for " + pageId + " not activated. Please check your configuration.");
+                }
             }
         }
     }
