@@ -95,35 +95,57 @@ public class AppServlet extends HttpServlet {
 
     private void correlations(String nameOfStartingNode) {
         // mainReason -> subReason -> subReason
-        final String parentId = UUID.randomUUID().toString();
-        final String child1 = UUID.randomUUID().toString();
-        final String child2 = UUID.randomUUID().toString();
+        final String mainReasonT1_1 = UUID.randomUUID().toString();
+        final String subReasonT1_1 = UUID.randomUUID().toString();
+        final String subReasonT1_1_1 = UUID.randomUUID().toString();
 
-        final String mainId = UUID.randomUUID().toString();
         NSysMon.get().measure(nameOfStartingNode + 0, m1 -> {
-            NSysMon.get().startFlow(new ACorrelationId("mainReason", mainId, null));
+            NSysMon.get().startFlow(new ACorrelationId("mainReasonT1_1", mainReasonT1_1, null));
             NSysMon.get().measure(nameOfStartingNode + 1, m2 -> {
-                NSysMon.get().joinFlow(new ACorrelationId("subReason", child1, parentId));
+                NSysMon.get().joinFlow(new ACorrelationId("subReasonT1_1", subReasonT1_1, mainReasonT1_1));
                 NSysMon.get().measure(nameOfStartingNode + 2, m3 -> {
-                    NSysMon.get().joinFlow(new ACorrelationId("subReason", child2, child1));
+                    NSysMon.get().joinFlow(new ACorrelationId("subReasonT1_1_1", subReasonT1_1_1, subReasonT1_1));
                 });
             });
         });
 
         // mainReason -> subReason -> subReason1
         //                         -> subReason2
-        final String parentId_2 = UUID.randomUUID().toString();
-        final String child1_2 = UUID.randomUUID().toString();
-        final String child2_2 = UUID.randomUUID().toString();
-        final String child3_2 = UUID.randomUUID().toString();
+        final String mainReasonT2_1 = UUID.randomUUID().toString();
+        final String subReasonT2_1 = UUID.randomUUID().toString();
+        final String subReasonT2_1_1 = UUID.randomUUID().toString();
+        final String subReasonT2_1_2 = UUID.randomUUID().toString();
 
         NSysMon.get().measure(nameOfStartingNode + 1, m1 -> {
-            NSysMon.get().startFlow(new ACorrelationId("mainReason", parentId_2, null));
+            NSysMon.get().startFlow(new ACorrelationId("mainReasonT2_1", mainReasonT2_1, null));
             NSysMon.get().measure(nameOfStartingNode + 2, m2 -> {
-                NSysMon.get().joinFlow(new ACorrelationId("subReason", child1_2, parentId_2));
+                NSysMon.get().joinFlow(new ACorrelationId("subReasonT2_1", subReasonT2_1, mainReasonT2_1));
                 NSysMon.get().measure(nameOfStartingNode + 3, m3 -> {
-                    NSysMon.get().joinFlow(new ACorrelationId("subReason1", child2_2, child1_2));
-                    NSysMon.get().joinFlow(new ACorrelationId("subReason2", child3_2, child1_2));
+                    NSysMon.get().joinFlow(new ACorrelationId("subReasonT2_1_1", subReasonT2_1_1, subReasonT2_1));
+                    NSysMon.get().joinFlow(new ACorrelationId("subReasonT2_1_2", subReasonT2_1_2, subReasonT2_1));
+                });
+            });
+        });
+
+        // mainReason -> subReason -> subReason1 -> subReason1_1
+        //                         -> subReason2 -> subReason2_1
+        //                         -> subReason2 -> subReason2_2
+        final String mainReasonT3_1 = UUID.randomUUID().toString();
+        final String subReasonT3_1 = UUID.randomUUID().toString();
+        final String subReasonT3_2 = UUID.randomUUID().toString();
+        final String subReasonT3_2_1 = UUID.randomUUID().toString();
+        final String subReasonT3_1_1 = UUID.randomUUID().toString();
+        final String subReasonT3_2_2 = UUID.randomUUID().toString();
+
+        NSysMon.get().measure(nameOfStartingNode + 1, m1 -> {
+            NSysMon.get().startFlow(new ACorrelationId("mainReasonT3_1", mainReasonT3_1, null));
+            NSysMon.get().measure(nameOfStartingNode + 2, m2 -> {
+                NSysMon.get().joinFlow(new ACorrelationId("subReasonT3_1", subReasonT3_1, mainReasonT3_1));
+                NSysMon.get().joinFlow(new ACorrelationId("subReasonT3_2", subReasonT3_2, mainReasonT3_1));
+                NSysMon.get().measure(nameOfStartingNode + 3, m3 -> {
+                    NSysMon.get().joinFlow(new ACorrelationId("subReasonT3_1_1", subReasonT3_1_1, subReasonT3_1));
+                    NSysMon.get().joinFlow(new ACorrelationId("subReasonT3_2_1", subReasonT3_2_1, subReasonT3_2));
+                    NSysMon.get().joinFlow(new ACorrelationId("subReasonT3_2_2", subReasonT3_2_2, subReasonT3_2));
                 });
             });
         });

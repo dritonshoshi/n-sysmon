@@ -1,17 +1,15 @@
 package com.nsysmon.servlet.correlationflow;
 
 import com.ajjpj.afoundation.io.AJsonSerHelper;
-import com.nsysmon.NSysMon;
 import com.nsysmon.NSysMonApi;
 import com.nsysmon.config.log.NSysMonLogger;
-import com.nsysmon.config.presentation.APresentationMenuEntry;
 import com.nsysmon.config.presentation.APresentationPageDefinition;
+import com.nsysmon.data.ACorrelationId;
 import com.nsysmon.impl.NSysMonConfigurer;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class CorrelationFlowPage implements APresentationPageDefinition {
     private volatile NSysMonApi sysMon;
@@ -67,17 +65,18 @@ public class CorrelationFlowPage implements APresentationPageDefinition {
         json.startObject();
         json.writeKey("tree");
         json.startArray();
-        for (Map.Entry<String, List<String>> entry : dataSink.data.entrySet()) {
-            if ((entry.getValue() == null || entry.getValue().isEmpty())){
-                //only root-nodes
+        Map<ACorrelationId, List<ACorrelationId>> data = dataSink.getData();
+        for (Map.Entry<ACorrelationId, List<ACorrelationId>> entry : data.entrySet()) {
+            if (entry.getKey().getIdParent() != null){
+                //only root-nodes as starting point
                 continue;
             }
             json.startObject();
             json.writeKey("text");
-            json.writeStringLiteral("Text for " + entry.getKey());//TODO FOX088S use real text
-            addNumberOfChildren(json, entry.getValue());
+            json.writeStringLiteral(entry.getKey().getQualifier());
+            addNumberOfChildren(json, entry.getValue(), data);
 
-            writeChildren(json, entry.getValue());
+            writeChildren(json, entry.getValue(), data);
 
             json.endObject();
         }
@@ -85,25 +84,29 @@ public class CorrelationFlowPage implements APresentationPageDefinition {
         json.endObject();
     }
 
-    private void writeChildren(AJsonSerHelper json, List<String> children) throws IOException {
+    private void writeChildren(AJsonSerHelper json, List<ACorrelationId> children, Map<ACorrelationId, List<ACorrelationId>> data) throws IOException {
         if (children == null || children.isEmpty()){
             //process only filled-elements
             return;
         }
+
         json.writeKey("nodes");
         json.startArray();
-        for (String child : children) {
+        for (ACorrelationId child : children) {
             json.startObject();
             json.writeKey("text");
-            json.writeStringLiteral("Text for " + child);//TODO FOX088S use real text
-            addNumberOfChildren(json, dataSink.data.get(child));
-            writeChildren(json, dataSink.data.get(child));
+            json.writeStringLiteral(child.getQualifier());
+            addNumberOfChildren(json, data.get(child), data);
+            writeChildren(json, data.get(child), data);
             json.endObject();
         }
         json.endArray();
     }
 
-    private void addNumberOfChildren(AJsonSerHelper json, List<String> children) throws IOException {
+	/**
+     * All children from all levels, not only the direct children.
+     */
+    private void addNumberOfChildren(AJsonSerHelper json, List<ACorrelationId> children, Map<ACorrelationId, List<ACorrelationId>> data) throws IOException {
         if (children == null || children.isEmpty()){
             return;
         }
@@ -111,23 +114,22 @@ public class CorrelationFlowPage implements APresentationPageDefinition {
         json.startArray();
 
         int cnt = 0;
-        for (String child : children) {
+        for (ACorrelationId child : children) {
             cnt += 1;
-            cnt += countChildren(child);
+            cnt += countChildren(child, data);
         }
         json.writeStringLiteral(String.valueOf(cnt));
 
         json.endArray();
-
     }
 
-    private int countChildren(String child) {
+    private int countChildren(ACorrelationId child, Map<ACorrelationId, List<ACorrelationId>> data) {
         int cnt = 0;
-        List<String> children = dataSink.data.get(child);
+        List<ACorrelationId> children = data.get(child);
         if (children != null){
             cnt += children.size();
-            for (String subChild : children) {
-                cnt += countChildren(subChild);
+            for (ACorrelationId subChild : children) {
+                cnt += countChildren(subChild, data);
             }
         }
         return cnt;
