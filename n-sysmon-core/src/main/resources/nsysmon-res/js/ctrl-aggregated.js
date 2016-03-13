@@ -415,12 +415,13 @@ angular.module('NSysMonApp').controller('CtrlAggregated', function($scope, $log,
             display = true;
             return true;
         }
-        if (curNode.name.indexOf(stringToSearchFor) > -1) {
+        var search = stringToSearchFor.toLowerCase();
+        if (curNode.name.toLowerCase().indexOf(search) > -1) {
             display = true;
             return true;
         }
         angular.forEach(curNode.children, function(child) {
-            if (child.name.indexOf(stringToSearchFor) > -1) {
+            if (child.name.toLowerCase().indexOf(search) > -1) {
                 display = true;
                 return true;
             }
