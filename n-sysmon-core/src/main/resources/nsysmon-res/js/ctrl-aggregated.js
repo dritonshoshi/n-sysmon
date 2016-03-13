@@ -24,8 +24,21 @@ angular.module('NSysMonApp').controller('CtrlAggregated', function($scope, $log,
     $scope.rootLevel = 0;
     $scope.hideTitleRows = 1;
     $scope.showDataTooltips = 0;
-    //$scope.nodeSearchText = "Garbage";
-    $scope.$watch('nodeSearchText', renderTree);
+
+    /* Delayed Search - Start */
+    var timeoutPromise;
+    var searchDelayInMs = 500;
+    $scope.$watch('nodeSearchText', function (val) {
+        if ($scope.nodeSearchText){
+            $timeout.cancel(timeoutPromise);
+        }
+        tempFilterText = val;
+        timeoutPromise = $timeout(function () {
+            $scope.nodeSearchText = tempFilterText;
+            renderTree();
+        }, searchDelayInMs); // delay
+    });
+    /* Delayed Search - End */
 
     var nodesByFqn = {};
 
@@ -426,6 +439,9 @@ angular.module('NSysMonApp').controller('CtrlAggregated', function($scope, $log,
                 return true;
             }
             display |= shouldRenderNode(child, stringToSearchFor);
+            if (display){
+                return true;
+            }
         });
         return display;
     }
