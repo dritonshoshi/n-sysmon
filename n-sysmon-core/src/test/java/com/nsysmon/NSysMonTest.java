@@ -485,7 +485,6 @@ public class NSysMonTest {
 
     @Test
     public void testCorrelation() {
-//TODO FOX088S
         final CollectingDataSink dataSink = new CollectingDataSink();
         final NSysMonApi sysMon = createSysMon(dataSink);
 
@@ -510,11 +509,6 @@ public class NSysMonTest {
         assertEquals(1, root.getStartedFlows().size());
         assertEquals(2, root.getJoinedFlows().size());
 
-//        assertTrue(root.getStartedFlows().contains(new ACorrelationId("a", "a", 0)));
-//        assertTrue(root.getStartedFlows().contains(new ACorrelationId("b", "b", 0)));
-//
-//        assertTrue(root.getJoinedFlows().contains(new ACorrelationId("c", "c", 0)));
-//        assertTrue(root.getJoinedFlows().contains(new ACorrelationId("d", "d", 0)));
     }
 }
 //TODO test top-level parallel measurement: should be rejected

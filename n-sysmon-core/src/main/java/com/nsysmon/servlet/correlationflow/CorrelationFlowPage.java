@@ -10,14 +10,15 @@ import com.nsysmon.impl.NSysMonConfigurer;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class CorrelationFlowPage implements APresentationPageDefinition {
     private volatile NSysMonApi sysMon;
     private static final NSysMonLogger LOG = NSysMonLogger.get(CorrelationFlowPage.class);
     private final CorrelationFlowDataSink dataSink;
 
-    public CorrelationFlowPage() {
-        dataSink = new CorrelationFlowDataSink();
+    public CorrelationFlowPage(int maxNumDetails) {
+        dataSink = new CorrelationFlowDataSink(maxNumDetails);
     }
 
     @Override
@@ -73,7 +74,7 @@ public class CorrelationFlowPage implements APresentationPageDefinition {
         json.startObject();
         json.writeKey("tree");
         json.startArray();
-        Map<ACorrelationId, List<ACorrelationId>> data = dataSink.getData();
+        Map<ACorrelationId, Set<ACorrelationId>> data = dataSink.getDataAsMap();
         data.entrySet().stream()
                 .sorted((o1, o2) -> o1.getKey().getQualifier().compareTo(o2.getKey().getQualifier()))
                 .forEach(entry -> {
@@ -98,7 +99,7 @@ public class CorrelationFlowPage implements APresentationPageDefinition {
         json.endObject();
     }
 
-    private void writeChildren(AJsonSerHelper json, List<ACorrelationId> children, Map<ACorrelationId, List<ACorrelationId>> data) throws IOException {
+    private void writeChildren(AJsonSerHelper json, Set<ACorrelationId> children, Map<ACorrelationId, Set<ACorrelationId>> data) throws IOException {
         if (children == null || children.isEmpty()){
             //process only filled-elements
             return;
@@ -127,7 +128,7 @@ public class CorrelationFlowPage implements APresentationPageDefinition {
 	/**
      * All children from all levels, not only the direct children.
      */
-    private void addNumberOfChildren(AJsonSerHelper json, List<ACorrelationId> children, Map<ACorrelationId, List<ACorrelationId>> data) throws IOException {
+    private void addNumberOfChildren(AJsonSerHelper json, Set<ACorrelationId> children, Map<ACorrelationId, Set<ACorrelationId>> data) throws IOException {
         if (children == null || children.isEmpty()){
             return;
         }
@@ -144,9 +145,9 @@ public class CorrelationFlowPage implements APresentationPageDefinition {
         json.endArray();
     }
 
-    private int countChildren(ACorrelationId child, Map<ACorrelationId, List<ACorrelationId>> data) {
+    private int countChildren(ACorrelationId child, Map<ACorrelationId, Set<ACorrelationId>> data) {
         int cnt = 0;
-        List<ACorrelationId> children = data.get(child);
+        Set<ACorrelationId> children = data.get(child);
         if (children != null){
             cnt += children.size();
             for (ACorrelationId subChild : children) {

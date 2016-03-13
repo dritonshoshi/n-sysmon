@@ -1,22 +1,25 @@
 package com.nsysmon.servlet.correlationflow;
 
+import com.ajjpj.afoundation.collection.mutable.ARingBuffer;
+import com.nsysmon.config.log.NSysMonLogger;
 import com.nsysmon.data.ACorrelationId;
 import com.nsysmon.data.AHierarchicalDataRoot;
 import com.nsysmon.datasink.ADataSink;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class CorrelationFlowDataSink implements ADataSink {
-    //TODO FOX088S change to round robing + constructor with size
-    //TODO FOX088S replace List with Set
-    private Map<ACorrelationId, List<ACorrelationId>> data = new ConcurrentHashMap<>();
+	private static final NSysMonLogger LOG = NSysMonLogger.get(CorrelationFlowDataSink.class);
+	private ARingBuffer<CorrelationFlowDetails> dataBuffer;
+
+	public CorrelationFlowDataSink(int maxNumDetails){
+		dataBuffer = new ARingBuffer<>(CorrelationFlowDetails.class, maxNumDetails);
+	}
 
     @Override
     public void onStartedHierarchicalMeasurement(String identifier) {
@@ -25,7 +28,7 @@ public class CorrelationFlowDataSink implements ADataSink {
     @Override
     public void onFinishedHierarchicalMeasurement(AHierarchicalDataRoot root) {
         processMeasurement(root.getStartedFlows());
-        processMeasurement(root.getJoinedFlows()); //TODO FOX088S check if this is really the same
+        processMeasurement(root.getJoinedFlows());
     }
 
     private void processMeasurement(Collection<ACorrelationId> flows) {
@@ -36,6 +39,10 @@ public class CorrelationFlowDataSink implements ADataSink {
 		    //System.out.println(flowsWithParent.size());
 		    addToData(flowsWithParent);
 	    }
+
+	    flowsToProcess.forEach(aCorrelationId -> {
+		    LOG.warn("Correlation " + aCorrelationId.getId() + " with description '" + aCorrelationId.getQualifier() + "' could not be saved, because parent isn't stored.");
+	    });
     }
 
 	private Set<ACorrelationId> findFlowsWithParent(Collection<ACorrelationId> flows) {
@@ -44,11 +51,11 @@ public class CorrelationFlowDataSink implements ADataSink {
 			if (flow.getIdParent()==null){
 				rc.add(flow);
 			}else{
-				for (ACorrelationId aCorrelationId : data.keySet()) {
-					if (flow.getIdParent().equals(aCorrelationId.getId())){
+				dataBuffer.forEach(correlationFlowDetails -> {
+					if (flow.getIdParent().equals(correlationFlowDetails.getaCorrelationId().getId())){
 						rc.add(flow);
 					}
-				}
+				});
 			}
 		}
 		return rc;
@@ -57,12 +64,18 @@ public class CorrelationFlowDataSink implements ADataSink {
 	private void addToData(Collection<ACorrelationId> flows) {
 		for (ACorrelationId flow : flows) {
 			if (flow.getIdParent() == null){
-		        data.putIfAbsent(flow, new ArrayList<>());
+				dataBuffer.put(new CorrelationFlowDetails(flow, new HashSet<>()));
 		    }else {
-		        data.putIfAbsent(flow, new ArrayList<>());
+				dataBuffer.put(new CorrelationFlowDetails(flow, new HashSet<>()));
 		        ACorrelationId parent = findParent(flow);
 		        if (parent != null){
-		            data.get(parent).add(flow);
+			        dataBuffer.forEach(correlationFlowDetails -> {
+				        if (correlationFlowDetails.getaCorrelationId().equals(parent)){
+					        correlationFlowDetails.getChilds().add(flow);
+				        }
+			        });
+		        }else{
+			        LOG.warn("Correlation " + flow.getId() + " with description '" + flow.getQualifier() + "' could not be saved, because parent isn't stored.");
 		        }
 		    }
 		}
@@ -72,12 +85,11 @@ public class CorrelationFlowDataSink implements ADataSink {
         if (flow.getIdParent() == null){
             return null;
         }
-        for (ACorrelationId aCorrelationId : data.keySet()) {
-            if (aCorrelationId.getId().equals(flow.getIdParent())){
-                return aCorrelationId;
+        for (CorrelationFlowDetails flowDetail : dataBuffer) {
+            if (flowDetail.getaCorrelationId().getId().equals(flow.getIdParent())){
+                return flowDetail.getaCorrelationId();
             }
         }
-        //TODO FOX088S throw error.
         return null;
     }
 
@@ -86,11 +98,17 @@ public class CorrelationFlowDataSink implements ADataSink {
         //nothing to do
     }
 
-    public Map<ACorrelationId, List<ACorrelationId>> getData() {
-        return Collections.unmodifiableMap(data);
+    public Map<ACorrelationId, Set<ACorrelationId>> getDataAsMap() {
+
+	    //this way it is easier to parse for the page
+	    Map<ACorrelationId, Set<ACorrelationId>> rc = new HashMap<>();
+	    for (CorrelationFlowDetails correlationFlowDetails : dataBuffer) {
+		    rc.put(correlationFlowDetails.getaCorrelationId(), correlationFlowDetails.getChilds());
+	    }
+	    return Collections.unmodifiableMap(rc);
     }
 
 	public void clearData() {
-		data.clear();
+		dataBuffer.clear();
 	}
 }
