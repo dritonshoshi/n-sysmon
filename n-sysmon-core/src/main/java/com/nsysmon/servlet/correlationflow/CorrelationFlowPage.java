@@ -50,8 +50,16 @@ public class CorrelationFlowPage implements APresentationPageDefinition {
         if ("getData".equals(service)) {
             serveData(json);
             return true;
+        }else if ("doClear".equals(service)) {
+            clearData();
+            serveData(json);
+            return true;
         }
         return false;
+    }
+
+    private void clearData() {
+        dataSink.clearData();
     }
 
     @Override

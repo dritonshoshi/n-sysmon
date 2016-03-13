@@ -89,4 +89,8 @@ public class CorrelationFlowDataSink implements ADataSink {
     public Map<ACorrelationId, List<ACorrelationId>> getData() {
         return Collections.unmodifiableMap(data);
     }
+
+	public void clearData() {
+		data.clear();
+	}
 }
