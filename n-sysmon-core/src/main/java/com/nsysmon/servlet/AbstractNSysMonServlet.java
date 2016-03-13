@@ -143,6 +143,10 @@ public abstract class AbstractNSysMonServlet extends HttpServlet {
     protected String getContentType(String resName) {
         if(resName.contains(".html")) {
             return "text/html";
+        } else if(resName.contains(".css")) {
+            return "text/css";
+        } else if(resName.contains(".js")) {
+            return "text/javascript";
         }
 
         return null;
