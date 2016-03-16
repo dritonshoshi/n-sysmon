@@ -86,7 +86,7 @@ public class CorrelationFlowDataSink implements ADataSink {
             return null;
         }
         for (CorrelationFlowDetails flowDetail : dataBuffer) {
-            if (flowDetail.getaCorrelationId().getId().equals(flow.getIdParent())){
+            if (flowDetail.getaCorrelationId() != null && flowDetail.getaCorrelationId().getId().equals(flow.getIdParent())){
                 return flowDetail.getaCorrelationId();
             }
         }

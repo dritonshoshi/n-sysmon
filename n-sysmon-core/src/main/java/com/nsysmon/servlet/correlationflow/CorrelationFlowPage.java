@@ -76,7 +76,7 @@ public class CorrelationFlowPage implements APresentationPageDefinition {
         json.startArray();
         Map<ACorrelationId, Set<ACorrelationId>> data = dataSink.getDataAsMap();
         data.entrySet().stream()
-                .sorted((o1, o2) -> o1.getKey().getQualifier().compareTo(o2.getKey().getQualifier()))
+                .sorted(new ACorrelationIdComparator())
                 .forEach(entry -> {
                     if (entry.getKey().getIdParent() == null) {
                         //only root-nodes as starting point
