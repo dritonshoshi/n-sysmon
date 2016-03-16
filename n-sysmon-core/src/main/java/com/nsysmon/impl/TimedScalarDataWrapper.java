@@ -14,7 +14,7 @@ public class TimedScalarDataWrapper implements Runnable {
     private final Map<String, ARingBuffer<AScalarDataPoint>> dataBuffer = new TreeMap<>();
     private final int maxEntries;
     private AList<RobustScalarMeasurerWrapper> timedScalarMeasurers = AList.nil();
-    private Map<String, Object> mementos = new TreeMap<>();
+    private final Map<String, Object> mementos = new TreeMap<>();
 
     public TimedScalarDataWrapper(int maxEntries) {
         this.maxEntries = maxEntries;

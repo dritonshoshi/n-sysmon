@@ -16,7 +16,7 @@ public class AJmxTomcatMeasurer implements AScalarMeasurer, NSysMonAware {
 
     private static final Logger LOG = Logger.getLogger(AJmxTomcatMeasurer.class);
 
-    private static final String KEY_PREFIX = "Tomcat ";
+    private static final String KEY_PREFIX = "Tomcat: ";
     private static final String KEY_REQUEST_COUNT = KEY_PREFIX + "Request Count";
     private static final String KEY_BYTES_RECEIVED  = KEY_PREFIX + "Received MB";
     private static final String KEY_BYTES_SENT = KEY_PREFIX + "Sent MB";

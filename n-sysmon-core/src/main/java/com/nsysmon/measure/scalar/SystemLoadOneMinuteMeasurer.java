@@ -10,7 +10,7 @@ import java.io.IOException;
 import java.util.Map;
 
 public class SystemLoadOneMinuteMeasurer implements AScalarMeasurer {
-    private static final String IDENT_LOAD_1_MIN = "SystemLoad";
+    private static final String IDENT_LOAD_1_MIN = "System: Load";
 
     private final File procFile = new File("/proc/loadavg");
     private final boolean isWindows;
@@ -28,6 +28,7 @@ public class SystemLoadOneMinuteMeasurer implements AScalarMeasurer {
         if (isWindows){
             return;
         }
+
         final BufferedReader in = new BufferedReader(new FileReader(procFile));
         final String[] raw = in.readLine().split(" ");
 

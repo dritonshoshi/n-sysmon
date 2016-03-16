@@ -67,13 +67,15 @@ public class AConnectionCounter implements AScalarMeasurer, AIConnectionCounter 
 
     @Override
     public void contributeMeasurements(Map<String, AScalarDataPoint> data, long timestamp, Map<String, Object> mementos) {
-        for(String key: openPerConnectionPool.keySet()) {
-            final String ident = (DEFAULT_POOL_IDENTIFIER.equals (key)) ? "Open JDBC Connections" : ("Open JDBC Connections (" + key + ')');
-            data.put(ident, new AScalarDataPoint(timestamp, ident, openPerConnectionPool.get(key).get(), 0));
+        for(Map.Entry<String, AtomicInteger> stringAtomicIntegerEntry : openPerConnectionPool.entrySet()) {
+            final String key = stringAtomicIntegerEntry.getKey();
+            final String ident = (DEFAULT_POOL_IDENTIFIER.equals(key)) ? "JDBC: Open Connections" : ("JDBC: Open Connections (" + key + ')');
+            data.put(ident, new AScalarDataPoint(timestamp, ident, stringAtomicIntegerEntry.getValue().get(), 0));
         }
-        for(String key: activePerConnectionPool.keySet()) {
-            final String ident = (DEFAULT_POOL_IDENTIFIER.equals (key)) ? "Active JDBC Connections" : ("Active JDBC Connections (" + key + ')');
-            data.put(ident, new AScalarDataPoint(timestamp, ident, activePerConnectionPool.get(key).get(), 0));
+        for(Map.Entry<String, AtomicInteger> stringAtomicIntegerEntry : activePerConnectionPool.entrySet()) {
+            final String key = stringAtomicIntegerEntry.getKey();
+            final String ident = (DEFAULT_POOL_IDENTIFIER.equals(key)) ? "JDBC: Active Connections" : ("JDBC: Active Connections (" + key + ')');
+            data.put(ident, new AScalarDataPoint(timestamp, ident, stringAtomicIntegerEntry.getValue().get(), 0));
         }
     }
 
