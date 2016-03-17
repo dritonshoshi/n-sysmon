@@ -30,6 +30,9 @@ public class ACorrelationIdComparator implements Comparator<Map.Entry<ACorrelati
         if (o1.getKey().getQualifier() == null){
             return -1;
         }
+        if (o2.getKey().getQualifier() == null){
+            return 1;
+        }
         return o1.getKey().getQualifier().compareTo(o2.getKey().getQualifier());
     }
 }

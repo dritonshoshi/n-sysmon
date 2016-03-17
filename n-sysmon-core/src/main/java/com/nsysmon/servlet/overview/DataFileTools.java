@@ -5,20 +5,20 @@ import java.time.format.DateTimeFormatter;
 
 class DataFileTools {
     //TODO FOX088S use YYYYMMDD instead of DateTimeFormatter.ISO_LOCAL_DATE_TIME
-    public String toGzipFilename(String outputPath, String pageDef, LocalDateTime fileDate, String serverName, String market) {
+    public String toGzipFilename(String outputPath, String pageDef, LocalDateTime fileDate, String serverName, String installationsName) {
         StringBuilder rc = new StringBuilder();
 
         rc.append(outputPath);
         rc.append("/");
         rc.append(DataFileGeneratorSupporter.DATAFILE_PREFIX);
         rc.append("_");
-        rc.append(market);
+        rc.append(installationsName);//TODO FOX088S an namen aus stasy anpassen
         rc.append("_");
         rc.append(serverName);
         rc.append("_");
         rc.append(pageDef);
         rc.append("_");
-        rc.append(fileDate.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME).replaceAll(":", "_"));
+        rc.append(fileDate.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME).replaceAll(":", "_")); //TODO FOX088S change to RVS-Timestamp
         rc.append(".gz");
 
         return rc.toString();
