@@ -27,13 +27,14 @@ public class CorrelationFlowDataSink implements ADataSink {
 
     @Override
     public void onFinishedHierarchicalMeasurement(AHierarchicalDataRoot root) {
-        processMeasurement(root.getStartedFlows());
-        processMeasurement(root.getJoinedFlows());
+        processMeasurement(root.getStartedFlows(), root.getJoinedFlows());
     }
 
-    private void processMeasurement(Collection<ACorrelationId> flows) {
-	    Set<ACorrelationId> flowsToProcess = new HashSet<>(flows);
-	    for (int i = 0; i<flows.size();i++) {
+    private void processMeasurement(Collection<ACorrelationId> startedFlows,Collection<ACorrelationId> joinedFlows) {
+	    Set<ACorrelationId> flowsToProcess = new HashSet<>(startedFlows);
+	    flowsToProcess.addAll(joinedFlows);
+		int loops = flowsToProcess.size();
+	    for (int i = 0; i< loops; i++) {
 		    Set<ACorrelationId> flowsWithParent = findFlowsWithParent(flowsToProcess);
 		    flowsToProcess.removeAll(flowsWithParent);
 		    //System.out.println(flowsWithParent.size());
@@ -43,7 +44,7 @@ public class CorrelationFlowDataSink implements ADataSink {
 		flowsToProcess.removeAll(flowsWithParent);
 
 	    flowsToProcess.forEach(aCorrelationId -> {
-		    LOG.warn("Correlation " + aCorrelationId.getId() + " with description '" + aCorrelationId.getQualifier() + "' could not be saved, because parent isn't stored.");
+		    LOG.warn("Correlation " + aCorrelationId.getId() + " with description '" + aCorrelationId.getQualifier() + "' could not be saved, because parent isn't stored!");
 	    });
     }
 
