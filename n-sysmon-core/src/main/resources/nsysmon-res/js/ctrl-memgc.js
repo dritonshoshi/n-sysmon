@@ -1,5 +1,4 @@
-
-angular.module('NSysMonApp').controller('CtrlMemGc', function($scope, $log, Rest) {
+angular.module('NSysMonApp').controller('CtrlMemGc', function($scope, $log, Rest, $location) {
     $('.btn').tooltip({
         container: 'body',
         html: true
@@ -71,7 +70,17 @@ angular.module('NSysMonApp').controller('CtrlMemGc', function($scope, $log, Rest
         sendCommand('getData');
     };
 
-    $scope.refresh();
+    // check if data from other sources should be loaded
+    function loadExternalData() {
+        var loadfileParam = $location.search().loadfile;
+        if (loadfileParam) {
+            $scope.autoRefreshGC = false;
+            Rest.callOther("loadableServerDataFiles", "loadFromFile" + "/" + loadfileParam, initFromResponseAndPlot);
+        }else{
+            $scope.refresh();
+        }
+    }
+    loadExternalData();
 
     function endMillis(gc) {
         return gc.durationNanos < 1000*1000 ? gc.startMillis : (gc.startMillis + gc.durationNanos / 1000 / 1000);
@@ -95,6 +104,10 @@ angular.module('NSysMonApp').controller('CtrlMemGc', function($scope, $log, Rest
         }
     }
 
+    function initFromResponseAndPlot(data) {
+        initFromResponse(data);
+        doPlot();
+    }
     function initFromResponse(data) {
         $scope.gcs = data.gcs;
 
@@ -202,12 +215,6 @@ angular.module('NSysMonApp').controller('CtrlMemGc', function($scope, $log, Rest
             doPlot();
         });
     }
-
-    $scope.refresh = function() {
-        sendCommand('getData');
-    };
-
-    $scope.refresh();
 
     var plot;
     function doPlot() {

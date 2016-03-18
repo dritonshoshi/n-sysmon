@@ -2,17 +2,19 @@ package com.nsysmon.servlet.memgc;
 
 import com.ajjpj.afoundation.io.AJsonSerHelper;
 import com.nsysmon.NSysMonApi;
-import com.nsysmon.impl.NSysMonConfigurer;
 import com.nsysmon.config.presentation.APresentationPageDefinition;
+import com.nsysmon.impl.NSysMonConfigurer;
+import com.nsysmon.servlet.overview.DataFileGeneratorSupporter;
 
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.List;
 
 
 /**
  * @author arno
  */
-public class AMemGcPageDefinition implements APresentationPageDefinition {
+public class AMemGcPageDefinition implements APresentationPageDefinition, DataFileGeneratorSupporter {
     private final int bufferSize;
 
     public AMemGcPageDefinition(int bufferSize) {
@@ -116,6 +118,12 @@ public class AMemGcPageDefinition implements APresentationPageDefinition {
         }
 
         json.endObject();
+    }
+
+    @Override
+    public void getDataForExport(OutputStream os) throws IOException {
+        AJsonSerHelper aJsonSerHelper = new AJsonSerHelper(os);
+        serveData(aJsonSerHelper);
     }
 
     //TODO getMostRecentTimestamp
