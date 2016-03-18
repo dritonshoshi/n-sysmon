@@ -11,29 +11,50 @@
 
 <div style="clear: both;"></div>
 
-<div class="input-group" style="margin: 2em;">
-    <span class="input-group-addon glyphicon glyphicon-globe input-group-addon"></span>
-    <select class="selectpicker form-control" name="marketSelect" id="marketSelect" ng-model="marketSearch.market">
-        <option value="">All</option>
-        <option ng-repeat="file in files | unique:'market' | orderBy:'market'" value="{{file.market}}">{{file.market}}</option>
-    </select>
+    <div class="input-group" style="margin: 2em;">
+        <span class="input-group-addon glyphicon glyphicon-globe input-group-addon"></span>
+        <select class="selectpicker form-control" name="marketSelect" id="marketSelect" ng-model="marketSearch.market">
+            <option value="">All</option>
+            <option ng-repeat="file in files | unique:'market' | orderBy:'market'" value="{{file.market}}">{{file.market}}</option>
+        </select>
 
-    <span class="input-group-addon glyphicon glyphicon-hdd input-group-addon"></span>
-    <select class="selectpicker form-control" name="serverSelect" id="serverSelect" ng-model="serverSearch.server">
-        <option value="">All</option>
-        <option ng-repeat="file in files | unique:'server' | filter:marketSearch | unique:'server'| orderBy:'server'" value="{{file.server}}">{{file.server}}</option>
-    </select>
+        <span class="input-group-addon glyphicon glyphicon-hdd input-group-addon"></span>
+        <select class="selectpicker form-control" name="serverSelect" id="serverSelect" ng-model="serverSearch.server">
+            <option value="">All</option>
+            <option ng-repeat="file in files | unique:'server' | filter:marketSearch | unique:'server'| orderBy:'server'" value="{{file.server}}">{{file.server}}</option>
+        </select>
 
-    <span class="input-group-addon glyphicon glyphicon-calendar input-group-addon"></span>
-    <select class="selectpicker form-control" name="dateSelect" id="dateSelect" ng-model="dateSearch.date">
-        <option value="">All</option>
-        <option ng-repeat="file in files | unique:'date'| orderBy:'date'" value="{{file.date}}">{{file.date}}</option>
-    </select>
-</div>
+        <span class="input-group-addon glyphicon glyphicon-calendar input-group-addon"></span>
+        <select class="selectpicker form-control" name="dateSelect" id="dateSelect" ng-model="dateSearch.date">
+            <option value="">All</option>
+            <option ng-repeat="file in files | unique:'date'| orderBy:'date'" value="{{file.date}}">{{file.date}}</option>
+        </select>
 
-<li ng-repeat="file in files | filter:marketSearch | filter:serverSearch | filter:dateSearch | orderBy:'name'">
-    <a ng-if="file && file.processor" href="#/{{file.processor}}?loadfile={{file.name}}">{{file.market}} {{file.server}} {{file.date}} {{file.time}} ({{file.size}} byte)</a>
-    <a ng-if="!file || !file.processor">{{file.name}} - not loadable</a>
-</li>
+        <span class="input-group-addon glyphicon glyphicon glyphicon-tag input-group-addon"></span>
+        <select class="selectpicker form-control" name="controllerIdSelect" id="controllerIdSelect" ng-model="controllerIdSearch.controllerId">
+            <option value="">All</option>
+            <option ng-repeat="file in files | unique:'controllerId'| orderBy:'controllerId'" value="{{file.controllerId}}">{{file.controllerName}}</option>
+        </select>
+    </div>
+
+    <div class="panel-group" id="accordion">
+        <!-- Controller-Grouping -->
+        <div ng-repeat="fileControllerId in files | filter:controllerIdSearch | filter:marketSearch | filter:serverSearch | filter:dateSearch | orderBy:'controllerId' | unique:'controllerId'" class="panel panel-primary" id="{{fileControllerId.controllerId}}">
+            <div class="panel-heading">
+                <h3 class="panel-title">
+                    <a data-toggle="collapse" data-target="#collapse{{fileControllerId.controllerId}}">{{fileControllerId.controllerName}}</a>
+                </h3>
+            </div>
+            <div id="collapse{{fileControllerId.controllerId}}" class="panel-collapse collapse in">
+                <div class="panel-body">
+                    <li ng-repeat="file in files | filter:fileControllerId.controllerId | filter:marketSearch | filter:serverSearch | filter:dateSearch | filter:controllerIdSearch  | orderBy:'name'">
+                        <a ng-if="file && file.processor" href="#/{{file.processor}}?loadfile={{file.name}}">{{file.market}} {{file.server}} {{file.date}} {{file.time}} ({{file.size}} byte)</a>
+                        <a ng-if="!file || !file.processor">{{file.name}} - not loadable</a>
+                    </li>
+                </div>
+            </div>
+        </div>
+    </div>
+
 
 </div>

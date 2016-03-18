@@ -3,14 +3,21 @@ package com.nsysmon.servlet.overview;
 import com.ajjpj.afoundation.io.AJsonSerHelper;
 import com.nsysmon.NSysMon;
 import com.nsysmon.NSysMonApi;
+import com.nsysmon.config.presentation.APresentationMenuEntry;
 import com.nsysmon.config.presentation.APresentationPageDefinition;
 
-import java.io.*;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.io.Writer;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.zip.GZIPInputStream;
 // http://localhost:8181/nsysmon/_$_nsysmon_$_/rest/loadableServerDataFiles/getFiles
 public class LoadableServerDataFiles implements APresentationPageDefinition {
@@ -78,6 +85,15 @@ public class LoadableServerDataFiles implements APresentationPageDefinition {
     private void getFilesAsJson(List<String> params, AJsonSerHelper json) throws IOException {
         DataFileTools dataTools = new DataFileTools();
 
+        //temporary remember the names, so they can be used in the display
+        Map<String, String> controllerid2controllerName = new HashMap<>();
+        for (APresentationMenuEntry menuEntry : NSysMon.get().getConfig().presentationMenuEntries) {
+            for (APresentationPageDefinition pageDef : menuEntry.pageDefinitions) {
+                controllerid2controllerName.put(pageDef.getId(), pageDef.getFullLabel());
+            }
+        }
+
+
         json.startObject();
         json.writeKey("files");
         json.startArray();
@@ -89,9 +105,10 @@ public class LoadableServerDataFiles implements APresentationPageDefinition {
                 String server = dataTools.getServerNameFromFilename(path.getFileName().toString());
                 String market = dataTools.getMarketFromFilename(path.getFileName().toString());
                 String dateAsString = dataTools.getDateFromFilename(path.getFileName().toString());
+                String controllerId = dataTools.getNsysmonControllerIdFromFilename(path.getFileName().toString());
 
                 json.startObject();
-                fillFileDataAsJson(json, dataTools, path, server, market, dateAsString);
+                fillFileDataAsJson(json, dataTools, path, server, market, dateAsString, controllerId, controllerid2controllerName.get(controllerId));
                 json.endObject();
             }
         } catch (IOException e) {
@@ -103,7 +120,7 @@ public class LoadableServerDataFiles implements APresentationPageDefinition {
 
     }
 
-    private void fillFileDataAsJson(AJsonSerHelper json, DataFileTools dataTools, Path path, String server, String market, String dateAsString) throws IOException {
+    private void fillFileDataAsJson(AJsonSerHelper json, DataFileTools dataTools, Path path, String server, String market, String dateAsString, String controllerId, String controllerName) throws IOException {
         json.writeKey("name");
         json.writeStringLiteral(path.getFileName().toString());
 
@@ -128,6 +145,12 @@ public class LoadableServerDataFiles implements APresentationPageDefinition {
 
         json.writeKey("server");
         json.writeStringLiteral(server);
+
+        json.writeKey("controllerId");
+        json.writeStringLiteral(controllerId);
+
+        json.writeKey("controllerName");
+        json.writeStringLiteral(controllerName);
     }
 
     @Override
