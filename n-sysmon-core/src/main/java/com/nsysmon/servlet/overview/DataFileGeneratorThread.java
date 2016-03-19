@@ -47,12 +47,14 @@ public class DataFileGeneratorThread implements Runnable {
 
         try {
             String host = InetAddress.getLocalHost().getHostName();
-            String installation = "TODO";//TODO FOX088S fill this
+            String installation = NSysMon.get().getConfig().appInfo.getApplicationName().replaceAll("/", "_");
             String filename = new DataFileTools().toGzipFilename(NSysMon.get().getConfig().pathDatafiles, pageDef.getId(), lastExport, host, installation);
             LOG.info("exporting to " + filename);
+
             FileOutputStream fos = new FileOutputStream(filename);
             GZIPOutputStream gzipOut = new GZIPOutputStream(fos);
             ((DataFileGeneratorSupporter) pageDef).getDataForExport(gzipOut);
+
             gzipOut.flush();
             fos.flush();
             gzipOut.close();
