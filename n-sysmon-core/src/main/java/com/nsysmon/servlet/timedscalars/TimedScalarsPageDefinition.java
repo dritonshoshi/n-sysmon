@@ -6,15 +6,19 @@ import com.nsysmon.NSysMonApi;
 import com.nsysmon.config.log.NSysMonLogger;
 import com.nsysmon.config.presentation.APresentationPageDefinition;
 import com.nsysmon.data.AScalarDataPoint;
+import com.nsysmon.servlet.overview.DataFileGeneratorSupporter;
 
 import java.io.IOException;
+import java.io.OutputStream;
 import java.net.URLDecoder;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 
-
-public class TimedScalarsPageDefinition implements APresentationPageDefinition {
+public class TimedScalarsPageDefinition implements APresentationPageDefinition, DataFileGeneratorSupporter {
     private volatile NSysMonApi sysMon;
     private static final NSysMonLogger LOG = NSysMonLogger.get(TimedScalarsPageDefinition.class);
 
@@ -89,7 +93,6 @@ public class TimedScalarsPageDefinition implements APresentationPageDefinition {
 
     }
 
-    //TODO FOX088S think about splitting this into 2 methods one for the names and one for the data
     private void serveData(final AJsonSerHelper json, List<String> params) throws IOException {
         final Map<String, ARingBuffer<AScalarDataPoint>> scalars = sysMon.getTimedScalarMeasurements();
         json.startObject();
@@ -127,6 +130,20 @@ public class TimedScalarsPageDefinition implements APresentationPageDefinition {
                 LOG.error(e);
             }
         }
+
+    }
+
+    @Override
+    public void getDataForExport(OutputStream os) throws IOException {
+        final Map<String, ARingBuffer<AScalarDataPoint>> scalars = sysMon.getTimedScalarMeasurements();
+        List<String> params = new ArrayList<>();
+        for (String key : scalars.keySet()) {
+            params.add(key);
+        }
+        String selectedEntries = params.stream().collect(Collectors.joining(","));
+
+        AJsonSerHelper aJsonSerHelper = new AJsonSerHelper(os);
+        serveGraphData(aJsonSerHelper, Collections.singletonList(selectedEntries));
 
     }
 }

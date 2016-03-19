@@ -1,4 +1,4 @@
-angular.module('NSysMonApp').controller('CtrlTimedScalars', function($scope, $timeout, $log, Rest, formatNumber, startsWith) {
+angular.module('NSysMonApp').controller('CtrlTimedScalars', function($scope, $timeout, $log, Rest, $location) {
     $scope.options =  {
       "chart": {
             "type": "lineWithFocusChart",
@@ -48,13 +48,27 @@ angular.module('NSysMonApp').controller('CtrlTimedScalars', function($scope, $ti
     $scope.graphData = []; //can leave empty
 
     $scope.autoRefresh = false;
-    $scope.autoRefreshSeconds = 1; //TODO change this value to something usefull
-    var autoRefreshCounter = 0; // to invalidate auto-refresh if there was a manual refresh in between
+    $scope.autoRefreshSeconds = 120;
+    // to invalidate auto-refresh if there was a manual refresh in between
+    var autoRefreshCounter = 0;
+    var selectedEntries;
 
     function initGraphDataFromResponse(data) {
-        //$scope.graphData = data;
-        $scope.rc.api.updateWithData(data);
-        triggerAutoRefresh();
+        $scope.loadedGraphData = data;
+        if ($location.search().loadfile) {
+            $scope.rc.api.updateWithData([]);
+            $scope.timedScalars = {};
+            selectedEntries = "";
+
+            var variableKey;
+            for (var myKey in $scope.loadedGraphData) {
+                variableKey = data[myKey].key;
+                $scope.timedScalars[variableKey] = {key: data[myKey].key, selected: false};
+            }
+        }else{
+            $scope.rc.api.updateWithData(data);
+            triggerAutoRefresh();
+        }
     }
 
     $scope.$watch('autoRefresh', triggerAutoRefresh);
@@ -62,6 +76,9 @@ angular.module('NSysMonApp').controller('CtrlTimedScalars', function($scope, $ti
 
     function triggerAutoRefresh() {
         if(! $scope.autoRefresh) {
+            return;
+        }
+        if ($location.search().loadfile) {
             return;
         }
 
@@ -76,18 +93,25 @@ angular.module('NSysMonApp').controller('CtrlTimedScalars', function($scope, $ti
     }
 
     $scope.refresh = function() {
+        if ($location.search().loadfile) {
+            return;
+        }
+
         selectedEntries = "";
         if (typeof $scope.timedScalars == 'undefined'){
             return;
         }
-        for (timedScalar in $scope.timedScalars) {
-            if ($scope.timedScalars[timedScalar].selected){
-                selectedEntries = selectedEntries.concat($scope.timedScalars[timedScalar].key);
+        for (var myKey in $scope.timedScalars) {
+            if ($scope.timedScalars[myKey].selected){
+                selectedEntries = selectedEntries.concat($scope.timedScalars[myKey].key);
                 selectedEntries = selectedEntries.concat(",");
             }
         }
         if (selectedEntries.length > 1) {
             Rest.call('getGraphData/' + selectedEntries, initGraphDataFromResponse);
+        }else {
+            //remove old graph-data
+            $scope.rc.api.updateWithData([]);
         }
 
     };
@@ -99,10 +123,37 @@ angular.module('NSysMonApp').controller('CtrlTimedScalars', function($scope, $ti
 
     $scope.toggleGraphData = function(key) {
         $scope.timedScalars[key].selected = !$scope.timedScalars[key].selected;
-        $scope.refresh();
+        if ($location.search().loadfile) {
+            var newGaphData = [];
+            for (var myKey in $scope.loadedGraphData) {
+                var keyName = $scope.loadedGraphData[myKey].key;
+                if ($scope.timedScalars[keyName].selected) {
+                    newGaphData.push({
+                        key: $scope.loadedGraphData[myKey].key,
+                        values: $scope.loadedGraphData[myKey].values
+                    });
+                    // newGaphData.push($scope.graphData[myKey].key, $scope.graphData[myKey].values);
+                }
+                $scope.graphData = newGaphData;
+                $scope.rc.api.updateWithData(newGaphData);
+            }
+        } else {
+            //only, if not loaded from a file
+            $scope.refresh();
+        }
+    };
+
+    // check if data from other sources should be loaded
+    function loadExternalData() {
+        var loadfileParam = $location.search().loadfile;
+        if (loadfileParam) {
+            selectedEntries = "";
+            Rest.callOther("loadableServerDataFiles", "loadFromFile" + "/" + loadfileParam, initGraphDataFromResponse);
+        }else{
+            Rest.call('getData', initFromResponse);
+            $scope.refresh();
+        }
     }
+    loadExternalData();
 
-    Rest.call('getData', initFromResponse);
-    $scope.refresh();
 });
-
