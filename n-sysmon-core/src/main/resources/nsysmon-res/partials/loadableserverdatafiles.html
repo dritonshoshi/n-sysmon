@@ -13,15 +13,15 @@
 
     <div class="input-group" style="margin: 2em;">
         <span class="input-group-addon glyphicon glyphicon-globe input-group-addon"></span>
-        <select class="selectpicker form-control" name="marketSelect" id="marketSelect" ng-model="marketSearch.market">
+        <select class="selectpicker form-control" name="installationSelect" id="installationSearch" ng-model="installationSearch.installation">
             <option value="">All</option>
-            <option ng-repeat="file in files | unique:'market' | orderBy:'market'" value="{{file.market}}">{{file.market}}</option>
+            <option ng-repeat="file in files | unique:'installation' | orderBy:'installation'" value="{{file.installation}}">{{file.installation}}</option>
         </select>
 
         <span class="input-group-addon glyphicon glyphicon-hdd input-group-addon"></span>
-        <select class="selectpicker form-control" name="serverSelect" id="serverSelect" ng-model="serverSearch.server">
+        <select class="selectpicker form-control" name="hostSelect" id="hostSelect" ng-model="hostSearch.host">
             <option value="">All</option>
-            <option ng-repeat="file in files | unique:'server' | filter:marketSearch | unique:'server'| orderBy:'server'" value="{{file.server}}">{{file.server}}</option>
+            <option ng-repeat="file in files | unique:'host' | filter:installationSearch | unique:'host'| orderBy:'host'" value="{{file.host}}">{{file.host}}</option>
         </select>
 
         <span class="input-group-addon glyphicon glyphicon-calendar input-group-addon"></span>
@@ -39,7 +39,7 @@
 
     <div class="panel-group" id="accordion">
         <!-- Controller-Grouping -->
-        <div ng-repeat="fileControllerId in files | filter:controllerIdSearch | filter:marketSearch | filter:serverSearch | filter:dateSearch | orderBy:'controllerId' | unique:'controllerId'" class="panel panel-primary" id="{{fileControllerId.controllerId}}">
+        <div ng-repeat="fileControllerId in files | filter:controllerIdSearch | filter:installationSearch | filter:hostSearch | filter:dateSearch | orderBy:'controllerId' | unique:'controllerId'" class="panel panel-primary" id="{{fileControllerId.controllerId}}">
             <div class="panel-heading">
                 <h3 class="panel-title">
                     <a data-toggle="collapse" data-target="#collapse{{fileControllerId.controllerId}}">{{fileControllerId.controllerName}}</a>
@@ -47,12 +47,12 @@
             </div>
             <div id="collapse{{fileControllerId.controllerId}}" class="panel-collapse collapse in">
                 <ul class="list-unstyled">
-                    <li ng-repeat="file in files | filter:fileControllerId.controllerId | filter:marketSearch | filter:serverSearch | filter:dateSearch | filter:controllerIdSearch  | orderBy:'name'">
+                    <li ng-repeat="file in files | filter:fileControllerId.controllerId | filter:installationSearch | filter:hostSearch | filter:dateSearch | filter:controllerIdSearch  | orderBy:'name'">
                         &nbsp;
                         <a ng-if="file && file.processor" href="#/{{file.processor}}?loadfile={{file.name}}" title="Display Data"><span class="glyphicon glyphicon-indent-left"></span></a>
                         &nbsp;
                         <a target="_self" href="#/{{file.processor}}?loadfile={{file.name}}" download="{{file.name}}" title="Download Data"><span class="glyphicon glyphicon-download-alt"></span></a>
-                        &nbsp;{{file.market}} {{file.server}} {{file.date}} {{file.time}} ({{file.size}} byte)
+                        &nbsp;{{file.installation}} {{file.host}} {{file.date}} {{file.time}} ({{file.size}} byte)
                         <a ng-if="!file || !file.processor">{{file.name}} - not loadable</a>
                     </li>
                 </ul>

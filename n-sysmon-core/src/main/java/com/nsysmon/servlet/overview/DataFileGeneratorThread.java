@@ -13,7 +13,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.zip.GZIPOutputStream;
 
 public class DataFileGeneratorThread implements Runnable {
-    //TODO FOX088S use YYYYMMDD instead of DateTimeFormatter.ISO_LOCAL_DATE_TIME
     private static final NSysMonLogger LOG = NSysMonLogger.get(DataFileGeneratorThread.class);
     private final String pageId;
     private LocalDateTime lastExport;
@@ -47,9 +46,9 @@ public class DataFileGeneratorThread implements Runnable {
         }
 
         try {
-            String serverName = InetAddress.getLocalHost().getHostName();
-            String market = "TODO";//TODO FOX088S fill this
-            String filename = new DataFileTools().toGzipFilename(NSysMon.get().getConfig().pathDatafiles, pageDef.getId(), lastExport, serverName, market);
+            String host = InetAddress.getLocalHost().getHostName();
+            String installation = "TODO";//TODO FOX088S fill this
+            String filename = new DataFileTools().toGzipFilename(NSysMon.get().getConfig().pathDatafiles, pageDef.getId(), lastExport, host, installation);
             LOG.info("exporting to " + filename);
             FileOutputStream fos = new FileOutputStream(filename);
             GZIPOutputStream gzipOut = new GZIPOutputStream(fos);

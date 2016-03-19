@@ -102,13 +102,13 @@ public class LoadableServerDataFiles implements APresentationPageDefinition {
                 if ((!path.getFileName().toString().startsWith(DataFileGeneratorSupporter.DATAFILE_PREFIX))||(!path.getFileName().toString().endsWith(".gz"))) {
                     continue;
                 }
-                String server = dataTools.getServerNameFromFilename(path.getFileName().toString());
-                String market = dataTools.getMarketFromFilename(path.getFileName().toString());
+                String host = dataTools.getHostFromFilename(path.getFileName().toString());
+                String installation = dataTools.getInstallationFromFilename(path.getFileName().toString());
                 String dateAsString = dataTools.getDateFromFilename(path.getFileName().toString());
                 String controllerId = dataTools.getNsysmonControllerIdFromFilename(path.getFileName().toString());
 
                 json.startObject();
-                fillFileDataAsJson(json, dataTools, path, server, market, dateAsString, controllerId, controllerid2controllerName.get(controllerId));
+                fillFileDataAsJson(json, dataTools, path, host, installation, dateAsString, controllerId, controllerid2controllerName.get(controllerId));
                 json.endObject();
             }
         } catch (IOException e) {
@@ -120,7 +120,7 @@ public class LoadableServerDataFiles implements APresentationPageDefinition {
 
     }
 
-    private void fillFileDataAsJson(AJsonSerHelper json, DataFileTools dataTools, Path path, String server, String market, String dateAsString, String controllerId, String controllerName) throws IOException {
+    private void fillFileDataAsJson(AJsonSerHelper json, DataFileTools dataTools, Path path, String host, String installation, String dateAsString, String controllerId, String controllerName) throws IOException {
         json.writeKey("name");
         json.writeStringLiteral(path.getFileName().toString());
 
@@ -140,11 +140,11 @@ public class LoadableServerDataFiles implements APresentationPageDefinition {
         json.writeKey("time");
         json.writeStringLiteral(dataTools.getTimeFromFilename(path.getFileName().toString()));
 
-        json.writeKey("market");
-        json.writeStringLiteral(market);
+        json.writeKey("installation");
+        json.writeStringLiteral(installation);
 
-        json.writeKey("server");
-        json.writeStringLiteral(server);
+        json.writeKey("host");
+        json.writeStringLiteral(host);
 
         json.writeKey("controllerId");
         json.writeStringLiteral(controllerId);

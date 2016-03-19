@@ -3,37 +3,55 @@ package com.nsysmon.servlet.overview;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+@SuppressWarnings("WeakerAccess")
 class DataFileTools {
-    //TODO FOX088S use YYYYMMDD instead of DateTimeFormatter.ISO_LOCAL_DATE_TIME
-    public String toGzipFilename(String outputPath, String pageDef, LocalDateTime fileDate, String serverName, String installationsName) {
+    private final static DateTimeFormatter date = DateTimeFormatter.ofPattern("yyyyMMdd");
+    private final static DateTimeFormatter time = DateTimeFormatter.ofPattern("HHmmss");
+
+    @SuppressWarnings("StringBufferReplaceableByString")
+    public String toGzipFilename(String outputPath, String pageDef, LocalDateTime fileDate, String host, String installation) {
         StringBuilder rc = new StringBuilder();
 
         rc.append(outputPath);
         rc.append("/");
         rc.append(DataFileGeneratorSupporter.DATAFILE_PREFIX);
         rc.append("_");
-        rc.append(installationsName);//TODO FOX088S an namen aus stasy anpassen
+        rc.append(installation);
         rc.append("_");
-        rc.append(serverName);
+        rc.append(host);
         rc.append("_");
         rc.append(pageDef);
         rc.append("_");
-        rc.append(fileDate.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME).replaceAll(":", "_")); //TODO FOX088S change to RVS-Timestamp
+        rc.append(getTimeStamp(fileDate));
         rc.append(".gz");
 
         return rc.toString();
     }
 
+    private static String getTimeStamp(LocalDateTime dateTime) {
+        return "D" + date.format(dateTime) + ".T" + time.format(dateTime);
+    }
+
     public String getNsysmonControllerIdFromFilename(String filename) {
-        //TODO FOX088S add not-found-checks
         String substring = getFilenameWithoutDirectories(filename);
 
         int index1 = substring.indexOf('_');
+        if (index1 == -1){
+            return "<unknown>";
+        }
         int index2 = substring.indexOf('_', index1 + 1);
+        if (index2 == -1){
+            return "<unknown>";
+        }
         int index3 = substring.indexOf('_', index2 + 1);
+        if (index3 == -1){
+            return "<unknown>";
+        }
         int index4 = substring.indexOf('_', index3 + 1);
-        String rc = substring.substring(index3 + 1, index4);
-        return rc;
+        if (index4 == -1){
+            return "<unknown>";
+        }
+        return substring.substring(index3 + 1, index4);
     }
 
     private String getFilenameWithoutDirectories(String filename) {
@@ -49,26 +67,29 @@ class DataFileTools {
 
     public String getDateFromFilename(String filename) {
         String substring = getFilenameWithoutDirectories(filename);
-        String rc = substring.split("_")[4].substring(0,10);
-        return rc;
+        String tmp = substring.split("_")[4].substring(1,9);
+        if (tmp.length() < 8){
+            return "<unknown>";
+        }
+        return tmp.substring(0,4) + "-" + tmp.substring(4,6) + "-" + tmp.substring(6,8);
     }
 
     public String getTimeFromFilename(String filename) {
         String substring = getFilenameWithoutDirectories(filename);
-        String[] split = substring.split("_");
-        String rc = split[4].substring(11) + ":" + split[5] + ":" + split[6].substring(0,2);
-        return rc;
+        String tmp = substring.split("_")[4].substring(11);
+        if (tmp.length() < 6){
+            return "<unknown>";
+        }
+        return tmp.substring(0,2) + ":" + tmp.substring(2,4) + ":" + tmp.substring(4,6);
     }
 
-    public String getMarketFromFilename(String filename) {
+    public String getInstallationFromFilename(String filename) {
         String substring = getFilenameWithoutDirectories(filename);
-        String rc = substring.split("_")[1];
-        return rc;
+        return substring.split("_")[1];
     }
 
-    public String getServerNameFromFilename(String filename) {
+    public String getHostFromFilename(String filename) {
         String substring = getFilenameWithoutDirectories(filename);
-        String rc = substring.split("_")[2];
-        return rc;
+        return substring.split("_")[2];
     }
 }

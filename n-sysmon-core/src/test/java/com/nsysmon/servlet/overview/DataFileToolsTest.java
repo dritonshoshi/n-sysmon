@@ -8,14 +8,16 @@ import java.time.LocalDateTime;
 public class DataFileToolsTest {
 
     @Test public void getNsysmonControllerIdFromFilename(){
-        String fileName = "Part1Part/nsysmon_market_server_Part2Part_2016-03-09T19:01:55.178";
+        //Dyyyymmdd.Thhmmss
+        //D20160309.T17055
+        String fileName = "Part1Part/nsysmon_installation_host_Part2Part_D20160309.T170552";
         String id = new DataFileTools().getNsysmonControllerIdFromFilename(fileName);
         Assert.assertNotNull(id);
         Assert.assertEquals("Part2Part", id);
     }
 
     @Test public void getNsysmonControllerIdFromFilename_WithoutDirectory(){
-        String fileName = "nsysmon_market_server_overviewDebuggingData_2016-03-09T20_58_03.173";
+        String fileName = "nsysmon_installation_host_overviewDebuggingData_D20160309.T170552";
         String id = new DataFileTools().getNsysmonControllerIdFromFilename(fileName);
         Assert.assertNotNull(id);
         Assert.assertEquals("overviewDebuggingData", id);
@@ -24,44 +26,44 @@ public class DataFileToolsTest {
     @Test public void toFilename(){
         String outputPath ="Part1Part";
         String pageDef = "Part2Part";
-        String serverName = "serverName";
-        String market = "market";
+        String hostName = "hostName";
+        String installation = "installation";
         LocalDateTime fileDate = LocalDateTime.now();
-        String fileName = new DataFileTools().toGzipFilename(outputPath, pageDef, fileDate, serverName, market);
+        String fileName = new DataFileTools().toGzipFilename(outputPath, pageDef, fileDate, hostName, installation);
 
         Assert.assertNotNull(fileName);
         Assert.assertTrue(fileName.contains(outputPath));
         Assert.assertTrue(fileName.contains(pageDef));
-        Assert.assertTrue(fileName.contains(serverName));
-        Assert.assertTrue(fileName.contains(market));
+        Assert.assertTrue(fileName.contains(hostName));
+        Assert.assertTrue(fileName.contains(installation));
     }
 
-    @Test public void getServerNameFromFilename(){
-        String fileName = "nsysmon_market_server_overviewDebuggingData_2016-03-09T20_58_03.173";
-        String id = new DataFileTools().getServerNameFromFilename(fileName);
+    @Test public void gethostNameFromFilename(){
+        String fileName = "nsysmon_installation_host_overviewDebuggingData_D20160309.T170552";
+        String id = new DataFileTools().getHostFromFilename(fileName);
         Assert.assertNotNull(id);
-        Assert.assertEquals("server", id);
+        Assert.assertEquals("host", id);
     }
 
     @Test public void getDateFromFilename(){
-        String fileName = "nsysmon_market_server_overviewDebuggingData_2016-03-09T20_58_03.173";
+        String fileName = "nsysmon_installation_host_overviewDebuggingData_D20160309.T170552";
         String id = new DataFileTools().getDateFromFilename(fileName);
         Assert.assertNotNull(id);
         Assert.assertEquals("2016-03-09", id);
     }
 
     @Test public void getTimeFromFilename(){
-        String fileName = "nsysmon_market_server_overviewDebuggingData_2016-03-09T20_58_03.173";
+        String fileName = "nsysmon_installation_host_overviewDebuggingData_D20160309.T170551";
         String id = new DataFileTools().getTimeFromFilename(fileName);
         Assert.assertNotNull(id);
-        Assert.assertEquals("20:58:03", id);
+        Assert.assertEquals("17:05:51", id);
     }
 
-    @Test public void getMarketFromFilename(){
-        String fileName = "nsysmon_market_server_overviewDebuggingData_2016-03-09T20_58_03.173";
-        String id = new DataFileTools().getMarketFromFilename(fileName);
+    @Test public void getinstallationFromFilename(){
+        String fileName = "nsysmon_installation_host_overviewDebuggingData_D20160309.T170552";
+        String id = new DataFileTools().getInstallationFromFilename(fileName);
         Assert.assertNotNull(id);
-        Assert.assertEquals("market", id);
+        Assert.assertEquals("installation", id);
     }
 
 }
