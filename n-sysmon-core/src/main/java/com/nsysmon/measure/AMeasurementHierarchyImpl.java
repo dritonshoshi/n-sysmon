@@ -101,9 +101,7 @@ public class AMeasurementHierarchyImpl implements AMeasurementHierarchy {
     }
 
     private void doKill() {
-        //TODO FOX088S add logging
-        //        log.error ("Excessive number of measurements in a single hierarchy:  " + size + " - probable memory leak, forcefully cleaning measurement stack. Root measurement was " +
-        //                rootMeasurement.getIdentifier() + " with parameters " + rootMeasurement.getParameters() + ", started at " + new Date(rootMeasurement.getStartTimeMillis()));
+        log.warn("Excessive number of measurements in a single hierarchy:  " + size + " - probable memory leak, forcefully cleaning measurement stack.");
         killedDueSize = true;
     }
 

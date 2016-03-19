@@ -3,6 +3,7 @@ package com.nsysmon.servlet.overview;
 import com.ajjpj.afoundation.io.AJsonSerHelper;
 import com.nsysmon.NSysMon;
 import com.nsysmon.NSysMonApi;
+import com.nsysmon.config.log.NSysMonLogger;
 import com.nsysmon.config.presentation.APresentationMenuEntry;
 import com.nsysmon.config.presentation.APresentationPageDefinition;
 
@@ -21,6 +22,8 @@ import java.util.Map;
 import java.util.zip.GZIPInputStream;
 // http://localhost:8181/nsysmon/_$_nsysmon_$_/rest/loadableServerDataFiles/getFiles
 public class LoadableServerDataFiles implements APresentationPageDefinition {
+
+    private static final NSysMonLogger LOG = NSysMonLogger.get(LoadableServerDataFiles.class);
 
     @Override
     public String getId() {
@@ -60,8 +63,10 @@ public class LoadableServerDataFiles implements APresentationPageDefinition {
     }
 
     private void loadFile(List<String> params, AJsonSerHelper json) throws IOException {
-        //TODO FOX088S error-handling
-        //TODO FOX088S security, check params.get(0)
+        if (params.get(0).contains("\\") || params.get(0).contains("/")) {
+            LOG.error("Not loading file " + params.get(0) + " because the directory looks strange.");
+            return;
+        }
 
         Path path = Paths.get(Paths.get(NSysMon.get().getConfig().pathDatafiles).toString(), params.get(0));
         FileInputStream fis = new FileInputStream(path.toFile());
