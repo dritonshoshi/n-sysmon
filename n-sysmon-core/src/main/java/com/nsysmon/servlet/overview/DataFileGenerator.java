@@ -4,6 +4,9 @@ import com.ajjpj.afoundation.io.AJsonSerHelper;
 import com.nsysmon.NSysMonApi;
 import com.nsysmon.config.log.NSysMonLogger;
 import com.nsysmon.config.presentation.APresentationPageDefinition;
+import com.nsysmon.data.AHierarchicalDataRoot;
+import com.nsysmon.datasink.ADataSink;
+import com.nsysmon.impl.NSysMonConfigurer;
 import com.nsysmon.util.DaemonThreadFactory;
 
 import java.io.IOException;
@@ -36,6 +39,28 @@ public class DataFileGenerator implements APresentationPageDefinition {
     @Override public String getControllerName() {
         return "CtrlDataFileGenerator";
     }
+
+    /* this datasink isn't used for data, just for receiving the shut-down-trigger when shutting down NSysmon */
+    private ADataSink dataSink = new ADataSink() {
+        @Override
+        public void onStartedHierarchicalMeasurement(String identifier) {
+            //nothing
+        }
+
+        @Override
+        public void onFinishedHierarchicalMeasurement(AHierarchicalDataRoot data) {
+            //nothing
+        }
+
+        @Override
+        public void shutdown() throws Exception {
+            LOG.info("Exporting all data one final time.");
+            // export all data when nsysmon get's shutdown
+            for (DataFileGeneratorThread dataFileGeneratorThread : pageStorer) {
+                dataFileGeneratorThread.run();
+            }
+        }
+    };
 
     private List<DataFileGeneratorThread> pageStorer = new ArrayList<>();
     private ScheduledExecutorService scheduledPool;
@@ -95,6 +120,6 @@ public class DataFileGenerator implements APresentationPageDefinition {
     }
 
     @Override public void init(NSysMonApi sysMon) {
-
+        NSysMonConfigurer.addDataSink(sysMon, dataSink);
     }
 }

@@ -268,7 +268,12 @@ public class NSysMonImpl implements AShutdownable, NSysMonApi {
         for(RobustDataSinkWrapper handler: handlers) {
             handler.shutdown();
         }
+
         for (RobustScalarMeasurerWrapper m: scalarMeasurers) {
+            m.shutdown();
+        }
+
+        for (RobustScalarMeasurerWrapper m: timedScalarMeasurers) {
             m.shutdown();
         }
 
