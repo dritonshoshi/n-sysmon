@@ -46,12 +46,16 @@
                 </h3>
             </div>
             <div id="collapse{{fileControllerId.controllerId}}" class="panel-collapse collapse in">
-                <div class="panel-body">
+                <ul class="list-unstyled">
                     <li ng-repeat="file in files | filter:fileControllerId.controllerId | filter:marketSearch | filter:serverSearch | filter:dateSearch | filter:controllerIdSearch  | orderBy:'name'">
-                        <a ng-if="file && file.processor" href="#/{{file.processor}}?loadfile={{file.name}}">{{file.market}} {{file.server}} {{file.date}} {{file.time}} ({{file.size}} byte)</a>
+                        &nbsp;
+                        <a ng-if="file && file.processor" href="#/{{file.processor}}?loadfile={{file.name}}" title="Display Data"><span class="glyphicon glyphicon-indent-left"></span></a>
+                        &nbsp;
+                        <a target="_self" href="#/{{file.processor}}?loadfile={{file.name}}" download="{{file.name}}" title="Download Data"><span class="glyphicon glyphicon-download-alt"></span></a>
+                        &nbsp;{{file.market}} {{file.server}} {{file.date}} {{file.time}} ({{file.size}} byte)
                         <a ng-if="!file || !file.processor">{{file.name}} - not loadable</a>
                     </li>
-                </div>
+                </ul>
             </div>
         </div>
     </div>
