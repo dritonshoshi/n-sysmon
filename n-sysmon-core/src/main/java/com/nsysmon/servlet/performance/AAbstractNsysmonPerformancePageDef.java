@@ -104,8 +104,8 @@ public abstract class AAbstractNsysmonPerformancePageDef implements APresentatio
         if(node.id != null) {
             json.writeKey("id");
             //this is done to reduce the size of the json, because now we don'T send the 20 chars per id, but a smaller string
-            json.writeStringLiteral("n"+nr);
-            //json.writeStringLiteral(node.id);
+//            json.writeStringLiteral("n"+nr);
+            json.writeStringLiteral(node.id);
         }
 
         json.writeKey("name");
