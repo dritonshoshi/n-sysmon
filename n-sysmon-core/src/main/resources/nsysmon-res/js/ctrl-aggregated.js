@@ -310,7 +310,7 @@ angular.module('NSysMonApp').controller('CtrlAggregated', function($scope, $log,
         }
     }
 
-    $scope.doExport = function() {
+    $scope.doExportAsExcel = function() {
         function pad2(n) {
             var result = n.toString();
             while(result.length < 2) {
@@ -462,7 +462,8 @@ angular.module('NSysMonApp').controller('CtrlAggregated', function($scope, $log,
                     dataCols += '<div class="subdued-progress-background">' + formattedValue + '</div>';
             }
             else {
-                dataCols += '<div>' + formattedValue + '</div>';
+                //dataCols += '<div>' + formattedValue + '</div>';
+                dataCols += formattedValue;
             }
 
             dataCols += '</div>';
