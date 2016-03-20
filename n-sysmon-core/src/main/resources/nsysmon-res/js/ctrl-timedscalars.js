@@ -49,9 +49,9 @@ angular.module('NSysMonApp').controller('CtrlTimedScalars', function($scope, $ti
 
     $scope.autoRefresh = false;
     $scope.autoRefreshSeconds = 120;
+    $scope.entriesToLoadDataFor = [];
     // to invalidate auto-refresh if there was a manual refresh in between
     var autoRefreshCounter = 0;
-    var selectedEntries;
 
     function initGraphDataFromResponse(data) {
         $scope.loadedGraphData = data;
@@ -97,18 +97,21 @@ angular.module('NSysMonApp').controller('CtrlTimedScalars', function($scope, $ti
             return;
         }
 
-        selectedEntries = "";
+        var selectedEntriesForServer = "";
         if (typeof $scope.timedScalars == 'undefined'){
             return;
         }
-        for (var myKey in $scope.timedScalars) {
-            if ($scope.timedScalars[myKey].selected){
-                selectedEntries = selectedEntries.concat($scope.timedScalars[myKey].key);
-                selectedEntries = selectedEntries.concat(",");
+
+        for (var keySelected in $scope.entriesToLoadDataFor) {
+            for (var keyData in $scope.timedScalars) {
+                if ($scope.timedScalars[keyData].key == $scope.entriesToLoadDataFor[keySelected]){
+                    selectedEntriesForServer = selectedEntriesForServer.concat($scope.entriesToLoadDataFor[keySelected]);
+                    selectedEntriesForServer = selectedEntriesForServer.concat(",");
+                }
             }
         }
-        if (selectedEntries.length > 1) {
-            Rest.call('getGraphData/' + selectedEntries, initGraphDataFromResponse);
+        if (selectedEntriesForServer.length > 1) {
+            Rest.call('getGraphData/' + selectedEntriesForServer, initGraphDataFromResponse);
         }else {
             //remove old graph-data
             $scope.rc.api.updateWithData([]);
@@ -122,8 +125,20 @@ angular.module('NSysMonApp').controller('CtrlTimedScalars', function($scope, $ti
     }
 
     $scope.toggleGraphData = function(key) {
-        $scope.timedScalars[key].selected = !$scope.timedScalars[key].selected;
+        var found = false;
+        for (var myKey in $scope.entriesToLoadDataFor) {
+            if ($scope.entriesToLoadDataFor[myKey] == key){
+                //$scope.entriesToLoadDataFor.remove(Number(myKey));
+                $scope.entriesToLoadDataFor.splice(myKey ,1);
+                found = true;
+            }
+        }
+        if (!found) {
+            $scope.entriesToLoadDataFor.push(key);
+        }
+
         if ($location.search().loadfile) {
+            //TODO FOX088S transform this to entriesToLoadDataFor
             var newGaphData = [];
             for (var myKey in $scope.loadedGraphData) {
                 var keyName = $scope.loadedGraphData[myKey].key;
@@ -132,7 +147,7 @@ angular.module('NSysMonApp').controller('CtrlTimedScalars', function($scope, $ti
                         key: $scope.loadedGraphData[myKey].key,
                         values: $scope.loadedGraphData[myKey].values
                     });
-                    // newGaphData.push($scope.graphData[myKey].key, $scope.graphData[myKey].values);
+                    // newGraphData.push($scope.graphData[myKey].key, $scope.graphData[myKey].values);
                 }
                 $scope.graphData = newGaphData;
                 $scope.rc.api.updateWithData(newGaphData);

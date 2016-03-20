@@ -43,13 +43,6 @@ fieldset legend {
     text-align: center;
 }
 
-.timedScalarOff {
-//    text-align: left;
-}
-.timedScalarOn {
-//    text-align: right;
-    background-color: rgba(255, 155, 155, .8) !important;
-}
 .timedscalar-measurements {
     width: 15%;
     display: inline-block;
@@ -481,4 +474,26 @@ div.env-value {
 .input-group > .input-group-btn:first-child > .selectpicker {
     border-top-left-radius: 5px;
     border-bottom-left-radius: 5px;
+}
+
+.timedScalarOff {
+}
+
+.timedScalarOn {
+    background-color: #1f66b0 !important;
+    color: white !important;
+}
+
+.timedScalar-option {
+    padding: 0.2em;
+    /*padding-left: 0.1em;*/
+    list-style: none;
+    display: block;
+    list-style-type: disc;
+    float: left;
+    width: 9em;
+    height: 9em;
+    background-color: #b9eaf2;
+    /*//background-color: #f9f9f9;*/
+    border: 0.2em solid rgb(255, 255, 255);
 }

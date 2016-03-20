@@ -11,16 +11,31 @@
         </div>
     </div>
 
-    <input type='hidden' ng-model="currentDisplayedScalars">
-    <fieldset class="timedscalar-measurements">
-        <legend>Available Data</legend>
-        <table class="table table-condensed table-striped">
-            <tr ng-repeat="s in timedScalars">
-                <td class="scalar-name" ng-click="toggleGraphData(s.key)" ng-class="s.selected ? 'timedScalarOn' : 'timedScalarOff'">{{s.key}}</td>
-            </tr>
-        </table>
-    </fieldset>
 
+    <div>
+        <!--TODO FOX088S ake sorting by group and key work -->
+        <div ng-repeat="entry in timedScalars | orderBy:'group' "
+             class="timedScalar-option {{entriesToLoadDataFor.indexOf(entry.key) == -1 ? 'timedScalarOff' : 'timedScalarOn'}}"
+             ng-click="toggleGraphData(entry.key)" >
+
+
+            <div ng-if="entry.group">
+                <!--TODO FOX088S decide if to request icon or not -->
+                <b>{{entry.group}}</b>
+            </div>
+
+            <div>
+                <small><b>{{entry.key}}</b></small>
+            </div>
+
+            <div ng-if="entry.description">
+                <small><small>{{entry.description}}</small></small>
+            </div>
+            <!--<div ng-if="entriesToLoadDataFor.indexOf(entry.key) != -1"><br/>selected</div>-->
+        </div>
+    </div>
+
+    <div style="clear:both"></div>
 
     <fieldset class="timedscalar-graph">
         <legend>Graphical Display</legend>

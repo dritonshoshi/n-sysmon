@@ -10,9 +10,9 @@ import java.util.Map;
 
 public class ThreadingMeasurer implements AScalarMeasurer {
 
-    private static final String THREAD_COUNT = "JVM: Current Thread Count";
-    private static final String DAEMON_THREAD_COUNT = "JVM: Daemon Thread Count";
-    private static final String THREADS_CREATED = "JVM: Threads Created";
+    private static final String THREAD_COUNT = "Current Thread Count";
+    private static final String DAEMON_THREAD_COUNT = "Daemon Thread Count";
+    private static final String THREADS_CREATED = "Threads Created";
 
     private long formerTotalStartedThreadCount = 0;
 
@@ -38,5 +38,29 @@ public class ThreadingMeasurer implements AScalarMeasurer {
 
     @Override public AOption<Long> getTimeoutInMilliSeconds() {
         return AOption.none();
+    }
+
+    @Override
+    public String getGroupnameOfMeasurement(String measurement) {
+        if (THREAD_COUNT.equalsIgnoreCase(measurement)) {
+            return "JVM";
+        } else if (DAEMON_THREAD_COUNT.equalsIgnoreCase(measurement)) {
+            return "JVM";
+        } else if (THREADS_CREATED.equalsIgnoreCase(measurement)) {
+            return "JVM";
+        }
+        return null;
+    }
+
+    @Override
+    public String getDescriptionOfMeasurement(String measurement) {
+        if (THREAD_COUNT.equalsIgnoreCase(measurement)) {
+            return "Counter of all threads in the JVM.";
+        } else if (DAEMON_THREAD_COUNT.equalsIgnoreCase(measurement)) {
+            return "Counter of all threads in the JVM marked as daemon.";
+        } else if (THREADS_CREATED.equalsIgnoreCase(measurement)) {
+            return "Threads created in the last time period.";
+        }
+        return null;
     }
 }

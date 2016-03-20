@@ -6,6 +6,7 @@ import com.nsysmon.NSysMonApi;
 import com.nsysmon.config.log.NSysMonLogger;
 import com.nsysmon.config.presentation.APresentationPageDefinition;
 import com.nsysmon.data.AScalarDataPoint;
+import com.nsysmon.measure.scalar.AScalarMeasurer;
 import com.nsysmon.servlet.overview.DataFileGeneratorSupporter;
 
 import java.io.IOException;
@@ -79,8 +80,8 @@ public class TimedScalarsPageDefinition implements APresentationPageDefinition, 
             for (String key : scalars.keySet()) {
                 if (key.equalsIgnoreCase(paramWithoutHtml)) {
                     json.startObject();
-                    json.writeKey("key");
-                    json.writeStringLiteral(key);
+                    addMetainfos(json, key);
+
                     json.writeKey("values");
                     json.startArray();
                     writeRingBufferIntoJson(json, scalars.get(key));
@@ -93,6 +94,45 @@ public class TimedScalarsPageDefinition implements APresentationPageDefinition, 
 
     }
 
+    private void addMetainfos(AJsonSerHelper json, String key) throws IOException {
+        json.writeKey("key");
+        json.writeStringLiteral(key);
+
+        String description = findDescriptionForKey(key);
+        if (description != null) {
+            json.writeKey("description");
+            json.writeStringLiteral(description);
+        }
+
+        String group = findGroupForKey(key);
+        if (group != null) {
+            json.writeKey("group");
+            json.writeStringLiteral(group);
+        }
+    }
+
+    private String findGroupForKey(String key) {
+        String tmp;
+        for (AScalarMeasurer initialTimedScalarMeasurer : sysMon.getConfig().initialTimedScalarMeasurers) {
+            tmp = initialTimedScalarMeasurer.getGroupnameOfMeasurement(key);
+            if (tmp != null){
+                return tmp;
+            }
+        }
+        return "other";
+    }
+
+    private String findDescriptionForKey(String key) {
+        String tmp;
+        for (AScalarMeasurer initialTimedScalarMeasurer : sysMon.getConfig().initialTimedScalarMeasurers) {
+            tmp = initialTimedScalarMeasurer.getDescriptionOfMeasurement(key);
+            if (tmp != null){
+                return tmp;
+            }
+        }
+        return null;
+    }
+
     private void serveData(final AJsonSerHelper json, List<String> params) throws IOException {
         final Map<String, ARingBuffer<AScalarDataPoint>> scalars = sysMon.getTimedScalarMeasurements();
         json.startObject();
@@ -103,8 +143,7 @@ public class TimedScalarsPageDefinition implements APresentationPageDefinition, 
         for (String key : scalars.keySet()) {
             json.writeKey(key);
             json.startObject();
-            json.writeKey("key");
-            json.writeStringLiteral(key);
+            addMetainfos(json, key);
             json.writeKey("selected");
             json.writeBooleanLiteral(params.contains(key));
             json.endObject();
@@ -146,4 +185,5 @@ public class TimedScalarsPageDefinition implements APresentationPageDefinition, 
         serveGraphData(aJsonSerHelper, Collections.singletonList(selectedEntries));
 
     }
+
 }

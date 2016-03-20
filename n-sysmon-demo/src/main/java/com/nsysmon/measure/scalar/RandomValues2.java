@@ -27,4 +27,22 @@ public class RandomValues2 implements AScalarMeasurer {
     @Override public AOption<Long> getTimeoutInMilliSeconds() {
         return AOption.none();
     }
+
+
+    @Override
+    public String getGroupnameOfMeasurement(String measurement) {
+        if (MEASUREMENT_NAME.equalsIgnoreCase(measurement)) {
+            return "Test";
+        }
+        return null;
+    }
+
+    @Override
+    public String getDescriptionOfMeasurement(String measurement) {
+        if (MEASUREMENT_NAME.equalsIgnoreCase(measurement)) {
+            return "Generates some more random values.";
+        }
+        return null;
+    }
+
 }

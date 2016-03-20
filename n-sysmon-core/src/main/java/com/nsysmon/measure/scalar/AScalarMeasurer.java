@@ -26,4 +26,11 @@ public interface AScalarMeasurer extends AShutdownable {
     void prepareMeasurements(Map<String, Object> mementos) throws Exception;
     void contributeMeasurements(Map<String, AScalarDataPoint> data, long timestamp, Map<String, Object> mementos) throws Exception;
     AOption<Long> getTimeoutInMilliSeconds();
+
+    default String getGroupnameOfMeasurement(String measurement){
+        return null;
+    }
+    default String getDescriptionOfMeasurement(String measurement){
+        return null;
+    }
 }
