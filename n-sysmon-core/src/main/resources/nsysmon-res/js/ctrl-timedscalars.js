@@ -138,19 +138,28 @@ angular.module('NSysMonApp').controller('CtrlTimedScalars', function($scope, $ti
         }
 
         if ($location.search().loadfile) {
-            //TODO FOX088S transform this to entriesToLoadDataFor
-            var newGaphData = [];
+            var newGraphData = [];
             for (var myKey in $scope.loadedGraphData) {
+                //$scope.entriesToLoadDataFor.push(key);
                 var keyName = $scope.loadedGraphData[myKey].key;
-                if ($scope.timedScalars[keyName].selected) {
-                    newGaphData.push({
+
+                var found = false;
+                for (var key in $scope.entriesToLoadDataFor) {
+                    if ($scope.entriesToLoadDataFor[key] == $scope.loadedGraphData[myKey].key){
+                        //$scope.entriesToLoadDataFor.remove(Number(myKey));
+                        found = true;
+                    }
+                }
+
+                if (found) {
+                    newGraphData.push({
                         key: $scope.loadedGraphData[myKey].key,
                         values: $scope.loadedGraphData[myKey].values
                     });
                     // newGraphData.push($scope.graphData[myKey].key, $scope.graphData[myKey].values);
                 }
-                $scope.graphData = newGaphData;
-                $scope.rc.api.updateWithData(newGaphData);
+                $scope.graphData = newGraphData;
+                $scope.rc.api.updateWithData(newGraphData);
             }
         } else {
             //only, if not loaded from a file
@@ -160,10 +169,10 @@ angular.module('NSysMonApp').controller('CtrlTimedScalars', function($scope, $ti
 
     // check if data from other sources should be loaded
     function loadExternalData() {
-        var loadfileParam = $location.search().loadfile;
-        if (loadfileParam) {
-            selectedEntries = "";
-            Rest.callOther("loadableServerDataFiles", "loadFromFile" + "/" + loadfileParam, initGraphDataFromResponse);
+        var loadFileNameParam = $location.search().loadfile;
+        if (loadFileNameParam) {
+            $scope.entriesToLoadDataFor = [];
+            Rest.callOther("loadableServerDataFiles", "loadFromFile" + "/" + loadFileNameParam, initGraphDataFromResponse);
         }else{
             Rest.call('getData', initFromResponse);
             $scope.refresh();

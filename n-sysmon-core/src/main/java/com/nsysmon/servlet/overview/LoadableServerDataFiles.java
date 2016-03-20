@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.zip.GZIPInputStream;
+
 // http://localhost:8181/nsysmon/_$_nsysmon_$_/rest/loadableServerDataFiles/getFiles
 public class LoadableServerDataFiles implements APresentationPageDefinition {
 
@@ -53,7 +54,7 @@ public class LoadableServerDataFiles implements APresentationPageDefinition {
     @Override
     public boolean handleRestCall(String service, List<String> params, AJsonSerHelper json) throws Exception {
         if ("getFiles".equals(service)) {
-            getFilesAsJson(params, json);
+            getFilesAsJson(json);
             return true;
         } else if ("loadFromFile".equals(service)) {
             loadFile(params, json);
@@ -68,7 +69,11 @@ public class LoadableServerDataFiles implements APresentationPageDefinition {
             return;
         }
 
-        Path path = Paths.get(Paths.get(NSysMon.get().getConfig().pathDatafiles).toString(), params.get(0));
+        String parameterFilename = params.get(0);
+        // replace whitespace with proper space
+        parameterFilename = parameterFilename.replaceAll("%20", " ");
+
+        Path path = Paths.get(Paths.get(NSysMon.get().getConfig().pathDatafiles).toString(), parameterFilename);
         FileInputStream fis = new FileInputStream(path.toFile());
         GZIPInputStream gzipIn = new GZIPInputStream(fis);
 
@@ -81,13 +86,13 @@ public class LoadableServerDataFiles implements APresentationPageDefinition {
 
     private void copyData(Reader input, Writer output) throws IOException {
         char[] buffer = new char[1024];
-        int n = 0;
+        int n;
         while (-1 != (n = input.read(buffer))) {
             output.write(buffer, 0, n);
         }
     }
 
-    private void getFilesAsJson(List<String> params, AJsonSerHelper json) throws IOException {
+    private void getFilesAsJson(AJsonSerHelper json) throws IOException {
         DataFileTools dataTools = new DataFileTools();
 
         //temporary remember the names, so they can be used in the display

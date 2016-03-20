@@ -13,7 +13,7 @@
 
 
     <div>
-        <!--TODO FOX088S ake sorting by group and key work -->
+        <!--TODO FOX088S make sorting by group and key work -->
         <div ng-repeat="entry in timedScalars | orderBy:'group' "
              class="timedScalar-option {{entriesToLoadDataFor.indexOf(entry.key) == -1 ? 'timedScalarOff' : 'timedScalarOn'}}"
              ng-click="toggleGraphData(entry.key)" >
