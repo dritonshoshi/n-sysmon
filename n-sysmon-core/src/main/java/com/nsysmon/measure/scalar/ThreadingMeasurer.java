@@ -57,7 +57,7 @@ public class ThreadingMeasurer implements AScalarMeasurer {
         if (THREAD_COUNT.equalsIgnoreCase(measurement)) {
             return "Counter of all threads in the JVM.";
         } else if (DAEMON_THREAD_COUNT.equalsIgnoreCase(measurement)) {
-            return "Counter of all threads in the JVM marked as daemon.";
+            return "All threads in the JVM marked as daemon.";
         } else if (THREADS_CREATED.equalsIgnoreCase(measurement)) {
             return "Threads created in the last time period.";
         }

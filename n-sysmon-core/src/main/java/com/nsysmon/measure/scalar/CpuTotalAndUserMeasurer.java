@@ -44,4 +44,24 @@ public class CpuTotalAndUserMeasurer implements AScalarMeasurer {
     @Override public AOption<Long> getTimeoutInMilliSeconds() {
         return AOption.none();
     }
+
+    @Override
+    public String getGroupnameOfMeasurement(String measurement) {
+        if (CPU_TOTAL.equalsIgnoreCase(measurement)) {
+            return "System";
+        } else if (CPU_USER.equalsIgnoreCase(measurement)) {
+            return "System";
+        }
+        return null;
+    }
+
+    @Override
+    public String getDescriptionOfMeasurement(String measurement) {
+        if (CPU_TOTAL.equalsIgnoreCase(measurement)) {
+            return "Total usage of the CPU including everything on the system.";
+        } else if (CPU_USER.equalsIgnoreCase(measurement)) {
+            return "CPU usage by this user.";
+        }
+        return null;
+    }
 }

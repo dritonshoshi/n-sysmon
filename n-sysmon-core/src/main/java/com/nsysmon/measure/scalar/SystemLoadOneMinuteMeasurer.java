@@ -43,4 +43,20 @@ public class SystemLoadOneMinuteMeasurer implements AScalarMeasurer {
     @Override public AOption<Long> getTimeoutInMilliSeconds() {
         return AOption.none();
     }
+
+    @Override
+    public String getGroupnameOfMeasurement(String measurement) {
+        if (IDENT_LOAD_1_MIN.equalsIgnoreCase(measurement)) {
+            return "System";
+        }
+        return null;
+    }
+
+    @Override
+    public String getDescriptionOfMeasurement(String measurement) {
+        if (IDENT_LOAD_1_MIN.equalsIgnoreCase(measurement)) {
+            return "Avarage of system load value for the last time period.";
+        }
+        return null;
+    }
 }

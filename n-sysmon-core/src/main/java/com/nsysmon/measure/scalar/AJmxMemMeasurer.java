@@ -50,4 +50,16 @@ public class AJmxMemMeasurer implements AScalarMeasurer {
     @Override public AOption<Long> getTimeoutInMilliSeconds() {
         return AOption.none();
     }
+
+    @Override
+    public String getGroupnameOfMeasurement(String measurement) {
+        if (measurement == null){
+            return null;
+        }
+        if (measurement.startsWith(PREFIX_MEM)) {
+            return "Memory";
+        }
+        return null;
+    }
+
 }

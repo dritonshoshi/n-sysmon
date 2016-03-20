@@ -484,6 +484,14 @@ div.env-value {
     color: white !important;
 }
 
+.timedScalarHeaderOn {
+    background-color: #1d4284;
+}
+
+.timedScalarHeaderOff {
+    background-color: #a6d7df;
+}
+
 .timedScalar-option {
     padding: 0.2em;
     /*padding-left: 0.1em;*/
@@ -491,8 +499,8 @@ div.env-value {
     display: block;
     list-style-type: disc;
     float: left;
-    width: 9em;
-    height: 9em;
+    width: 8em;
+    height: 8em;
     background-color: #b9eaf2;
     /*//background-color: #f9f9f9;*/
     border: 0.2em solid rgb(255, 255, 255);

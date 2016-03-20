@@ -19,7 +19,8 @@
              ng-click="toggleGraphData(entry.key)" >
 
 
-            <div ng-if="entry.group">
+            <div ng-if="entry.group"
+                 class="{{entriesToLoadDataFor.indexOf(entry.key) == -1 ? 'timedScalarHeaderOff' : 'timedScalarHeaderOn'}}">
                 <!--TODO FOX088S decide if to request icon or not -->
                 <b>{{entry.group}}</b>
             </div>
