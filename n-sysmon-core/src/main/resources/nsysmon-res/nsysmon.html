@@ -1,47 +1,48 @@
-<!doctype html>
-<html ng-app="NSysMonApp" ng-controller="NSysMonCtrl">
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" ng-app="NSysMonApp" ng-controller="NSysMonCtrl">
 <head>
     <title ng-bind="title"></title>
     <meta http-equiv="Content-type" content="text/html;charset=UTF-8" />
-    <meta charset="utf-8">
-    <link rel="stylesheet" type="text/css" href="_$_nsysmon_$_/static/css/nsysmon.css">
-    <link rel="stylesheet" type="text/css" href="_$_nsysmon_$_/static/css/bootstrap-3.3.6.min.css">
-    <link rel="stylesheet" type="text/css" href="_$_nsysmon_$_/static/css/bootstrap-theme-3.3.6.min.css">
-    <link rel="stylesheet" type="text/css" href="_$_nsysmon_$_/static/css/bootstrap-treeview-1.2.0.min.css">
+    <meta charset="utf-8"/>
+    <link rel="stylesheet" type="text/css" href="_$_nsysmon_$_/static/css/nsysmon.css"/>
+    <link rel="stylesheet" type="text/css" href="_$_nsysmon_$_/static/css/bootstrap-3.3.6.min.css"/>
+    <link rel="stylesheet" type="text/css" href="_$_nsysmon_$_/static/css/bootstrap-theme-3.3.6.min.css"/>
+    <link rel="stylesheet" type="text/css" href="_$_nsysmon_$_/static/css/bootstrap-treeview-1.2.0.min.css"/>
     <link rel="stylesheet" type="text/css" href="_$_nsysmon_$_/static/css/nv.d3-1.8.2-125.min.css"/>
-    <script src="_$_nsysmon_$_/static/lib/jquery-2.2.1.min.js"></script>
-    <script src="_$_nsysmon_$_/static/lib/angular-1.4.4.min.js"></script>
-    <script src="_$_nsysmon_$_/static/lib/angular-route-1.2.3.js"></script>
-    <script src="_$_nsysmon_$_/static/lib/angular-filter-0.5.7.min.js"></script>
-    <script src="_$_nsysmon_$_/static/lib/FileSaver.js"></script>
-    <script src="_$_nsysmon_$_/static/lib/bootstrap-3.3.6.min.js"></script>
-    <script src="_$_nsysmon_$_/static/lib/bootstrap-treeview-1.2.0.min.js"></script>
+    <script src="_$_nsysmon_$_/static/lib/jquery-2.2.1.min.js" type="text/javascript"></script>
+    <script src="_$_nsysmon_$_/static/lib/angular-1.4.4.min.js" type="text/javascript"></script>
+    <script src="_$_nsysmon_$_/static/lib/angular-route-1.2.3.js" type="text/javascript"></script>
+    <script src="_$_nsysmon_$_/static/lib/angular-filter-0.5.7.min.js" type="text/javascript"></script>
+    <script src="_$_nsysmon_$_/static/lib/FileSaver.js" type="text/javascript"></script>
+    <script src="_$_nsysmon_$_/static/lib/bootstrap-3.3.6.min.js" type="text/javascript"></script>
+    <script src="_$_nsysmon_$_/static/lib/bootstrap-treeview-1.2.0.min.js" type="text/javascript"></script>
 
-    <script src="_$_nsysmon_$_/static/lib/jquery.flot-0.8.2.js"></script>
-    <script src="_$_nsysmon_$_/static/lib/jquery.flot.resize-0.8.2.js"></script>
-    <script src="_$_nsysmon_$_/static/lib/jquery.flot.stack-0.8.2.js"></script>
-    <script src="_$_nsysmon_$_/static/lib/jquery.flot.time-0.8.2.js"></script>
-    <script src="_$_nsysmon_$_/static/lib/jquery.flot.axislabels-0.8.2.js"></script>
-    <script src="_$_nsysmon_$_/static/lib/jquery.flot.navigate-0.8.2.js"></script>
+    <script src="_$_nsysmon_$_/static/lib/jquery.flot-0.8.2.js" type="text/javascript"></script>
+    <script src="_$_nsysmon_$_/static/lib/jquery.flot.resize-0.8.2.js" type="text/javascript"></script>
+    <script src="_$_nsysmon_$_/static/lib/jquery.flot.stack-0.8.2.js" type="text/javascript"></script>
+    <script src="_$_nsysmon_$_/static/lib/jquery.flot.time-0.8.2.js" type="text/javascript"></script>
+    <script src="_$_nsysmon_$_/static/lib/jquery.flot.axislabels-0.8.2.js" type="text/javascript"></script>
+    <script src="_$_nsysmon_$_/static/lib/jquery.flot.navigate-0.8.2.js" type="text/javascript"></script>
 
-    <script src="_$_nsysmon_$_/static/js/nsysmon-app.js"></script>
-    <script src="_$_nsysmon_$_/static/js/ctrl-aggregated.js"></script>
-    <script src="_$_nsysmon_$_/static/js/ctrl-debugging-overview.js"></script>
-    <script src="_$_nsysmon_$_/static/js/ctrl-scalars.js"></script>
-    <script src="_$_nsysmon_$_/static/js/ctrl-envvar.js"></script>
-    <script src="_$_nsysmon_$_/static/js/ctrl-memgc.js"></script>
-    <script src="_$_nsysmon_$_/static/js/ctrl-threaddump.js"></script>
-    <script src="_$_nsysmon_$_/static/js/ctrl-timedscalars.js"></script>
-    <script src="_$_nsysmon_$_/static/js/ctrl-loadabledatafiles.js"></script>
-    <script src="_$_nsysmon_$_/static/js/ctrl-datafilegenerator.js"></script>
-    <script src="_$_nsysmon_$_/static/js/ctrl-correlationflow.js"></script>
+    <script src="_$_nsysmon_$_/static/js/nsysmon-app.js" type="text/javascript"></script>
+    <script src="_$_nsysmon_$_/static/js/ctrl-aggregated.js" type="text/javascript"></script>
+    <script src="_$_nsysmon_$_/static/js/ctrl-debugging-overview.js" type="text/javascript"></script>
+    <script src="_$_nsysmon_$_/static/js/ctrl-scalars.js" type="text/javascript"></script>
+    <script src="_$_nsysmon_$_/static/js/ctrl-envvar.js" type="text/javascript"></script>
+    <script src="_$_nsysmon_$_/static/js/ctrl-memgc.js" type="text/javascript"></script>
+    <script src="_$_nsysmon_$_/static/js/ctrl-threaddump.js" type="text/javascript"></script>
+    <script src="_$_nsysmon_$_/static/js/ctrl-timedscalars.js" type="text/javascript"></script>
+    <script src="_$_nsysmon_$_/static/js/ctrl-loadabledatafiles.js" type="" ></script>
+    <script src="_$_nsysmon_$_/static/js/ctrl-datafilegenerator.js" type="text/javascript"></script>
+    <script src="_$_nsysmon_$_/static/js/ctrl-correlationflow.js" type="text/javascript"></script>
 
-    <script src="_$_nsysmon_$_/config.js"></script>
-    <script src="_$_nsysmon_$_/static/js/nsysmon-module.js"></script>
+    <script src="_$_nsysmon_$_/config.js" type="text/javascript"></script>
+    <script src="_$_nsysmon_$_/static/js/nsysmon-module.js" type="text/javascript"></script>
 
-    <script src="_$_nsysmon_$_/static/lib/d3-3.5.16.min.js"></script>
-    <script src="_$_nsysmon_$_/static/lib/nv.d3-1.8.2-125.min.js"></script>
-    <script src="_$_nsysmon_$_/static/lib/angular-nvd3-1.0.5.min.js"></script>
+    <script src="_$_nsysmon_$_/static/lib/d3-3.5.16.min.js" type="text/javascript"></script>
+    <script src="_$_nsysmon_$_/static/lib/nv.d3-1.8.2-125.min.js" type="text/javascript"></script>
+    <script src="_$_nsysmon_$_/static/lib/angular-nvd3-1.0.5.min.js" type="text/javascript"></script>
 
 </head>
 <body>
@@ -62,7 +63,7 @@
                 <ul class="dropdown-menu">
                     <li ng-repeat="pageDef in menuItem.entries"><a href="#/{{pageDef.id}}">{{pageDef.shortLabel}}</a></li>
                 </ul>
-                <a class="dropdown-toggle" data-toggle="dropdown">{{menuItem.label}} <b class="caret"></b></a>
+                <a class="dropdown-toggle" data-toggle="dropdown">{{menuItem.label}} <strong class="caret"></strong></a>
             </li>
         </ul>
         <!--<ul class="nav navbar-nav navbar-right">-->

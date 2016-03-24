@@ -422,6 +422,7 @@ angular.module('NSysMonApp').controller('CtrlAggregated', function($scope, $log,
     /*
         Checks if this node should be displayed, used e.g. for the search-filter
      */
+    // TODO FOX088S check if this node also can be extended
     function shouldRenderNode(curNode, stringToSearchFor) {
         var display = false;
         if (!stringToSearchFor){
@@ -450,6 +451,7 @@ angular.module('NSysMonApp').controller('CtrlAggregated', function($scope, $log,
         var dataRowSubdued = !curNode.isNotSerial ? '' : 'data-row-subdued';
 
         var dataCols = '';
+        var formatting = '';
         angular.forEach($scope.columnDefs, function(curCol, colIdx) {
             dataCols += '<div class="' + $scope.colClass(colIdx) + '">';
 
@@ -489,7 +491,7 @@ angular.module('NSysMonApp').controller('CtrlAggregated', function($scope, $log,
     function renderDisplayNameForNode(curNode){
         var rc = '';
         if (!curNode || !curNode.name || !curNode.tooltip || $scope.showDataTooltips != 1) {
-            rc += '<div data-toggle="data-tooltip" class="node-text" style="margin-right: ' + $scope.totalDataWidth + 'px;">' + renderSql(curNode) + '</div>';
+            rc += '<div class="node-text" style="margin-right: ' + $scope.totalDataWidth + 'px;">' + renderSql(curNode) + '</div>';
         } else {
             rc += '<div data-toggle="data-tooltip" class="node-text" style="margin-right: ' + $scope.totalDataWidth + 'px;" ' + renderTooltipp(curNode) + '>' + escapeHtml(curNode.name) + '</div>';
         }

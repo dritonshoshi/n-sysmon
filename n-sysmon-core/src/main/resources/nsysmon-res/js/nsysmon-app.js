@@ -15,7 +15,7 @@ angular.module('NSysMonApp').controller('NSysMonCtrl', function($scope, $route, 
     $scope.configRaw = config.raw();
     $scope.curTitle = function() {
         if (!config.forCurrentPage()){
-            return "<unknown>";
+            return "unknown";
         }else{
             return config.forCurrentPage().fullLabel;
         }

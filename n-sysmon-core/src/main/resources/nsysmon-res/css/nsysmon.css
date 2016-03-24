@@ -495,9 +495,8 @@ div.env-value {
 .timedScalar-option {
     padding: 0.2em;
     /*padding-left: 0.1em;*/
-    list-style: none;
     display: block;
-    list-style-type: disc;
+    list-style: disc none;
     float: left;
     width: 8em;
     height: 8em;
