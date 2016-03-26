@@ -24,8 +24,8 @@ public class ATracePageDefinition extends AAbstractNsysmonPerformancePageDef imp
 
     private static final List<ColDef> colDefs = Arrays.asList(
             new ColDef("%", true, 1, ColWidth.Medium),
-            new ColDef("total µs", false, 0, ColWidth.Long),
-            new ColDef("self µs", false, 0, ColWidth.Long),
+            new ColDef("total &mu;s", false, 0, ColWidth.Long),
+            new ColDef("self &mu;s", false, 0, ColWidth.Long),
             new ColDef("start @", false, 0, ColWidth.Long)
     );
 
