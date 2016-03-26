@@ -142,6 +142,36 @@ angular.module('NSysMonApp').controller('CtrlAggregated', function($scope, $log,
         return parts.join(decimalSeparator);
     };
 
+    $scope.expandLongest = function() {
+
+        function setExpandedMainLevel(nodes) {
+            // expand all top level-entries
+            if(nodes) {
+                for(var i=0; i<nodes.length; i++) {
+                    $scope.expansionModel[nodes[i].fqn] = true;
+                    setExpandedLongest(nodes[i].children);
+                }
+            }
+        }
+
+        function setExpandedLongest(nodes) {
+            //for all sub-entries only expand the longest call
+            if(nodes) {
+                var longestNode;
+                for(var i=0; i<nodes.length; i++) {
+                    if (!longestNode || (longestNode.data[1] < nodes[i].data[1] && !nodes[i].isNotSerial)) {
+                        longestNode = nodes[i];
+                    }
+                }
+                $scope.expansionModel[longestNode.fqn] = true;
+                setExpandedLongest(longestNode.children);
+            }
+        }
+
+        setExpandedMainLevel($scope.traces);
+        renderTree();
+    };
+
     $scope.expandAll = function() {
         function setExpanded(nodes) {
             if(nodes) {

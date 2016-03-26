@@ -1,17 +1,18 @@
 
 <div class="options-header">
     <div class="row">
-        <div class="col-sm-4">
+        <div class="col-sm-3">
             <div class="input-group">
                 <span class="input-group-addon glyphicon glyphicon-search" style="top: 0px;"></span>
                 <input type="text" class="form-control" aria-describedby="sizing-addon2" placeholder="Search for..." ng-model="nodeSearchText">
             </div>
         </div>
-        <div class="col-sm-4 pull-right">
-            <div class="button-box">
+        <div class="col-sm-5 pull-right">
+            <div class="btn-toolbar" role="group" >
                 <div class="btn-group">
-                    <a class="btn btn-default" ng-click="expandAll()" data-toggle="tooltip" title="Expand All"><img src="_$_nsysmon_$_/static/img/treenode-closed.png" /></a>
-                    <a class="btn btn-default" ng-click="collapseAll()" data-toggle="tooltip" title="Collapse All"><img src="_$_nsysmon_$_/static/img/treenode-open.png" /></a>
+                    <a class="btn btn-default" ng-click="expandAll()" data-toggle="tooltip" title="Expand All"><img src="_$_nsysmon_$_/static/img/treenode-closed.png" />&nbsp;</a>
+                    <a class="btn btn-default" ng-click="collapseAll()" data-toggle="tooltip" title="Collapse All"><img src="_$_nsysmon_$_/static/img/treenode-open.png" />&nbsp;</a>
+                    <a class="btn btn-default" ng-click="expandLongest()" data-toggle="tooltip" title="Expand Longest"><span class="glyphicon glyphicon-time"></span>&nbsp;</a></a>
                 </div>
                 <div class="btn-group">
                     <a class="btn {{pickClass()}}" ng-click="togglePickMode()" data-toggle="tooltip" title="Click on a node to show only that node and its children">Pick</a>
@@ -25,7 +26,7 @@
                 </div>
                 <div class="btn-group" role="group">
                     <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                        <span class="glyphicon glyphicon-folder-open"></span>
+                        <span class="glyphicon glyphicon-folder-open"></span>&nbsp;
                     </button>
                     <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="dLabel">
                         <li><a href="{{getJsonDownloadLink()}}" data-toggle="tooltip" title="Directly download data from server" download="{{getJsonFilename()}}"><span class="glyphicon glyphicon-cloud-download"></span> JSON Export</a></li>
