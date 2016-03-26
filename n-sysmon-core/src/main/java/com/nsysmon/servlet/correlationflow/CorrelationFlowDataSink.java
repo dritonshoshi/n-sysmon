@@ -39,6 +39,8 @@ public class CorrelationFlowDataSink implements ADataSink {
 		    //System.out.println(flowsWithParent.size());
 		    addToData(flowsWithParent);
 	    }
+		Set<ACorrelationId> flowsWithParent = findFlowsWithParent(flowsToProcess);
+		flowsToProcess.removeAll(flowsWithParent);
 
 	    flowsToProcess.forEach(aCorrelationId -> {
 		    LOG.warn("Correlation " + aCorrelationId.getId() + " with description '" + aCorrelationId.getQualifier() + "' could not be saved, because parent isn't stored.");
@@ -74,19 +76,17 @@ public class CorrelationFlowDataSink implements ADataSink {
 					        correlationFlowDetails.getChilds().add(flow);
 				        }
 			        });
-		        }else{
-			        LOG.warn("Correlation " + flow.getId() + " with description '" + flow.getQualifier() + "' could not be saved, because parent isn't stored.");
 		        }
 		    }
 		}
 	}
 
 	private ACorrelationId findParent(ACorrelationId flow) {
-        if (flow.getIdParent() == null){
+        if (flow == null || flow.getIdParent() == null){
             return null;
         }
         for (CorrelationFlowDetails flowDetail : dataBuffer) {
-            if (flowDetail.getaCorrelationId() != null && flowDetail.getaCorrelationId().getId().equals(flow.getIdParent())){
+            if (flowDetail.getaCorrelationId() != null && flowDetail.getaCorrelationId().getId() != null && flowDetail.getaCorrelationId().getId().equals(flow.getIdParent())){
                 return flowDetail.getaCorrelationId();
             }
         }
