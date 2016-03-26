@@ -258,29 +258,24 @@ angular.module('NSysMonApp').controller('CtrlAggregated', function($scope, $log,
     };
 
 
-    $scope.doExportAsJSON = function() {
+    
+    $scope.getJsonDownloadLink= function() {
+        return Rest.getDataUrl('getData');
+    }
 
-        function internalExportAsJson(data) {
-
-            function pad2(n) {
-                var result = n.toString();
-                while(result.length < 2) {
-                    result = '0' + result;
-                }
-                return result;
+    $scope.getJsonFilename = function() {
+        function pad2(n) {
+            var result = n.toString();
+            while(result.length < 2) {
+                result = '0' + result;
             }
-            var now = new Date();
-            var formattedNow = now.getFullYear() + '-' + pad2((now.getMonth()+1)) + '-' + pad2(now.getDate()) + '-' + pad2(now.getHours()) + '-' + pad2(now.getMinutes()) + '-' + pad2(now.getSeconds());
-
-            var blob = new Blob([angular.toJson(data)], {type: "application/json;charset=utf-8"});
-            blockGui(false);
-            saveAs(blob, "nsysmon-export-" + formattedNow + '.json');
+            return result;
         }
-
-        blockGui(true);
-        Rest.call('getData', internalExportAsJson);
-    };
-
+        var now = new Date();
+        var formattedNow = now.getFullYear() + '-' + pad2((now.getMonth()+1)) + '-' + pad2(now.getDate()) + '-' + pad2(now.getHours()) + '-' + pad2(now.getMinutes()) + '-' + pad2(now.getSeconds());
+        return "nsysmon-export-" + formattedNow + '.json';
+    }
+    
     $scope.doImportJSON = function() {
         $scope.uploadFile();
     };
@@ -362,6 +357,7 @@ angular.module('NSysMonApp').controller('CtrlAggregated', function($scope, $log,
         $('#theTree').html(hhttmmll);
 
         $('.data-row.with-children').click(onClickNode);
+        
         if ($scope.showDataTooltips == 1){
             $("[data-toggle=data-tooltip]").tooltip();
         }
@@ -451,7 +447,6 @@ angular.module('NSysMonApp').controller('CtrlAggregated', function($scope, $log,
         var dataRowSubdued = !curNode.isNotSerial ? '' : 'data-row-subdued';
 
         var dataCols = '';
-        var formatting = '';
         angular.forEach($scope.columnDefs, function(curCol, colIdx) {
             dataCols += '<div class="' + $scope.colClass(colIdx) + '">';
 

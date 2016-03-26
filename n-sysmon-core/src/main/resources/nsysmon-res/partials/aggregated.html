@@ -28,7 +28,7 @@
                         <span class="glyphicon glyphicon-folder-open"></span>
                     </button>
                     <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="dLabel">
-                        <li><a ng-click="doExportAsJSON()" data-toggle="tooltip" title="Export currently visible data as JSON"><span class="glyphicon glyphicon-cloud-download"></span> JSON Export</a></li>
+                        <li><a href="{{getJsonDownloadLink()}}" data-toggle="tooltip" title="Directly download data from server" download="{{getJsonFilename()}}"><span class="glyphicon glyphicon-cloud-download"></span> JSON Export</a></li>
                         <li><a data-toggle="tooltip" title="Import JSON Data" onclick="$('#file').click();"><span class="glyphicon glyphicon-cloud-upload"></span> JSON Import</a></li>
                         <li role="separator" class="divider"></li>
                         <li><a ng-click="doExportAsExcel()" data-toggle="tooltip" title="Export currently visible data to Excel as CSV"><span class="glyphicon glyphicon-th-list"></span> CSV Export</a></li>

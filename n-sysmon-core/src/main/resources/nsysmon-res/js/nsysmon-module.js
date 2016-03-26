@@ -14,6 +14,10 @@
     }
 
     nsysmon.service('Rest', ['$log', '$http', '$location', 'Modal', function($log, $http, $location, Modal) {
+        this.getDataUrl = function(service) {
+            return '_$_nsysmon_$_/rest/' + curPage($location) + '/' + service;
+        };
+        
         this.call = function(service, onSuccess, onError) {
             $http
                 .get('_$_nsysmon_$_/rest/' + curPage($location) + '/' + service)
@@ -26,6 +30,7 @@
                     }
                 });
         };
+        
         this.callOther = function(identifier, service, onSuccess, onError) {
             $http
                 .get('_$_nsysmon_$_/rest/' + identifier + '/' + service)
