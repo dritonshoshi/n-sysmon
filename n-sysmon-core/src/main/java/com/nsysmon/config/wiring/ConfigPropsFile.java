@@ -23,7 +23,7 @@ public class ConfigPropsFile {
     }
 
     public <T> T get(String key, Class<T> type, Class<?>... paramTypes) {
-        return get(key, AOption.<T>none(), type, paramTypes);
+        return get(key, AOption.none(), type, paramTypes);
     }
 
     public <T> T get(String key, AOption<? extends T> defaultValue, Class<T> type, Class<?>... paramTypes) {

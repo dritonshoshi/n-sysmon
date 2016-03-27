@@ -103,7 +103,7 @@ public class ATracePageDefinition extends AAbstractNsysmonPerformancePageDef imp
         if(selfNanos > node.getDurationNanos()) selfNanos = node.getDurationNanos();
 
         if(selfNanos != 0 && children.size() > 0) {
-            children.add(0, new TreeNode("<self>", true, new long[]{selfNanos * 1000 / node.getDurationNanos(), selfNanos / 1000, selfNanos / 1000, node.getStartTimeMillis() - childNow}, Collections.<TreeNode>emptyList()));
+            children.add(0, new TreeNode("<self>", true, new long[]{selfNanos * 1000 / node.getDurationNanos(), selfNanos / 1000, selfNanos / 1000, node.getStartTimeMillis() - childNow}, Collections.emptyList()));
         }
 
 

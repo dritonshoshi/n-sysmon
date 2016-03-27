@@ -183,7 +183,7 @@ public class AMeasurementHierarchyImpl implements AMeasurementHierarchy {
         }
 
         final long finishedTimestamp = config.timer.getCurrentNanos();
-        m.getChildrenOfParent().add(new AHierarchicalData(false, m.getStartTimeMillis(), finishedTimestamp - m.getStartTimeNanos(), m.getIdentifier(), m.getParameters(), Collections.<AHierarchicalData>emptyList(), killedDueSize));
+        m.getChildrenOfParent().add(new AHierarchicalData(false, m.getStartTimeMillis(), finishedTimestamp - m.getStartTimeNanos(), m.getIdentifier(), m.getParameters(), Collections.emptyList(), killedDueSize));
     }
 
     @Override
@@ -222,7 +222,7 @@ public class AMeasurementHierarchyImpl implements AMeasurementHierarchy {
         final List<AHierarchicalData> children = new ArrayList<>(0);
         for(String detailIdentifier: m.getDetails().keySet()) {
             final ACollectingMeasurement.Detail detail = m.getDetails().get(detailIdentifier);
-            children.add(new AHierarchicalData(true, m.getStartTimeMillis(), detail.getTotalNanos(), detailIdentifier, Collections.<String, String>emptyMap(), Collections.<AHierarchicalData>emptyList(), killedDueSize));
+            children.add(new AHierarchicalData(true, m.getStartTimeMillis(), detail.getTotalNanos(), detailIdentifier, Collections.emptyMap(), Collections.emptyList(), killedDueSize));
         }
 
         final AHierarchicalData newData = new AHierarchicalData(m.isSerial(), m.getStartTimeMillis(), m.getTotalDurationNanos(), m.getIdentifier(), m.getParameters(), children, killedDueSize);

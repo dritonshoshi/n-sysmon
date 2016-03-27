@@ -157,7 +157,7 @@ public class AJmxGcMeasurer implements AScalarMeasurer, NSysMonAware {
 //                after.getMax();
             }
 
-            final AHierarchicalData byGcTypeNode = new AHierarchicalData(true, startMillis, durationNanos, gcType, Collections.<String,String>emptyMap(), Collections.<AHierarchicalData>emptyList(), false);
+            final AHierarchicalData byGcTypeNode = new AHierarchicalData(true, startMillis, durationNanos, gcType, Collections.emptyMap(), Collections.emptyList(), false);
             return new AHierarchicalData(true, startMillis, durationNanos, IDENT_GC_TRACE_ROOT, paramMap, Collections.singletonList(byGcTypeNode), false);
         }
 
@@ -169,7 +169,7 @@ public class AJmxGcMeasurer implements AScalarMeasurer, NSysMonAware {
             //we only handle GARBAGE_COLLECTION_NOTIFICATION notifications here
             if (notification.getType().equals(GarbageCollectionNotificationInfo.GARBAGE_COLLECTION_NOTIFICATION)) {
                 final GarbageCollectionNotificationInfo info = GarbageCollectionNotificationInfo.from((CompositeData) notification.getUserData());
-                sysMon.injectSyntheticMeasurement(new AHierarchicalDataRoot(toHierarchicalData(info), Collections.<ACorrelationId>emptyList(), Collections.<ACorrelationId>emptyList()));
+                sysMon.injectSyntheticMeasurement(new AHierarchicalDataRoot(toHierarchicalData(info), Collections.emptyList(), Collections.emptyList()));
             }
         }
     }

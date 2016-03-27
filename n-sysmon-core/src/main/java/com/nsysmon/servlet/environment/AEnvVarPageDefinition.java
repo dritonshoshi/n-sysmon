@@ -88,7 +88,7 @@ public class AEnvVarPageDefinition implements APresentationPageDefinition {
         final SortedSet<EnvData> result = new TreeSet<>();
 
         for(AEnvironmentData data: raw) {
-            mergeIntoExisting(result, data.getName(), data.getValue(), AList.<String>nil());
+            mergeIntoExisting(result, data.getName(), data.getValue(), AList.nil());
         }
 
         return result;
