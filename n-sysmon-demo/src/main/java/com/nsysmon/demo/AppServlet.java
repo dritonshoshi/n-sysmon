@@ -40,8 +40,17 @@ public class AppServlet extends HttpServlet {
     }
 
     @Override protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        boolean onlySmallTree = req.getRequestURL().toString().contains("/small");
+
         final PrintWriter out = resp.getWriter();
-        out.println ("<html><head><title>N-SysMon demo content</title></head><body><h1>N-SysMon demo content</h1></body></html>");
+        out.println("<html><head><title>N-SysMon demo content</title></head><body>");
+        out.println("<h1>N-SysMon demo content</h1>");
+        if (onlySmallTree) {
+            out.println("generating small content");
+        }else{
+            out.println("generating huge content");
+        }
+        out.println("</body></html>");
 
         final ASimpleMeasurement parMeasurement = NSysMon.get().start("parallel", false);
         sleep();
@@ -90,7 +99,9 @@ public class AppServlet extends HttpServlet {
 
         correlations("e");
 
-        hugeTree(8, 6);
+        if (!onlySmallTree) {
+            hugeTree(8, 6);
+        }
     }
 
     private void correlations(String nameOfStartingNode) {
