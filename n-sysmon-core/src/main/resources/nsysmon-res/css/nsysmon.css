@@ -270,7 +270,7 @@ div.data-row {
   /*height: 19px;*/
   font-size: 15px;
   overflow: hidden;
-  margin-bottom: 2px;
+  margin-bottom: 1px;
   line-height: 22px;
   padding-left: 4px;
   padding-right: 7px;
@@ -287,47 +287,47 @@ div.data-row-0+div.children {
 
 div.data-row-0 {
   /*border-top: solid black 1px;*/
-  background: #f2f2f2;
+  background: #f5f5f5;
 }
 div.data-row-1 {
   padding-left: 1em;
-  background: #eaeaea;
+  background: #e6e6e6;
 }
 div.data-row-2 {
   padding-left: 2em;
-  background: #e2e2e2;
+  background: #d7d7d7;
 }
 div.data-row-3 {
   padding-left: 3em;
-  background: #dadada;
+  background: #c8c8c8;
 }
 div.data-row-4 {
   padding-left: 4em;
-  background: #d2d2d2;
+  background: #b9b9b9;
 }
 div.data-row-5 {
   padding-left: 5em;
-  background: #cacaca;
+  background: #aaaaaa;
 }
 div.data-row-6 {
   padding-left: 6em;
-  background: #c2c2c2;
+  background: #9b9b9b;
 }
 div.data-row-7 {
   padding-left: 7em;
-  background: #bababa;
+  background: #8c8c8c;
 }
 div.data-row-8 {
   padding-left: 8em;
-  background: #b2b2b2;
+  background: #7d7d7d;
 }
 div.data-row-9 {
   padding-left: 9em;
-  background: #aaaaaa;
+  background: #6e6e6e;
 }
 div.data-row-10 {
   padding-left: 10em;
-  background: #a2a2a2;
+  background: #5f5f5f;
 }
 
 /* thread dump */
