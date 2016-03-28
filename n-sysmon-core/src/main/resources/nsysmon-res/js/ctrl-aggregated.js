@@ -25,6 +25,9 @@ angular.module('NSysMonApp').controller('CtrlAggregated', function($scope, $log,
     $scope.hideTitleRows = 1;
     $scope.showDataTooltips = 0;
 
+    $scope.hideSearchNonMatchingNodes = true;
+    $scope.expandSearchMatchingNodes = true;
+
     /* Delayed Search - Start */
     var timeoutPromise;
     var searchDelayInMs = 500;
@@ -35,6 +38,8 @@ angular.module('NSysMonApp').controller('CtrlAggregated', function($scope, $log,
         tempFilterText = val;
         timeoutPromise = $timeout(function () {
             $scope.nodeSearchText = tempFilterText;
+            //collapse all nodes when search is active
+            $scope.expansionModel = [];
             renderTree();
         }, searchDelayInMs); // delay
     });
@@ -44,6 +49,7 @@ angular.module('NSysMonApp').controller('CtrlAggregated', function($scope, $log,
 
     $scope.$watch('hideTitleRows', renderTree);
     $scope.$watch('showDataTooltips', renderTree);
+    $scope.$watch('hideSearchNonMatchingNodes', renderTree);
 
     function initFromResponse(data) {
 //        $log.log('init from response');
@@ -445,16 +451,16 @@ angular.module('NSysMonApp').controller('CtrlAggregated', function($scope, $log,
         return result;
     }
 
-    /*
-        Checks if this node should be displayed, used e.g. for the search-filter
-     */
-    // TODO FOX088S check if this node also can be extended
-    function shouldRenderNode(curNode, stringToSearchFor) {
-        var display = false;
-        if (!stringToSearchFor){
-            display = true;
-            return true;
+    //TODO FOX088S set some hint on the main page, to indicate search is too short
+    function isValidSearchActive(stringToSearchFor) {
+        if (!stringToSearchFor || stringToSearchFor.length < 4){
+            return false;
         }
+        return true;
+    }
+
+    function nodeOrChildrenMatchSearch(curNode, stringToSearchFor) {
+        var display = false;
         var search = stringToSearchFor.toLowerCase();
         if (curNode.name.toLowerCase().indexOf(search) > -1) {
             display = true;
@@ -473,7 +479,29 @@ angular.module('NSysMonApp').controller('CtrlAggregated', function($scope, $log,
         return display;
     }
 
+    /*
+        Checks if this node should be displayed, used e.g. for the search-filter
+     */
+    function shouldRenderNode(curNode, stringToSearchFor) {
+        // if (!$scope.hideSearchNonMatchingNodes){
+        //     return true;
+        // }
+
+        if (!isValidSearchActive(stringToSearchFor)){
+            return true;
+        }
+
+        return nodeOrChildrenMatchSearch(curNode, stringToSearchFor);
+    }
+
     function htmlForTreeNode(curNode) {
+        if (!shouldRenderNode(curNode, $scope.nodeSearchText) && $scope.hideSearchNonMatchingNodes){
+            return '';
+        }
+        if (isValidSearchActive($scope.nodeSearchText) && $scope.expandSearchMatchingNodes){
+            $scope.expansionModel[curNode.fqn] = true;
+        }
+
         var dataRowSubdued = !curNode.isNotSerial ? '' : 'data-row-subdued';
 
         var dataCols = '';

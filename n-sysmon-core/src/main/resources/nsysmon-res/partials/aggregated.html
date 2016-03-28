@@ -41,6 +41,7 @@
             <div class="input-group">
                 <input type="checkbox" ng-model="hideTitleRows" ng-checked="true"/>Hide titles between trees<br>
                 <input type="checkbox" ng-model="showDataTooltips" ng-checked="false"/>Show data in tooltips<br>
+                <input type="checkbox" ng-model="hideSearchNonMatchingNodes" ng-checked="true"/>Hide non-matching child-nodes<br>
                 <input type="file" id="file" onchange="angular.element(this).scope().doImportJSON()" style="visibility:hidden;"/>
             </div>
         </div>
