@@ -35,7 +35,7 @@ angular.module('NSysMonApp').controller('CtrlAggregated', function($scope, $log,
         if ($scope.nodeSearchText){
             $timeout.cancel(timeoutPromise);
         }
-        tempFilterText = val;
+        var tempFilterText = val;
         timeoutPromise = $timeout(function () {
             $scope.nodeSearchText = tempFilterText;
             //collapse all nodes when search is active
@@ -119,15 +119,16 @@ angular.module('NSysMonApp').controller('CtrlAggregated', function($scope, $log,
         return $scope.isInPickMode ? 'btn-danger' : 'btn-default';
     };
 
-    //disabled getData on load $scope.refresh();
+    //disabled getData on load due to performance problems with huge data
+    // $scope.refresh();
 
     // check if data from other sources should be loaded
     function loadExternalData() {
-        var loadfileParam = $location.search().loadfile;
-        if (loadfileParam) {
+        var loadFileParam = $location.search().loadfile;
+        if (loadFileParam) {
             // block gui for long calls
             blockGui(true);
-            Rest.callOther("loadableServerDataFiles", "loadFromFile" + "/" + loadfileParam, initFromResponse);
+            Rest.callOther("loadableServerDataFiles", "loadFromFile" + "/" + loadFileParam, initFromResponse);
         }
     }
     loadExternalData();
@@ -200,12 +201,6 @@ angular.module('NSysMonApp').controller('CtrlAggregated', function($scope, $log,
 
     $scope.isPercentage = function(columnDef) {
         return columnDef.isPercentage;
-    };
-    $scope.isSubdued = function(node) {
-        return node.isNotSerial;
-    };
-    $scope.dataRowSubdued = function(node) {
-        return !node.isNotSerial ? '' : 'data-row-subdued';
     };
     $scope.progressWidthStyle = function(value) {
         return 'background-size: ' + (value + 2) + '% 100%';
@@ -297,7 +292,7 @@ angular.module('NSysMonApp').controller('CtrlAggregated', function($scope, $log,
     
     $scope.getJsonDownloadLink= function() {
         return Rest.getDataUrl('getData');
-    }
+    };
 
     $scope.getJsonFilename = function() {
         function pad2(n) {
@@ -310,7 +305,7 @@ angular.module('NSysMonApp').controller('CtrlAggregated', function($scope, $log,
         var now = new Date();
         var formattedNow = now.getFullYear() + '-' + pad2((now.getMonth()+1)) + '-' + pad2(now.getDate()) + '-' + pad2(now.getHours()) + '-' + pad2(now.getMinutes()) + '-' + pad2(now.getSeconds());
         return "nsysmon-export-" + formattedNow + '.json';
-    }
+    };
     
     $scope.doImportJSON = function() {
         $scope.uploadFile();
@@ -451,12 +446,21 @@ angular.module('NSysMonApp').controller('CtrlAggregated', function($scope, $log,
         return result;
     }
 
-    //TODO FOX088S set some hint on the main page, to indicate search is too short
+    $scope.isValidSearchActive = function() {
+        return isValidSearchActive($scope.nodeSearchText);
+    };
+
+    $scope.clearSearch = function() {
+        $scope.nodeSearchText = undefined;
+    };
+
+    $scope.isSearchTooShort = function() {
+        return ($scope.nodeSearchText && $scope.nodeSearchText.length < 4);
+
+    };
+
     function isValidSearchActive(stringToSearchFor) {
-        if (!stringToSearchFor || stringToSearchFor.length < 4){
-            return false;
-        }
-        return true;
+        return !(!stringToSearchFor || stringToSearchFor.length < 4);
     }
 
     function nodeOrChildrenMatchSearch(curNode, stringToSearchFor) {
@@ -483,10 +487,6 @@ angular.module('NSysMonApp').controller('CtrlAggregated', function($scope, $log,
         Checks if this node should be displayed, used e.g. for the search-filter
      */
     function shouldRenderNode(curNode, stringToSearchFor) {
-        // if (!$scope.hideSearchNonMatchingNodes){
-        //     return true;
-        // }
-
         if (!isValidSearchActive(stringToSearchFor)){
             return true;
         }
@@ -517,7 +517,6 @@ angular.module('NSysMonApp').controller('CtrlAggregated', function($scope, $log,
                     dataCols += '<div class="subdued-progress-background">' + formattedValue + '</div>';
             }
             else {
-                //dataCols += '<div>' + formattedValue + '</div>';
                 dataCols += formattedValue;
             }
 

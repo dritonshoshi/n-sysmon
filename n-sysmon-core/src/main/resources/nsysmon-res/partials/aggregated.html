@@ -48,6 +48,8 @@
     </div>
 </div>
 <div class="affix-placeholder"></div>
+<div ng-if="isValidSearchActive()" class="alert alert-warning" role="alert">Some elements aren't displayed because they don't match the search.  <a ng-click="clearSearch()">Clear</a> search.</div>
+<div ng-if="isSearchTooShort()" class="alert alert-warning" role="alert">Search text is too short, must have at least 4 characters.</div>
 <div id="theTree"></div>
 
 
