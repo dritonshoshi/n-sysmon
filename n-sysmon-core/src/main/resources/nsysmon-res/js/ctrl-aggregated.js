@@ -379,7 +379,7 @@ angular.module('NSysMonApp').controller('CtrlAggregated', function($scope, $log,
         // it is an important performance optimization to explicitly unregister event listeners and remove old child
         //  elements from the DOM instead of implicitly removing them in the call to $(...).html(...) - the difference
         //  is seconds vs. minutes for large trees!
-        $('.data-row.with-children').off();
+        // $('.data-row.with-children').off();
         var myNode = document.getElementById("theTree");
         while (myNode && myNode.firstChild) {
             myNode.removeChild(myNode.firstChild);

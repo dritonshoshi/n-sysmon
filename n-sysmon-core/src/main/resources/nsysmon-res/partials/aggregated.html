@@ -12,7 +12,7 @@
                 <div class="btn-group">
                     <a class="btn btn-default" ng-click="expandAll()" data-toggle="tooltip" title="Expand All"><img src="_$_nsysmon_$_/static/img/treenode-closed.png" />&nbsp;</a>
                     <a class="btn btn-default" ng-click="collapseAll()" data-toggle="tooltip" title="Collapse All"><img src="_$_nsysmon_$_/static/img/treenode-open.png" />&nbsp;</a>
-                    <a class="btn btn-default" ng-click="expandLongest()" data-toggle="tooltip" title="Expand Longest"><span class="glyphicon glyphicon-time"></span>&nbsp;</a></a>
+                    <a class="btn btn-default" ng-click="expandLongest()" data-toggle="tooltip" title="Expand Longest"><span class="glyphicon glyphicon-time"></span>&nbsp;</a>
                 </div>
                 <div class="btn-group">
                     <a class="btn {{pickClass()}}" ng-click="togglePickMode()" data-toggle="tooltip" title="Click on a node to show only that node and its children">Pick</a>
@@ -39,16 +39,16 @@
         </div>
         <div class="col-sm-4 pull-right">
             <div class="input-group">
-                <input type="checkbox" ng-model="hideTitleRows" ng-checked="true"/>Hide titles between trees<br>
-                <input type="checkbox" ng-model="showDataTooltips" ng-checked="false"/>Show data in tooltips<br>
-                <input type="checkbox" ng-model="hideSearchNonMatchingNodes" ng-checked="true"/>Hide non-matching child-nodes<br>
+                <input type="checkbox" ng-model="hideTitleRows" ng-checked="true" title="Hide titles between trees"/>Hide titles between trees<br>
+                <input type="checkbox" ng-model="showDataTooltips" ng-checked="false" title="Show data in tooltips"/>Show data in tooltips<br>
+                <input type="checkbox" ng-model="hideSearchNonMatchingNodes" ng-checked="true" title="Hide non-matching child-nodes"/>Hide non-matching child-nodes<br>
                 <input type="file" id="file" onchange="angular.element(this).scope().doImportJSON()" style="visibility:hidden;"/>
             </div>
         </div>
     </div>
 </div>
 <div class="affix-placeholder"></div>
-<div ng-if="isValidSearchActive()" class="alert alert-warning" role="alert">Some elements aren't displayed because they don't match the search.  <a ng-click="clearSearch()">Clear</a> search.</div>
+<div ng-if="isValidSearchActive()" class="alert alert-warning" role="alert">Some elements aren't displayed because they don't match the search.  <a ng-click="clearSearch()" class="alert-link">Clear</a> search.</div>
 <div ng-if="isSearchTooShort()" class="alert alert-warning" role="alert">Search text is too short, must have at least 4 characters.</div>
 <div id="theTree"></div>
 
