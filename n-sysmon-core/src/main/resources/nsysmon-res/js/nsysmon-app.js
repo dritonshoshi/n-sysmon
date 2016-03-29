@@ -29,3 +29,21 @@ angular.module('NSysMonApp').controller('NSysMonCtrl', function($scope, $route, 
         return config.raw().applicationInstanceHtmlColorCode;
     };
 });
+
+// filter to be able to sort objects by variable-name and not only arrays
+angular.module('NSysMonApp').filter('timedScalarEntrySorter', function() {
+    return function(items, reverse) {
+        var filtered = [];
+        angular.forEach(items, function(item) {
+            filtered.push(item);
+        });
+        filtered.sort(function (entryA, entryB) {
+                if (entryA.group == entryB.group){
+                    return (entryA.key > entryB.key ? 1 : -1);
+                }
+                return (entryA.group > entryB.group ? 1 : -1);
+        });
+        if(reverse) filtered.reverse();
+        return filtered;
+    };
+});
