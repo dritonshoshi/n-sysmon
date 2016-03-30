@@ -2,12 +2,12 @@ angular.module('NSysMonApp').controller('CtrlTimedScalars', function($scope, $ti
     $scope.options =  {
       "chart": {
             "type": "lineWithFocusChart",
-            "height": 450,
+            "height": 500,
             "margin": {
               "top": 20,
               "right": 20,
-              "bottom": 60,
-              "left": 60
+              "bottom": 20,
+              "left": 20
             },
             color: d3.scale.category10().range(),
             useInteractiveGuideline: true,
@@ -47,7 +47,7 @@ angular.module('NSysMonApp').controller('CtrlTimedScalars', function($scope, $ti
 
     $scope.graphData = []; //can leave empty
 
-    $scope.autoRefresh = false;
+    $scope.autoRefresh = true;
     $scope.autoRefreshSeconds = 120;
     $scope.entriesToLoadDataFor = [];
     // to invalidate auto-refresh if there was a manual refresh in between

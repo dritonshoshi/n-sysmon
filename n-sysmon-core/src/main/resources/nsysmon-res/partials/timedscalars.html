@@ -12,6 +12,15 @@
     </div>
 
 
+    <div style="clear:both"></div>
+
+    <fieldset class="timedscalar-graph" style="width:98%">
+        <legend>Graphical Display</legend>
+        <nvd3 options='options' id='chart' data='graphData' api="rc.api"></nvd3>
+    </fieldset>
+
+    <div style="clear:both"></div>
+
     <div>
         <div ng-repeat="entry in timedScalars | timedScalarEntrySorter"
              class="timedScalar-option {{entriesToLoadDataFor.indexOf(entry.key) == -1 ? 'timedScalarOff' : 'timedScalarOn'}}"
@@ -34,10 +43,4 @@
         </div>
     </div>
 
-    <div style="clear:both"></div>
-
-    <fieldset class="timedscalar-graph">
-        <legend>Graphical Display</legend>
-        <nvd3 options='options' id='chart' data='graphData' api="rc.api"></nvd3>
-    </fieldset>
 </div>
