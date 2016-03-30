@@ -51,7 +51,7 @@
                         &nbsp;
                         <a ng-if="file && file.processor" href="#/{{file.processor}}?loadfile={{file.name}}" title="Display Data"><span class="glyphicon glyphicon-indent-left"></span></a>
                         &nbsp;
-                        <a target="_self" href="#/{{file.processor}}?loadfile={{file.name}}" download="{{file.name}}" title="Download Data"><span class="glyphicon glyphicon-download-alt"></span></a>
+                        <a target="_self" href="/nsysmon/_$_nsysmon_$_/rest/loadableServerDataFiles/loadFromFile/{{file.name}}" download="{{file.name}}.json"><span class="glyphicon glyphicon-download-alt"></span></a>
                         &nbsp;{{file.installation}} {{file.host}} {{file.date}} {{file.time}} ({{file.size}} byte)
                         <a ng-if="!file || !file.processor">{{file.name}} - not loadable</a>
                     </li>
