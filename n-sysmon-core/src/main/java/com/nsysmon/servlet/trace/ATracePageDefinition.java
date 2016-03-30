@@ -13,7 +13,13 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 /**
  * @author arno
@@ -128,7 +134,10 @@ public class ATracePageDefinition extends AAbstractNsysmonPerformancePageDef imp
 
         final List<List<String>> result = new ArrayList<>();
 
-        for(String key: new TreeSet<>(node.getParameters().keySet())) {
+        TreeSet<String> sortedKeys = new TreeSet<>(new NumberSorter());
+        sortedKeys.addAll(node.getParameters().keySet());
+
+        for(String key: sortedKeys) {
             result.add(Arrays.asList(key, node.getParameters().get(key)));
         }
 
@@ -172,5 +181,20 @@ public class ATracePageDefinition extends AAbstractNsysmonPerformancePageDef imp
     public void getDataForExport(OutputStream os) throws IOException {
         AJsonSerHelper aJsonSerHelper = new AJsonSerHelper(os);
         serveData(aJsonSerHelper);
+    }
+
+    class NumberSorter implements Comparator<String> {
+        @Override public int compare(String s1, String s2) {
+            try {
+                double nr1 = Double.parseDouble(s1);
+                double nr2 = Double.parseDouble(s2);
+                return (int) (nr1 - nr2);
+            }
+
+            catch (NumberFormatException e) {
+                return 0;
+            }
+
+        }
     }
 }
