@@ -21,6 +21,7 @@ angular.module('NSysMonApp').controller('CtrlAggregated', function($scope, $log,
 
 
     $scope.expansionModel = {};
+    $scope.markedNodes = {};
     $scope.rootLevel = 0;
     $scope.hideTitleRows = 1;
     $scope.showDataTooltips = 0;
@@ -150,6 +151,7 @@ angular.module('NSysMonApp').controller('CtrlAggregated', function($scope, $log,
     };
 
     $scope.expandLongest = function() {
+        $scope.markedNodes = {};
 
         function setExpandedMainLevel(nodes) {
             // expand all top level-entries
@@ -172,6 +174,9 @@ angular.module('NSysMonApp').controller('CtrlAggregated', function($scope, $log,
                 }
                 $scope.expansionModel[longestNode.fqn] = true;
                 setExpandedLongest(longestNode.children);
+                if (!longestNode.children || longestNode.children.length == 0){
+                    $scope.markedNodes[longestNode.fqn] = true;
+                }
             }
         }
 
@@ -226,6 +231,18 @@ angular.module('NSysMonApp').controller('CtrlAggregated', function($scope, $log,
             return 'node-icon-wasKilled';
         }
         return 'no-icon node-icon-empty';
+    };
+    $scope.nodeIconMarked = function(node) {
+        if(node && $scope.markedNodes[node.fqn]) {
+            return 'node-icon-marked';
+        }
+        return 'no-icon node-icon-empty';
+    };
+    $scope.nodeMarker = function(node) {
+        if(node && $scope.markedNodes[node.fqn]) {
+            return 'data-row-marked';
+        }
+        return '';
     };
     $scope.expansionStyle = function(node) {
         return $scope.isExpanded(node) ? 'block' : 'none';
@@ -525,9 +542,10 @@ angular.module('NSysMonApp').controller('CtrlAggregated', function($scope, $log,
 
         var withChildrenClass = (curNode.children && curNode.children.length) ? ' with-children' : '';
         var result =
-            '<div class="data-row data-row-' + (curNode.level - $scope.rootLevel) + withChildrenClass + ' ' + dataRowSubdued + '">' +
+            '<div class="data-row data-row-' + (curNode.level - $scope.rootLevel) + withChildrenClass + ' ' + dataRowSubdued + ' ' + $scope.nodeMarker(curNode) + '">' +
                 '<div class="fqn-holder">' + escapeHtml(curNode.fqn) + '</div>' +
                 '<div class="node-icon ' + $scope.nodeIconClass(curNode.fqn) + '">&nbsp;</div>' +
+                '<div class="node-icon ' + $scope.nodeIconMarked(curNode) + '">&nbsp;</div>' +
                 '<div class="' + $scope.nodeIconClassWasKilled(curNode) + '">&nbsp;</div>' +
                 dataCols +
                 renderDisplayNameForNode(curNode) +

@@ -192,6 +192,13 @@ div.node-icon-wasKilled {
   background-repeat: no-repeat;
   background-position: center;
 }
+div.node-icon-marked {
+  float: left;
+  width: 1em;
+  background: url('../img/treenode-wasKilled.png');
+  background-repeat: no-repeat;
+  background-position: center;
+}
 div.node-icon-empty {
 }
 
@@ -264,6 +271,10 @@ div.subdued-progress-background {
 
 .unrendered {
     display: none;
+}
+
+div.data-row-marked {
+  background: #33CCFF !important;
 }
 
 div.data-row {
