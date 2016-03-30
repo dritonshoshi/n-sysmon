@@ -11,6 +11,10 @@ angular.module('NSysMonApp').controller('CtrlLoadableServerDataFiles', function(
         Rest.call(cmd, initFromResponse);
     }
 
+    $scope.getJsonDownloadLink= function() {
+        return Rest.getDataUrl('loadFromFile');
+    };
+
     function initFromResponse(data) {
         $scope.files = data.files;
         //console.log(data);
