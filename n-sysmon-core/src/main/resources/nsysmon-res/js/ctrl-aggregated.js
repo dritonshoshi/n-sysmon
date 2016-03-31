@@ -60,6 +60,7 @@ angular.module('NSysMonApp').controller('CtrlAggregated', function($scope, $log,
         $scope.pickedTraces = $scope.traces; //TODO keep selection on 'refresh'
 
         nodesByFqn = {};
+        $scope.markedNodes = {};
         initTraceNodes($scope.traces, 0, '');
 
 //        $log.log('after init trace nodes');
@@ -564,7 +565,7 @@ angular.module('NSysMonApp').controller('CtrlAggregated', function($scope, $log,
             '<div class="data-row data-row-' + (curNode.level - $scope.rootLevel) + withChildrenClass + ' ' + dataRowSubdued + ' ' + $scope.nodeMarker(curNode) + '">' +
                 '<div class="fqn-holder">' + escapeHtml(curNode.fqn) + '</div>' +
                 '<div class="node-icon ' + $scope.nodeIconClass(curNode.fqn) + '">&nbsp;</div>' +
-                '<div class="node-icon ' + $scope.nodeIconMarked(curNode) + '">&nbsp;</div>' +
+                '<div class="' + $scope.nodeIconMarked(curNode) + '">&nbsp;</div>' +
                 '<div class="' + $scope.nodeIconClassWasKilled(curNode) + '">&nbsp;</div>' +
                 dataCols +
                 renderDisplayNameForNode(curNode) +
