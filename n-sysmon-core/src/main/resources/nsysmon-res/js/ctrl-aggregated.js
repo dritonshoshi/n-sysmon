@@ -483,14 +483,33 @@ angular.module('NSysMonApp').controller('CtrlAggregated', function($scope, $log,
     function nodeOrChildrenMatchSearch(curNode, stringToSearchFor) {
         var display = false;
         var search = stringToSearchFor.toLowerCase();
+
         if (curNode.name.toLowerCase().indexOf(search) > -1) {
             display = true;
             return true;
+        }
+        //check tooltips
+        if (curNode && curNode.tooltip) {
+            curNode.tooltip.forEach(function(entry) {
+                                        if ((entry.id.toLowerCase().indexOf(search) > -1) || (entry.value.toLowerCase().indexOf(search) > -1)) {
+                                            display = true;
+                                            return true;
+                                        }
+                                    }, this);
         }
         angular.forEach(curNode.children, function(child) {
             if (child.name.toLowerCase().indexOf(search) > -1) {
                 display = true;
                 return true;
+            }
+            //check tooltips
+            if (child && child.tooltip) {
+                child.tooltip.forEach(function(entry) {
+                                        if ((entry.id.toLowerCase().indexOf(search) > -1) || (entry.value.toLowerCase().indexOf(search) > -1)) {
+                                                display = true;
+                                                return true;
+                                            }
+                                        }, this);
             }
             display |= shouldRenderNode(child, stringToSearchFor);
             if (display){
@@ -563,7 +582,7 @@ angular.module('NSysMonApp').controller('CtrlAggregated', function($scope, $log,
         if (!curNode || !curNode.name || !curNode.tooltip || $scope.showDataTooltips != 1) {
             rc += '<div class="node-text" style="margin-right: ' + $scope.totalDataWidth + 'px;">' + renderSql(curNode) + '</div>';
         } else {
-            rc += '<div data-toggle="data-tooltip" class="node-text" style="margin-right: ' + $scope.totalDataWidth + 'px;" ' + renderTooltipp(curNode) + '>' + escapeHtml(curNode.name) + '</div>';
+            rc += '<div data-toggle="data-tooltip" class="node-text" style="margin-right: ' + $scope.totalDataWidth + 'px;" ' + renderTooltip(curNode) + '>' + escapeHtml(curNode.name) + '</div>';
         }
         return rc;
     }
@@ -579,7 +598,7 @@ angular.module('NSysMonApp').controller('CtrlAggregated', function($scope, $log,
         return rc;
     }
 
-    function renderTooltipp(curNode) {
+    function renderTooltip(curNode) {
         if (!curNode || !curNode.tooltip || $scope.showDataTooltips != 1){
             return '';
         }
