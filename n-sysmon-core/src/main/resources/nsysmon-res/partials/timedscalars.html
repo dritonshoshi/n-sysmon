@@ -4,15 +4,66 @@
             <a class="btn btn-default" ng-click="refresh()" data-toggle="tooltip"
                title="Fetch fresh data from the server">Refresh</a>
         </div>
+        <div class="button-box">
+            <a class="btn btn-default" ng-click="refreshMonitor()" data-toggle="tooltip"
+               title="Fetch fresh data from the server">Refresh Monitor</a>
+        </div>
         <div class="input-group">
-            <span class="input-group-addon"><input type="checkbox" ng-model="autoRefresh" title="Activate autorefresh"></span>
-            <input type="text" class="form-control" ng-model="autoRefreshSeconds" style="width:50px" title="duration"> Automatically
-            refresh graph after {{autoRefreshSeconds}} seconds
+            <span class="input-group-addon">
+                <span class="glyphicon glyphicon-refresh" aria-hidden="true"></span>
+                <input type="checkbox" ng-model="autoRefresh" title="Activate autorefresh">
+            </span>
+            <div ng-hide="autoRefresh==false" >
+                <input type="text" class="form-control" ng-model="autoRefreshSeconds" style="width:50px" title="duration">
+                <span>Automatically refresh graph after {{autoRefreshSeconds}} seconds</span>
+            </div>
+            <div ng-hide="autoRefresh==true" >
+                <!--very ugly hack to prevent the checkbox resizing-->
+                &nbsp;
+            </div>
+
+        </div>
+        <div class="input-group">
+            <span class="input-group-addon">
+                <span class="glyphicon glyphicon-hourglass" aria-hidden="true"></span>
+                <input type="checkbox" ng-model="useFilterMinutes" title="Use DisplayFilter">
+            </span>
+            <div ng-hide="useFilterMinutes==false" >
+                <input type="text" class="form-control" ng-model="displayFilterMinutes" style="width:50px" title="duration">
+                Show only last {{displayFilterMinutes}} minutes
+            </div>
+            <div ng-hide="useFilterMinutes==true" >
+                <!--very ugly hack to prevent the checkbox resizing-->
+                &nbsp;
+            </div>
         </div>
     </div>
 
 
     <div style="clear:both"></div>
+
+    <fieldset class="timedscalar-monitor" style="width:98%">
+        <legend>Monitoring</legend>
+        <!-- TODO FOX088S Add sorting -->
+        <!-- TODO FOX088S Add formatting -->
+        <table class="table table-condensed table-striped">
+            <tr>
+                <th class="scalar-name"  style="width: 150px"></th>
+                <th class="scalar-value" style="width: 80px;">Min</th>
+                <th class="scalar-value" style="width: 80px;">Max</th>
+                <th class="scalar-value" style="width: 80px;">Average</th>
+                <th class="scalar-value" >Description</th>
+            </tr>
+            <tr ng-repeat="entry in timedScalarsWithMonitoringData">
+                <td class="scalar-name">{{entry.key}}</td>
+                <td class="scalar-value"> {{entry.minValue}}</td>
+                <td class="scalar-value"> {{entry.maxValue}}</td>
+                <td class="scalar-value"> {{entry.avgValue}}</td>
+                <td class="scalar-value">{{entry.description}}</td>
+            </tr>
+            <tr ng-repeat="freq in cpuFreq"><td></td><td class="scalar-value">{{freq.mhz}} MHz</td><td class="scalar-value">{{freq.formattedValue}} CPUs</td><td></td><td></td><td></td></tr>
+        </table>
+    </fieldset>
 
     <fieldset class="timedscalar-graph" style="width:98%">
         <legend>Graphical Display</legend>

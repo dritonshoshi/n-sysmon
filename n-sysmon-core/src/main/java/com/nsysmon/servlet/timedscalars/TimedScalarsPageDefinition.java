@@ -12,10 +12,15 @@ import com.nsysmon.servlet.overview.DataFileGeneratorSupporter;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URLDecoder;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 
@@ -61,6 +66,12 @@ public class TimedScalarsPageDefinition implements APresentationPageDefinition, 
         }else if ("getGraphData".equals(service)) {
             serveGraphData(json, params);
             return true;
+        }else if ("getLatestGraphData".equals(service)) {
+            serveLatestGraphData(json, params);
+            return true;
+        }else if ("getMonitoringData".equals(service)) {
+            serveMonitoringData(json, params);
+            return true;
         }
 
         return false;
@@ -92,6 +103,77 @@ public class TimedScalarsPageDefinition implements APresentationPageDefinition, 
         }
         json.endArray();
 
+    }
+
+    private void serveLatestGraphData(final AJsonSerHelper json, List<String> params) throws IOException {
+        if (params == null || params.size() < 1){
+            return;
+        }
+        String selectedEntries = params.get(0);
+        Duration newerThan = Duration.ofMinutes(Long.parseLong(params.get(1)));
+
+
+        json.startArray();
+        for (String param : selectedEntries.split(",")) {
+            String paramWithoutHtml = URLDecoder.decode(param, "UTF-8");
+            final Map<String, ARingBuffer<AScalarDataPoint>> scalars = sysMon.getTimedScalarMeasurements();
+
+            for (String key : scalars.keySet()) {
+                if (key.equalsIgnoreCase(paramWithoutHtml)) {
+                    json.startObject();
+                    addMetainfos(json, key);
+
+                    json.writeKey("values");
+                    json.startArray();
+                    writeRingBufferIntoJson(json, scalars.get(key), newerThan);
+                    json.endArray();
+                    json.endObject();
+                }
+            }
+        }
+        json.endArray();
+    }
+
+    private void serveMonitoringData(final AJsonSerHelper json, List<String> params) throws IOException {
+        Duration newerThan = Duration.ofMinutes(Long.parseLong(params.get(1)));
+        String selectedEntries = params.get(0);
+
+        json.startArray();
+        for (String param : selectedEntries.split(",")) {
+            String paramWithoutHtml = URLDecoder.decode(param, "UTF-8");
+            final Map<String, ARingBuffer<AScalarDataPoint>> scalars = sysMon.getTimedScalarMeasurements();
+
+            for (String key : scalars.keySet()) {
+                if (key.equalsIgnoreCase(paramWithoutHtml)) {
+                    json.startObject();
+                    addMetainfos(json, key);
+
+                    TreeSet<AScalarDataPoint> filteredDataPoints = filterByTimestamp(scalars.get(key), newerThan);
+                    AScalarDataPoint max = filteredDataPoints.stream().max(new AScalarDataPointValueComparator()).orElseGet(() -> null);
+                    json.writeKey("maxValue");
+                    if (max == null) {
+                        json.writeNumberLiteral(0, 0);
+                    }else {
+                        json.writeNumberLiteral(max.getValue(), max.getNumFracDigits());
+                    }
+
+                    AScalarDataPoint min = filteredDataPoints.stream().min(new AScalarDataPointValueComparator()).orElseGet(() -> null);
+                    json.writeKey("minValue");
+                    if (min == null) {
+                        json.writeNumberLiteral(0, 0);
+                    }else {
+                        json.writeNumberLiteral(min.getValue(), min.getNumFracDigits());
+                    }
+
+                    AScalarDataPoint avg = getAverageValue(filteredDataPoints);
+                    json.writeKey("avgValue");
+                    json.writeNumberLiteral(avg.getValue(), avg.getNumFracDigits());
+
+                    json.endObject();
+                }
+            }
+        }
+        json.endArray();
     }
 
     private void addMetainfos(AJsonSerHelper json, String key) throws IOException {
@@ -169,7 +251,59 @@ public class TimedScalarsPageDefinition implements APresentationPageDefinition, 
                 LOG.error(e);
             }
         }
+    }
 
+    private AScalarDataPoint getAverageValue(TreeSet<AScalarDataPoint> filteredDataPoints ){
+        AScalarDataPoint latestDataPoint = filteredDataPoints.last(); //TODO FOX088S check if last is ok or if it has to be first
+
+        final long[] sum = {0L};
+        filteredDataPoints.parallelStream().forEach(aScalarDataPoint -> sum[0] += aScalarDataPoint.getValue());
+
+        long value = sum[0] / filteredDataPoints.size();
+        return new AScalarDataPoint(latestDataPoint.getTimestamp(), latestDataPoint.getName(), value, latestDataPoint.getNumFracDigits());
+    }
+
+    private TreeSet<AScalarDataPoint> filterByTimestamp(final ARingBuffer<AScalarDataPoint> buffer, Duration newerThan){
+        Set<AScalarDataPoint> tmpRc = new TreeSet<>(new AScalarDataPointTimestampComparator());
+        TreeSet<AScalarDataPoint> rc = new TreeSet<>(new AScalarDataPointTimestampComparator());;
+
+        final LocalDateTime localDateTime = LocalDateTime.now();
+        for (AScalarDataPoint scalarDataPoint : buffer) {
+
+            long timeStamp = scalarDataPoint.getTimestamp();
+            long latestMillis = localDateTime
+                    .minus(newerThan)
+                    .toEpochSecond(ZoneOffset.systemDefault().getRules().getOffset(localDateTime))
+                    *1000;
+
+            if (latestMillis >= timeStamp) {
+                //entry too old
+                continue;
+            }
+            tmpRc.add(scalarDataPoint);
+        }
+        tmpRc.forEach(rc::add);
+        return rc;
+    }
+
+    private void writeRingBufferIntoJson(final AJsonSerHelper json, final ARingBuffer<AScalarDataPoint> buffer, Duration newerThan) throws IOException {
+
+        for (AScalarDataPoint scalarDataPoint : filterByTimestamp(buffer, newerThan)) {
+            try {
+                long timeStamp = scalarDataPoint.getTimestamp();
+
+                json.startObject();
+
+                json.writeKey("x");
+                json.writeNumberLiteral(timeStamp, 0);
+                json.writeKey("y");
+                json.writeNumberLiteral(scalarDataPoint.getValue(), scalarDataPoint.getNumFracDigits());
+
+                json.endObject();
+            } catch (IOException e) {
+                LOG.error(e);
+            }
+        }
     }
 
     @Override
