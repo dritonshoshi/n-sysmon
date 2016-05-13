@@ -16,13 +16,9 @@ public class AJmxTomcatDeltaMeasurer implements AScalarMeasurer, NSysMonAware {
 
     private static final Logger LOG = Logger.getLogger(AJmxTomcatDeltaMeasurer.class);
 
-    private static final String KEY_PREFIX = "Tomcat";
     private static final String KEY_REQUEST_COUNT = "Request Count";
     private static final String KEY_BYTES_RECEIVED  = "Received MB";
     private static final String KEY_BYTES_SENT  = "Sent MB";
-//    private static final String KEY_REQUEST_COUNT = KEY_PREFIX + "Request Count";
-//    private static final String KEY_BYTES_RECEIVED  = KEY_PREFIX + "Received MB";
-//    private static final String KEY_BYTES_SENT  = KEY_PREFIX + "Sent MB";
 
     private static String OBJECT_GLOBAL_REQUEST_PROCESSOR;
     private static final String NAME_REQUEST_COUNT = "requestCount";
@@ -80,10 +76,9 @@ public class AJmxTomcatDeltaMeasurer implements AScalarMeasurer, NSysMonAware {
 
     @Override
     public String getGroupnameOfMeasurement(String measurement) {
-        if (measurement == null){
-            return null;
-        }
-        if (measurement.contains(KEY_PREFIX)) {
+        if (KEY_REQUEST_COUNT.equalsIgnoreCase(measurement) ||
+                KEY_BYTES_RECEIVED.equalsIgnoreCase(measurement) ||
+                KEY_BYTES_SENT.equalsIgnoreCase(measurement)) {
             return "Tomcat";
         }
         return null;

@@ -10,7 +10,7 @@ import java.io.IOException;
 import java.util.Map;
 
 public class SystemLoadOneMinuteMeasurer implements AScalarMeasurer {
-    private static final String IDENT_LOAD_1_MIN = "System: Load";
+    private static final String IDENT_LOAD_1_MIN = "Load";
 
     private final File procFile = new File("/proc/loadavg");
     private final boolean isWindows;
@@ -55,7 +55,7 @@ public class SystemLoadOneMinuteMeasurer implements AScalarMeasurer {
     @Override
     public String getDescriptionOfMeasurement(String measurement) {
         if (IDENT_LOAD_1_MIN.equalsIgnoreCase(measurement)) {
-            return "Avarage of system load value for the last time period.";
+            return "Average of system load value for the last time period.";
         }
         return null;
     }

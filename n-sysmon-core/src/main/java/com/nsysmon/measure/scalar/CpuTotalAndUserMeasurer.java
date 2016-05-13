@@ -10,8 +10,8 @@ import java.util.Map;
 
 public class CpuTotalAndUserMeasurer implements AScalarMeasurer {
 
-    private static final String CPU_TOTAL = "System: CPU Total";
-    private static final String CPU_USER = "System: CPU User";
+    private static final String CPU_TOTAL = "CPU Total";
+    private static final String CPU_USER = "CPU User";
 
     private final boolean isWindows;
 

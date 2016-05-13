@@ -85,4 +85,21 @@ public class AConnectionCounter implements AScalarMeasurer, AIConnectionCounter 
     @Override public AOption<Long> getTimeoutInMilliSeconds() {
         return AOption.none();
     }
+
+    @Override public String getGroupnameOfMeasurement(String measurement) {
+        if (measurement != null && measurement.startsWith("JDBC")) {
+            return "JDBC";
+        }
+        return null;
+    }
+
+    @Override public String getDescriptionOfMeasurement(String measurement) {
+        if (measurement != null && measurement.startsWith("JDBC: Open Connections")) {
+            return "Open database connections.";
+        }
+        else if (measurement != null && measurement.startsWith("JDBC: Active Connections")) {
+            return "Active database connections.";
+        }
+        return null;
+    }
 }
