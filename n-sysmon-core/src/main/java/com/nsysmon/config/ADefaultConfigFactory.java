@@ -21,8 +21,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-//import com.ajjpj.afoundation.util.AUnchecker;
-
 
 /**
  * This class evaluates the default configuration files, creating a config instance from their content.
@@ -55,6 +53,7 @@ public class ADefaultConfigFactory implements AConfigFactory {
     public static final String KEY_MAX_NESTED_MEASUREMENTS = "max-nested-measurements";
     public static final String KEY_MAX_NUM_MEASUREMENTS_PER_HIERARCHY = "max-measurements-per-hierarchy";
 
+    public static final String KEY_MAX_NUM_MEASUREMENTS_RELEVANT_FOR_MONITORING = "max-measurements-relevant-for-monitoring";
     public static final String KEY_MAX_NUM_MEASUREMENTS_PER_TIMED_SCALAR = "max-measurements-per-timed-scalar";
     public static final String KEY_DURATION_OF_ONE_TIMED_SCALAR = "duration-of-one-timed-scalar";
 
@@ -172,6 +171,7 @@ public class ADefaultConfigFactory implements AConfigFactory {
         builder.setMaxNestedMeasurements(props.get(KEY_MAX_NESTED_MEASUREMENTS, Integer.TYPE));
         builder.setMaxNumMeasurementsPerHierarchy(props.get(KEY_MAX_NUM_MEASUREMENTS_PER_HIERARCHY, Integer.TYPE));
         builder.setMaxNumMeasurementsPerTimedScalar(props.get(KEY_MAX_NUM_MEASUREMENTS_PER_TIMED_SCALAR, Integer.TYPE));
+        builder.setMaxNumMeasurementsForCockpit(props.get(KEY_MAX_NUM_MEASUREMENTS_RELEVANT_FOR_MONITORING, Integer.TYPE));
 
         builder.setDataSinkTimeoutNanos (props.get (KEY_DATA_SINK_TIMEOUT_NANOS, Long.TYPE));
         builder.setMaxNumDataSinkTimeouts(props.get(KEY_MAX_NUM_DATA_SINK_TIMEOUTS, Integer.TYPE));

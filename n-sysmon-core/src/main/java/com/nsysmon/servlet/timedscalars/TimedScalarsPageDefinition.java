@@ -135,21 +135,24 @@ public class TimedScalarsPageDefinition implements APresentationPageDefinition, 
     }
 
     private void serveMonitoringData(final AJsonSerHelper json, List<String> params) throws IOException {
-        Duration newerThan = Duration.ofMinutes(Long.parseLong(params.get(1)));
         String selectedEntries = params.get(0);
 
         json.startArray();
         for (String param : selectedEntries.split(",")) {
             String paramWithoutHtml = URLDecoder.decode(param, "UTF-8");
-            final Map<String, ARingBuffer<AScalarDataPoint>> scalars = sysMon.getTimedScalarMeasurements();
+            final Map<String, ARingBuffer<AScalarDataPoint>> scalars = sysMon.getTimedScalarMeasurementsForMonitoring();
 
             for (String key : scalars.keySet()) {
                 if (key.equalsIgnoreCase(paramWithoutHtml)) {
                     json.startObject();
                     addMetainfos(json, key);
 
-                    TreeSet<AScalarDataPoint> filteredDataPoints = filterByTimestamp(scalars.get(key), newerThan);
-                    AScalarDataPoint max = filteredDataPoints.stream().max(new AScalarDataPointValueComparator()).orElseGet(() -> null);
+                    TreeSet<AScalarDataPoint> monitoringDataPoints = new TreeSet<>(new AScalarDataPointValueComparator());
+                    for (AScalarDataPoint dataPoint : scalars.get(key)) {
+                        monitoringDataPoints.add(dataPoint);
+                    }
+
+                    AScalarDataPoint max = monitoringDataPoints.stream().max(new AScalarDataPointValueComparator()).orElseGet(() -> null);
                     json.writeKey("maxValue");
                     if (max == null) {
                         json.writeNumberLiteral(0, 0);
@@ -157,7 +160,7 @@ public class TimedScalarsPageDefinition implements APresentationPageDefinition, 
                         json.writeNumberLiteral(max.getValue(), max.getNumFracDigits());
                     }
 
-                    AScalarDataPoint min = filteredDataPoints.stream().min(new AScalarDataPointValueComparator()).orElseGet(() -> null);
+                    AScalarDataPoint min = monitoringDataPoints.stream().min(new AScalarDataPointValueComparator()).orElseGet(() -> null);
                     json.writeKey("minValue");
                     if (min == null) {
                         json.writeNumberLiteral(0, 0);
@@ -165,7 +168,7 @@ public class TimedScalarsPageDefinition implements APresentationPageDefinition, 
                         json.writeNumberLiteral(min.getValue(), min.getNumFracDigits());
                     }
 
-                    AScalarDataPoint avg = getAverageValue(filteredDataPoints);
+                    AScalarDataPoint avg = getAverageValue(monitoringDataPoints);
                     json.writeKey("avgValue");
                     json.writeNumberLiteral(avg.getValue(), avg.getNumFracDigits());
 
@@ -265,7 +268,7 @@ public class TimedScalarsPageDefinition implements APresentationPageDefinition, 
 
     private TreeSet<AScalarDataPoint> filterByTimestamp(final ARingBuffer<AScalarDataPoint> buffer, Duration newerThan){
         Set<AScalarDataPoint> tmpRc = new TreeSet<>(new AScalarDataPointTimestampComparator());
-        TreeSet<AScalarDataPoint> rc = new TreeSet<>(new AScalarDataPointTimestampComparator());;
+        TreeSet<AScalarDataPoint> rc = new TreeSet<>(new AScalarDataPointTimestampComparator());
 
         final LocalDateTime localDateTime = LocalDateTime.now();
         for (AScalarDataPoint scalarDataPoint : buffer) {

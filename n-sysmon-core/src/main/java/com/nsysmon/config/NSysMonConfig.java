@@ -25,6 +25,7 @@ public class NSysMonConfig {
     public final int maxNestedMeasurements;
     public final int maxNumMeasurementsPerHierarchy;
     public final int maxNumMeasurementsPerTimedScalar;
+    public final int maxNumMeasurementsForMonitoring;
     public final int durationOfOneTimedScalar;
 
     public final long measurementTimeoutNanos;
@@ -54,17 +55,18 @@ public class NSysMonConfig {
     public final String pathDatafiles;
 
     public NSysMonConfig(AApplicationInfoProvider appInfo, int averagingDelayForScalarsMillis, int durationOfOneTimedScalar, int maxNestedMeasurements, int maxNumMeasurementsPerHierarchy, int maxNumMeasurementsPerTimedScalar,
-            long measurementTimeoutNanos, int maxNumMeasurementTimeouts, long dataSinkTimeoutNanos, int maxNumDataSinkTimeouts, ATimer timer, AHttpRequestAnalyzer httpRequestAnalyzer,
-            List<AEnvironmentMeasurer> environmentMeasurers, List<AScalarMeasurer> initialScalarMeasurers, List<AScalarMeasurer> initialTimedScalarMeasurers, List<ADataSink> initialDataSinks,
-            String defaultPage,
-            List<APresentationMenuEntry> presentationMenuEntries, Map<String, String> additionalConfigurationParameters, Boolean collectSqlParameters, boolean collectTooltips,
-            String pathDatafiles) {
+                         int maxNumMeasurementsForMonitoring, long measurementTimeoutNanos, int maxNumMeasurementTimeouts, long dataSinkTimeoutNanos, int maxNumDataSinkTimeouts, ATimer timer, AHttpRequestAnalyzer httpRequestAnalyzer,
+                         List<AEnvironmentMeasurer> environmentMeasurers, List<AScalarMeasurer> initialScalarMeasurers, List<AScalarMeasurer> initialTimedScalarMeasurers, List<ADataSink> initialDataSinks,
+                         String defaultPage,
+                         List<APresentationMenuEntry> presentationMenuEntries, Map<String, String> additionalConfigurationParameters, Boolean collectSqlParameters, boolean collectTooltips,
+                         String pathDatafiles) {
         this.appInfo = appInfo;
         this.averagingDelayForScalarsMillis = averagingDelayForScalarsMillis;
         this.durationOfOneTimedScalar = durationOfOneTimedScalar;
         this.maxNestedMeasurements = maxNestedMeasurements;
         this.maxNumMeasurementsPerHierarchy = maxNumMeasurementsPerHierarchy;
         this.maxNumMeasurementsPerTimedScalar = maxNumMeasurementsPerTimedScalar;
+        this.maxNumMeasurementsForMonitoring = maxNumMeasurementsForMonitoring;
         this.measurementTimeoutNanos = measurementTimeoutNanos;
         this.maxNumMeasurementTimeouts = maxNumMeasurementTimeouts;
         this.dataSinkTimeoutNanos = dataSinkTimeoutNanos;

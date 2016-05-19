@@ -12,12 +12,15 @@ import java.util.TreeMap;
 
 class TimedScalarDataWrapper implements Runnable {
     private final Map<String, ARingBuffer<AScalarDataPoint>> dataBuffer = new TreeMap<>();
-    private final int maxEntries;
+    private final Map<String, ARingBuffer<AScalarDataPoint>> dataBufferMonitoring = new TreeMap<>();
+    private final int maxEntriesTotal;
+    private final int maxEntriesMonitoring;
     private AList<RobustScalarMeasurerWrapper> timedScalarMeasurers = AList.nil();
     private final Map<String, Object> mementos = new TreeMap<>();
 
-    TimedScalarDataWrapper(int maxEntries) {
-        this.maxEntries = maxEntries;
+    TimedScalarDataWrapper(int maxEntriesTotal, int maxEntriesMonitoring) {
+        this.maxEntriesTotal = maxEntriesTotal;
+        this.maxEntriesMonitoring = maxEntriesMonitoring;
     }
 
     @Override
@@ -40,6 +43,10 @@ class TimedScalarDataWrapper implements Runnable {
         return Collections.unmodifiableMap(dataBuffer);
     }
 
+    public Map<String, ARingBuffer<AScalarDataPoint>> getMeasurementsForMonitoring() {
+        return Collections.unmodifiableMap(dataBufferMonitoring);
+    }
+
     void refreshMeasurers(AList<RobustScalarMeasurerWrapper> timedScalarMeasurers) {
         for (RobustScalarMeasurerWrapper timedScalarMeasurer : timedScalarMeasurers) {
             timedScalarMeasurer.prepareMeasurements(mementos);
@@ -51,9 +58,14 @@ class TimedScalarDataWrapper implements Runnable {
         for (AScalarDataPoint point : dataPoint) {
             String name = point.getName();
             if (!dataBuffer.containsKey(name)){
-                dataBuffer.put(name, new ARingBuffer<>(AScalarDataPoint.class, maxEntries));
+                dataBuffer.put(name, new ARingBuffer<>(AScalarDataPoint.class, maxEntriesTotal));
             }
             dataBuffer.get(name).put(point);
+
+            if (!dataBufferMonitoring.containsKey(name)){
+                dataBufferMonitoring.put(name, new ARingBuffer<>(AScalarDataPoint.class, maxEntriesMonitoring));
+            }
+            dataBufferMonitoring.get(name).put(point);
         }
     }
 }
