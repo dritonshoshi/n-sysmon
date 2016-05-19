@@ -255,7 +255,6 @@ angular.module('NSysMonApp').controller('CtrlScalars', function($scope, $log, Re
                 return Math.log(raw) / Math.LN10 + 2;
             }
 
-            console.log('disk:' + dev + ':sizeGB');
             var hasSize = $scope.scalars['disk:' + dev + ':sizeGB'];
             var hasTraffic = $scope.scalars['disk:' + dev + ':read-mbytes'];
 
@@ -269,7 +268,6 @@ angular.module('NSysMonApp').controller('CtrlScalars', function($scope, $log, Re
                 result += '<td class="scalar-name"></td>';
             }
 
-            console.log(hasSize);
             if(hasSize) {
                 var sizeGB = $scope.scalars['disk:' + dev + ':sizeGB'].value;
                 var availableGB = $scope.scalars['disk:' + dev + ':availableGB'].value;
