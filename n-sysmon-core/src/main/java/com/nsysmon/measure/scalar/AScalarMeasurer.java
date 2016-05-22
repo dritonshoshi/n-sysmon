@@ -5,6 +5,8 @@ import com.ajjpj.afoundation.collection.immutable.AOption;
 import com.nsysmon.data.AScalarDataPoint;
 import com.nsysmon.util.AShutdownable;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 
@@ -32,5 +34,9 @@ public interface AScalarMeasurer extends AShutdownable {
     }
     default String getDescriptionOfMeasurement(String measurement){
         return null;
+    }
+
+    default List<String> getConfigurationParameters(){
+        return Collections.emptyList();
     }
 }

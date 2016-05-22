@@ -13,6 +13,7 @@ import com.nsysmon.util.timer.ATimer;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -52,6 +53,7 @@ public class NSysMonConfigBuilder {
     private final List<APresentationMenuEntry> presentationMenuEntries = new ArrayList<>();
     private String defaultPage;
     private Map<String, String> additionalConfigurationParameters;
+    private Map<String, Long> timedScalarMonitoringParameters = new HashMap<>();
 
     public NSysMonConfigBuilder(AApplicationInfoProvider appInfo) {
         this.appInfo = appInfo;
@@ -191,8 +193,12 @@ public class NSysMonConfigBuilder {
                 timer, httpRequestAnalyzer,
                 environmentMeasurers, scalarMeasurers, scalarTimedMeasurers, dataSinks,
                 defaultPage, presentationMenuEntries, additionalConfigurationParameters,
-                collectSqlParameters, collectTooltips, pathDatafiles
+                collectSqlParameters, collectTooltips, pathDatafiles, timedScalarMonitoringParameters
                 );
+    }
+
+    public void addTimedScalarMonitoringParmameter(String key, Long value) {
+        this.timedScalarMonitoringParameters.put(key, value);
     }
 
     public void setAdditionalConfigurationParameters(Map<String, String> additionalConfigurationParameters) {

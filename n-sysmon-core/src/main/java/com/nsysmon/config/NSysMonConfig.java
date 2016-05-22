@@ -52,6 +52,8 @@ public class NSysMonConfig {
     private Boolean overrideCollectSqlParameters = null;
     private Boolean overrideCollectTooltips = null;
 
+    private Map<String, Long> timedScalarMonitoringParameters;
+
     public final String pathDatafiles;
 
     public NSysMonConfig(AApplicationInfoProvider appInfo, int averagingDelayForScalarsMillis, int durationOfOneTimedScalar, int maxNestedMeasurements, int maxNumMeasurementsPerHierarchy, int maxNumMeasurementsPerTimedScalar,
@@ -59,7 +61,7 @@ public class NSysMonConfig {
                          List<AEnvironmentMeasurer> environmentMeasurers, List<AScalarMeasurer> initialScalarMeasurers, List<AScalarMeasurer> initialTimedScalarMeasurers, List<ADataSink> initialDataSinks,
                          String defaultPage,
                          List<APresentationMenuEntry> presentationMenuEntries, Map<String, String> additionalConfigurationParameters, Boolean collectSqlParameters, boolean collectTooltips,
-                         String pathDatafiles) {
+                         String pathDatafiles, Map<String, Long> timedScalarMonitoringParameters) {
         this.appInfo = appInfo;
         this.averagingDelayForScalarsMillis = averagingDelayForScalarsMillis;
         this.durationOfOneTimedScalar = durationOfOneTimedScalar;
@@ -83,6 +85,7 @@ public class NSysMonConfig {
         this.collectSqlParameters = collectSqlParameters;
         this.collectTooltips = collectTooltips;
         this.pathDatafiles = pathDatafiles;
+        this.timedScalarMonitoringParameters = timedScalarMonitoringParameters;
     }
 
     /**

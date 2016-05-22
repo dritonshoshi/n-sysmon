@@ -198,6 +198,21 @@ public class ADefaultConfigFactory implements AConfigFactory {
             builder.addPresentationMenuEntry(menuEntry, pageDefs);
         }
 
+        for (AScalarMeasurer timedScalarClass : props.getList(KEY_TIMED_SCALAR_MEASURERS, AScalarMeasurer.class)) {
+            List<String> configurationParameters = timedScalarClass.getConfigurationParameters();
+            for (String parameterValue : configurationParameters) {
+                Long value = props.get(parameterValue, Long.class);
+                if (value == null) {
+                    // TODO FOX088S add Logging
+                    String message = "No configuration valueAsString found for " + parameterValue + "!";
+                    value = 0L;
+                }
+                // TODO FOX088S add Logging
+                System.out.println("INFO: using " + value + " as value for " + parameterValue);
+                builder.addTimedScalarMonitoringParmameter(parameterValue, value);
+            }
+        }
+
         return builder.build();
     }
 }

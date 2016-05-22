@@ -9,8 +9,10 @@ import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.lang.management.OperatingSystemMXBean;
 import java.nio.charset.Charset;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -28,6 +30,11 @@ public class ACpuUtilizationMeasurer implements AScalarMeasurer {
     public static final String KEY_ALL_USED = KEY_PREFIX + "all-used";
     public static final String KEY_PREFIX_MHZ = KEY_PREFIX + "freq-mhz:";
     public static final String KEY_SELF_KERNEL = KEY_PREFIX + "self-kernel";
+    public static String KEY_CONFIGURATION_PREFIX = "timedscalar" + "." + ACpuUtilizationMeasurer.class.getSimpleName() + ".";
+    public static String KEY_CONFIGURATION_ALL_USED_MEDIUM = KEY_CONFIGURATION_PREFIX + "all-used" + ".medium";
+    public static String KEY_CONFIGURATION_ALL_USED_HIGH = KEY_CONFIGURATION_PREFIX + "all-used" + ".high";
+    public static String KEY_CONFIGURATION_SELF_KERNEL_MEDIUM = KEY_CONFIGURATION_PREFIX + "self-kernel" + ".medium";
+    public static String KEY_CONFIGURATION_SELF_KERNEL_HIGH = KEY_CONFIGURATION_PREFIX + "self-kernel" + ".high";
     private final boolean isWindows;
 
     public ACpuUtilizationMeasurer(){
@@ -144,5 +151,10 @@ public class ACpuUtilizationMeasurer implements AScalarMeasurer {
 
     @Override public AOption<Long> getTimeoutInMilliSeconds() {
         return AOption.none();
+    }
+
+    @Override
+    public List<String> getConfigurationParameters() {
+        return Arrays.asList(KEY_CONFIGURATION_ALL_USED_HIGH, KEY_CONFIGURATION_ALL_USED_MEDIUM, KEY_CONFIGURATION_SELF_KERNEL_HIGH, KEY_CONFIGURATION_SELF_KERNEL_MEDIUM);
     }
 }
