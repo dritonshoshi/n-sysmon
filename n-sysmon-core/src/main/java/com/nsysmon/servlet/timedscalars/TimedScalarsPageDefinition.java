@@ -2,6 +2,7 @@ package com.nsysmon.servlet.timedscalars;
 
 import com.ajjpj.afoundation.collection.mutable.ARingBuffer;
 import com.ajjpj.afoundation.io.AJsonSerHelper;
+import com.nsysmon.NSysMon;
 import com.nsysmon.NSysMonApi;
 import com.nsysmon.config.log.NSysMonLogger;
 import com.nsysmon.config.presentation.APresentationPageDefinition;
@@ -19,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
@@ -144,39 +146,73 @@ public class TimedScalarsPageDefinition implements APresentationPageDefinition, 
 
             for (String key : scalars.keySet()) {
                 if (key.equalsIgnoreCase(paramWithoutHtml)) {
-                    json.startObject();
-                    addMetainfos(json, key);
-
-                    TreeSet<AScalarDataPoint> monitoringDataPoints = new TreeSet<>(new AScalarDataPointValueComparator());
-                    for (AScalarDataPoint dataPoint : scalars.get(key)) {
-                        monitoringDataPoints.add(dataPoint);
-                    }
-
-                    AScalarDataPoint max = monitoringDataPoints.stream().max(new AScalarDataPointValueComparator()).orElseGet(() -> null);
-                    json.writeKey("maxValue");
-                    if (max == null) {
-                        json.writeNumberLiteral(0, 0);
-                    }else {
-                        json.writeNumberLiteral(max.getValue(), max.getNumFracDigits());
-                    }
-
-                    AScalarDataPoint min = monitoringDataPoints.stream().min(new AScalarDataPointValueComparator()).orElseGet(() -> null);
-                    json.writeKey("minValue");
-                    if (min == null) {
-                        json.writeNumberLiteral(0, 0);
-                    }else {
-                        json.writeNumberLiteral(min.getValue(), min.getNumFracDigits());
-                    }
-
-                    AScalarDataPoint avg = getAverageValue(monitoringDataPoints);
-                    json.writeKey("avgValue");
-                    json.writeNumberLiteral(avg.getValue(), avg.getNumFracDigits());
-
-                    json.endObject();
+                    fillMonitoringData(json, scalars, key);
                 }
             }
         }
         json.endArray();
+    }
+
+    private void fillMonitoringData(AJsonSerHelper json, Map<String, ARingBuffer<AScalarDataPoint>> scalars, String key) throws IOException {
+        json.startObject();
+        addMetainfos(json, key);
+
+        TreeSet<AScalarDataPoint> monitoringDataPoints = new TreeSet<>(new AScalarDataPointValueComparator());
+        for (AScalarDataPoint dataPoint : scalars.get(key)) {
+            monitoringDataPoints.add(dataPoint);
+        }
+
+        AScalarDataPoint max = monitoringDataPoints.stream().max(new AScalarDataPointValueComparator()).orElseGet(() -> null);
+        json.writeKey("maxValue");
+        if (max == null) {
+            json.writeNumberLiteral(0, 0);
+        }else {
+            json.writeNumberLiteral(max.getValue(), max.getNumFracDigits());
+        }
+
+        AScalarDataPoint min = monitoringDataPoints.stream().min(new AScalarDataPointValueComparator()).orElseGet(() -> null);
+        json.writeKey("minValue");
+        if (min == null) {
+            json.writeNumberLiteral(0, 0);
+        }else {
+            json.writeNumberLiteral(min.getValue(), min.getNumFracDigits());
+        }
+
+        AScalarDataPoint avg = getAverageValue(monitoringDataPoints);
+        json.writeKey("avgValue");
+        json.writeNumberLiteral(avg.getValue(), avg.getNumFracDigits());
+
+        //TODO FOX088S check if evaluation should be changed to double
+        AScalarMeasurer.EvaluatedValue evaluatedValue = evaluateValue(key, avg.getValue());
+        json.writeKey("threshold");
+        json.writeStringLiteral(evaluatedValue.name());
+
+        json.endObject();
+    }
+
+    private AScalarMeasurer.EvaluatedValue evaluateValue(String key, double value) {
+        Set<String> configKeys = NSysMon.get().getConfig().getTimedScalarMonitoringParameters().keySet();
+        Optional<String> highValue = configKeys.stream()
+                .filter(s -> s.endsWith(AScalarMeasurer.KEY_CONFIGURATION_HIGH))
+                .filter(s -> s.contains(key))
+                .findFirst();
+        final Long[] valueToCompare = new Long[1];
+        valueToCompare[0] = 0L;
+        highValue.ifPresent(s -> valueToCompare[0] = NSysMon.get().getConfig().getTimedScalarMonitoringParameters().get(s));
+        if (valueToCompare[0] != 0L && valueToCompare[0] < value) {
+            return AScalarMeasurer.EvaluatedValue.HIGH;
+        }
+        //check medium, if no high was detected
+            Optional<String> mediumValue = configKeys.stream()
+                    .filter(s -> s.endsWith(AScalarMeasurer.KEY_CONFIGURATION_MEDIUM))
+                    .filter(s -> s.contains(key))
+                    .findFirst();
+            mediumValue.ifPresent(s -> valueToCompare[0] = NSysMon.get().getConfig().getTimedScalarMonitoringParameters().get(s));
+
+        if (valueToCompare[0] != 0L && valueToCompare[0] < value) {
+            return AScalarMeasurer.EvaluatedValue.MEDIUM;
+        }
+        return AScalarMeasurer.EvaluatedValue.LOW;
     }
 
     private void addMetainfos(AJsonSerHelper json, String key) throws IOException {
@@ -257,6 +293,7 @@ public class TimedScalarsPageDefinition implements APresentationPageDefinition, 
     }
 
     private AScalarDataPoint getAverageValue(TreeSet<AScalarDataPoint> filteredDataPoints ){
+        //TODO FOX088S Average sees to be 1/10 of the real value?!
         AScalarDataPoint latestDataPoint = filteredDataPoints.last(); //TODO FOX088S check if last is ok or if it has to be first
 
         final long[] sum = {0L};

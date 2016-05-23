@@ -135,4 +135,7 @@ public class NSysMonConfig {
         overrideCollectTooltips = false;
     }
 
+    public Map<String, Long> getTimedScalarMonitoringParameters() {
+        return timedScalarMonitoringParameters;
+    }
 }

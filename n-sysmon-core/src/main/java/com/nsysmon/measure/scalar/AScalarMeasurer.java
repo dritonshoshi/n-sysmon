@@ -25,6 +25,14 @@ import java.util.Map;
  *  <code>prepareMeasurements()</code> and the entire memento mechanism.
  */
 public interface AScalarMeasurer extends AShutdownable {
+    String KEY_CONFIGURATION_SEPERATOR = ".";
+    String KEY_CONFIGURATION_MEDIUM = "medium";
+    String KEY_CONFIGURATION_HIGH = "high";
+
+    enum EvaluatedValue{
+        LOW, MEDIUM, HIGH
+    }
+
     void prepareMeasurements(Map<String, Object> mementos) throws Exception;
     void contributeMeasurements(Map<String, AScalarDataPoint> data, long timestamp, Map<String, Object> mementos) throws Exception;
     AOption<Long> getTimeoutInMilliSeconds();
@@ -39,4 +47,5 @@ public interface AScalarMeasurer extends AShutdownable {
     default List<String> getConfigurationParameters(){
         return Collections.emptyList();
     }
+
 }
