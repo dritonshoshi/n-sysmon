@@ -293,13 +293,32 @@ public class TimedScalarsPageDefinition implements APresentationPageDefinition, 
     }
 
     private AScalarDataPoint getAverageValue(TreeSet<AScalarDataPoint> filteredDataPoints ){
-        //TODO FOX088S Average sees to be 1/10 of the real value?!
         AScalarDataPoint latestDataPoint = filteredDataPoints.last(); //TODO FOX088S check if last is ok or if it has to be first
 
         final long[] sum = {0L};
-        filteredDataPoints.parallelStream().forEach(aScalarDataPoint -> sum[0] += aScalarDataPoint.getValue());
+        final long[] cnt = {0};
+        filteredDataPoints.parallelStream().forEach(aScalarDataPoint -> {
+            sum[0] += aScalarDataPoint.getValue();
+            cnt[0]++;
+        });
 
-        long value = sum[0] / filteredDataPoints.size();
+        sum[0] = (long) (sum[0] * Math.pow(10, latestDataPoint.getNumFracDigits()+1));
+        long value = sum[0] / cnt[0];
+        return new AScalarDataPoint(latestDataPoint.getTimestamp(), latestDataPoint.getName(), value, latestDataPoint.getNumFracDigits()+1);
+    }
+
+    private AScalarDataPoint getAverageValue2(TreeSet<AScalarDataPoint> filteredDataPoints ){
+        AScalarDataPoint latestDataPoint = filteredDataPoints.last(); //TODO FOX088S check if last is ok or if it has to be first
+
+        final long[] sum = {0L};
+        final long[] cnt = {0};
+        filteredDataPoints.parallelStream().forEach(aScalarDataPoint -> {
+            sum[0] += aScalarDataPoint.getValue();
+            cnt[0]++;
+        });
+
+        sum[0] = (long) (sum[0] * Math.pow(10, latestDataPoint.getNumFracDigits()));
+        long value = sum[0] / cnt[0];
         return new AScalarDataPoint(latestDataPoint.getTimestamp(), latestDataPoint.getName(), value, latestDataPoint.getNumFracDigits());
     }
 
