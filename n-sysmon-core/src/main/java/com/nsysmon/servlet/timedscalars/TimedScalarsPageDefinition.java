@@ -191,27 +191,26 @@ public class TimedScalarsPageDefinition implements APresentationPageDefinition, 
     }
 
     private AScalarMeasurer.EvaluatedValue evaluateValue(String key, double value) {
-        Set<String> configKeys = NSysMon.get().getConfig().getTimedScalarMonitoringParameters().keySet();
-        Optional<String> highValue = configKeys.stream()
-                .filter(s -> s.endsWith(AScalarMeasurer.KEY_CONFIGURATION_HIGH))
-                .filter(s -> s.contains(key))
+        Optional<Map.Entry<String, Long>> highValue = NSysMon.get().getConfig().getTimedScalarMonitoringParameters()
+                .entrySet()
+                .stream()
+                .filter(s -> s.getKey().endsWith(AScalarMeasurer.KEY_CONFIGURATION_HIGH))
+                .filter(s -> s.getKey().contains(key))
                 .findFirst();
-        final Long[] valueToCompare = new Long[1];
-        valueToCompare[0] = 0L;
-        highValue.ifPresent(s -> valueToCompare[0] = NSysMon.get().getConfig().getTimedScalarMonitoringParameters().get(s));
-        if (valueToCompare[0] != 0L && valueToCompare[0] < value) {
+        if (highValue.isPresent() && highValue.get().getValue() < value){
             return AScalarMeasurer.EvaluatedValue.HIGH;
         }
-        //check medium, if no high was detected
-            Optional<String> mediumValue = configKeys.stream()
-                    .filter(s -> s.endsWith(AScalarMeasurer.KEY_CONFIGURATION_MEDIUM))
-                    .filter(s -> s.contains(key))
-                    .findFirst();
-            mediumValue.ifPresent(s -> valueToCompare[0] = NSysMon.get().getConfig().getTimedScalarMonitoringParameters().get(s));
 
-        if (valueToCompare[0] != 0L && valueToCompare[0] < value) {
+        Optional<Map.Entry<String, Long>> mediumValue = NSysMon.get().getConfig().getTimedScalarMonitoringParameters()
+                .entrySet()
+                .stream()
+                .filter(s -> s.getKey().endsWith(AScalarMeasurer.KEY_CONFIGURATION_MEDIUM))
+                .filter(s -> s.getKey().contains(key))
+                .findFirst();
+        if (mediumValue.isPresent() && mediumValue.get().getValue() < value){
             return AScalarMeasurer.EvaluatedValue.MEDIUM;
         }
+
         return AScalarMeasurer.EvaluatedValue.LOW;
     }
 
@@ -293,7 +292,7 @@ public class TimedScalarsPageDefinition implements APresentationPageDefinition, 
     }
 
     private AScalarDataPoint getAverageValue(TreeSet<AScalarDataPoint> filteredDataPoints ){
-        AScalarDataPoint latestDataPoint = filteredDataPoints.last(); //TODO FOX088S check if last is ok or if it has to be first
+        AScalarDataPoint latestDataPoint = filteredDataPoints.last();
 
         final long[] sum = {0L};
         final long[] cnt = {0};
@@ -305,21 +304,6 @@ public class TimedScalarsPageDefinition implements APresentationPageDefinition, 
         sum[0] = (long) (sum[0] * Math.pow(10, latestDataPoint.getNumFracDigits()+1));
         long value = sum[0] / cnt[0];
         return new AScalarDataPoint(latestDataPoint.getTimestamp(), latestDataPoint.getName(), value, latestDataPoint.getNumFracDigits()+1);
-    }
-
-    private AScalarDataPoint getAverageValue2(TreeSet<AScalarDataPoint> filteredDataPoints ){
-        AScalarDataPoint latestDataPoint = filteredDataPoints.last(); //TODO FOX088S check if last is ok or if it has to be first
-
-        final long[] sum = {0L};
-        final long[] cnt = {0};
-        filteredDataPoints.parallelStream().forEach(aScalarDataPoint -> {
-            sum[0] += aScalarDataPoint.getValue();
-            cnt[0]++;
-        });
-
-        sum[0] = (long) (sum[0] * Math.pow(10, latestDataPoint.getNumFracDigits()));
-        long value = sum[0] / cnt[0];
-        return new AScalarDataPoint(latestDataPoint.getTimestamp(), latestDataPoint.getName(), value, latestDataPoint.getNumFracDigits());
     }
 
     private TreeSet<AScalarDataPoint> filterByTimestamp(final ARingBuffer<AScalarDataPoint> buffer, Duration newerThan){

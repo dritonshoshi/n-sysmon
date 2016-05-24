@@ -25,7 +25,6 @@ import java.util.Map;
  *  <code>prepareMeasurements()</code> and the entire memento mechanism.
  */
 public interface AScalarMeasurer extends AShutdownable {
-    String KEY_CONFIGURATION_SEPERATOR = ".";
     String KEY_CONFIGURATION_MEDIUM = "medium";
     String KEY_CONFIGURATION_HIGH = "high";
 
