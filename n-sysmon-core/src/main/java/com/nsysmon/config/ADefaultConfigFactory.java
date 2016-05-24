@@ -201,18 +201,23 @@ public class ADefaultConfigFactory implements AConfigFactory {
         for (AScalarMeasurer timedScalarClass : props.getList(KEY_TIMED_SCALAR_MEASURERS, AScalarMeasurer.class)) {
             List<String> configurationParameters = timedScalarClass.getConfigurationParameters();
             for (String parameterValue : configurationParameters) {
-                Long value = props.get(parameterValue, Long.class);
-                if (value == null) {
-                    // TODO FOX088S add Logging
-                    String message = "No configuration valueAsString found for " + parameterValue + "!";
-                    value = 0L;
-                }
-                // TODO FOX088S add Logging
-                System.out.println("INFO: using " + value + " as value for " + parameterValue);
-                builder.addTimedScalarMonitoringParmameter(parameterValue, value);
+                readTimedScalarMonitoringThreshold(props, builder, "timedscalar." + timedScalarClass.getClass().getSimpleName() + "." + parameterValue + ".medium");
+                readTimedScalarMonitoringThreshold(props, builder, "timedscalar." + timedScalarClass.getClass().getSimpleName() + "." + parameterValue + ".high");
             }
         }
 
         return builder.build();
+    }
+
+    private void readTimedScalarMonitoringThreshold(ConfigPropsFile props, NSysMonConfigBuilder builder, String parameterToUse) {
+        Long value = props.get(parameterToUse, Long.class);
+        if (value == null) {
+            // TODO FOX088S add Logging
+            String message = "No configuration valueAsString found for " + parameterToUse + "!";
+            value = 0L;
+        }
+        // TODO FOX088S add Logging
+        System.out.println("INFO: using " + value + " as value for " + parameterToUse);
+        builder.addTimedScalarMonitoringParmameter(parameterToUse, value);
     }
 }

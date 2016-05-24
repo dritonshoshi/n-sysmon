@@ -515,3 +515,14 @@ div.env-value {
     /*//background-color: #f9f9f9;*/
     border: 0.2em solid rgb(255, 255, 255);
 }
+
+.timed-scalar-monitoring-low {
+}
+
+.timed-scalar-monitoring-medium {
+    background-color: #f2e063;
+}
+
+.timed-scalar-monitoring-high {
+    background-color: #f27b80;
+}

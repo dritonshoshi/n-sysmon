@@ -63,17 +63,17 @@
             <tr>
                 <th class="scalar-name"  style="width: 150px"></th>
                 <th class="scalar-value" style="width: 80px;">Min</th>
-                <th class="scalar-value" style="width: 80px;">Max</th>
                 <th class="scalar-value" style="width: 80px;">Average</th>
-                <th class="scalar-value" >Threshold</th>
+                <th class="scalar-value" style="width: 80px;">Max</th>
                 <th class="scalar-value" >Description</th>
             </tr>
-            <tr ng-repeat="entry in timedScalarsWithMonitoringData">
+            <tr ng-repeat="entry in timedScalarsWithMonitoringData"
+                class="timed-scalar-monitoring-{{entry.threshold|lowercase}}"
+            >
                 <td class="scalar-name">{{entry.key}}</td>
                 <td class="scalar-value"> {{entry.minValue}}</td>
-                <td class="scalar-value"> {{entry.maxValue}}</td>
                 <td class="scalar-value"> {{entry.avgValue}}</td>
-                <td class="scalar-value">{{entry.threshold}}</td>
+                <td class="scalar-value"> {{entry.maxValue}}</td>
                 <td class="scalar-value">{{entry.description}}</td>
             </tr>
             <tr ng-repeat="freq in cpuFreq"><td></td><td class="scalar-value">{{freq.mhz}} MHz</td><td class="scalar-value">{{freq.formattedValue}} CPUs</td><td></td><td></td><td></td></tr>

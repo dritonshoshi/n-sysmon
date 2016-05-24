@@ -30,11 +30,6 @@ public class ACpuUtilizationMeasurer implements AScalarMeasurer {
     public static final String KEY_ALL_USED = KEY_PREFIX + "all-used";
     public static final String KEY_PREFIX_MHZ = KEY_PREFIX + "freq-mhz:";
     public static final String KEY_SELF_KERNEL = KEY_PREFIX + "self-kernel";
-    public static String KEY_CONFIGURATION_PREFIX = "timedscalar" + KEY_CONFIGURATION_SEPERATOR + ACpuUtilizationMeasurer.class.getSimpleName() + KEY_CONFIGURATION_SEPERATOR;
-    public static String KEY_CONFIGURATION_ALL_USED_MEDIUM = KEY_CONFIGURATION_PREFIX + KEY_ALL_USED + KEY_CONFIGURATION_SEPERATOR+ KEY_CONFIGURATION_MEDIUM;
-    public static String KEY_CONFIGURATION_ALL_USED_HIGH = KEY_CONFIGURATION_PREFIX + KEY_ALL_USED + KEY_CONFIGURATION_SEPERATOR+ KEY_CONFIGURATION_HIGH;
-    public static String KEY_CONFIGURATION_SELF_KERNEL_MEDIUM = KEY_CONFIGURATION_PREFIX + KEY_SELF_KERNEL + KEY_CONFIGURATION_SEPERATOR+ KEY_CONFIGURATION_MEDIUM;
-    public static String KEY_CONFIGURATION_SELF_KERNEL_HIGH = KEY_CONFIGURATION_PREFIX + KEY_SELF_KERNEL + KEY_CONFIGURATION_SEPERATOR+ KEY_CONFIGURATION_HIGH;
     private final boolean isWindows;
 
     public ACpuUtilizationMeasurer(){
@@ -53,8 +48,10 @@ public class ACpuUtilizationMeasurer implements AScalarMeasurer {
         OperatingSystemMXBean operatingSystemMXBean = ManagementFactory.getOperatingSystemMXBean();
         if (operatingSystemMXBean instanceof com.sun.management.OperatingSystemMXBean) {
             com.sun.management.OperatingSystemMXBean bean = (com.sun.management.OperatingSystemMXBean) operatingSystemMXBean;
-            data.put(KEY_AVAILABLE, new AScalarDataPoint(timestamp, KEY_AVAILABLE, bean.getAvailableProcessors() * 1000, 1));
-            data.put(KEY_SELF_KERNEL, new AScalarDataPoint(timestamp, KEY_SELF_KERNEL, (long) (bean.getSystemCpuLoad() * 1000), 1));
+            long value = bean.getAvailableProcessors() * 1000;
+            data.put(KEY_AVAILABLE, new AScalarDataPoint(timestamp, KEY_AVAILABLE, Math.max(0, value), 1));
+            value = (long) (bean.getSystemCpuLoad() * 1000);
+            data.put(KEY_SELF_KERNEL, new AScalarDataPoint(timestamp, KEY_SELF_KERNEL, Math.max(0, value), 1));
         }
     }
 
@@ -155,7 +152,7 @@ public class ACpuUtilizationMeasurer implements AScalarMeasurer {
 
     @Override
     public List<String> getConfigurationParameters() {
-        return Arrays.asList(KEY_CONFIGURATION_ALL_USED_HIGH, KEY_CONFIGURATION_ALL_USED_MEDIUM, KEY_CONFIGURATION_SELF_KERNEL_HIGH, KEY_CONFIGURATION_SELF_KERNEL_MEDIUM);
+        return Arrays.asList(KEY_SELF_KERNEL, KEY_ALL_USED);
     }
 
 }
