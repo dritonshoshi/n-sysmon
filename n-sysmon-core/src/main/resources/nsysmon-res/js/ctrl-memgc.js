@@ -4,6 +4,7 @@ angular.module('NSysMonApp').controller('CtrlMemGc', function($scope, $log, Rest
         html: true
     });
 
+    $('title').text("NSysmon - Memory and Garbage Collector");
     $scope.autoRefreshGC = true;
     $scope.autoRefreshSecondsGC = 300;
     var autoRefreshCounter = 0; // to invalidate auto-refresh if there was a manual refresh in between

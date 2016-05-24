@@ -1,5 +1,6 @@
 angular.module('NSysMonApp').controller('CtrlCorrelationFlow', function($scope, $log, Rest, escapeHtml, $timeout) {
 
+    $('title').text("NSysmon - Correlations");
     $scope.refresh = function() {
         sendCommand('getData');
     };

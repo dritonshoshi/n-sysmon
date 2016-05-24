@@ -2,6 +2,7 @@
 angular.module('NSysMonApp').controller('CtrlScalars', function($scope, $log, Rest, formatNumber, startsWith) {
     var effectiveNumCpus = 1;
 
+    $('title').text("NSysmon - Scalars");
     $scope.autoRefresh = true;
     $scope.autoRefreshSeconds = 60;
     var autoRefreshCounter = 0; // to invalidate auto-refresh if there was a manual refresh in between

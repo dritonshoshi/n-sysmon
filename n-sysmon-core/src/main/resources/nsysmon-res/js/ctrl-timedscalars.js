@@ -47,6 +47,8 @@ angular.module('NSysMonApp').controller('CtrlTimedScalars', function($scope, $ti
 
     $scope.graphData = []; //can leave empty
 
+    $('title').text("NSysmon - Timed Scalars");
+
     $scope.autoRefresh = true;
     $scope.autoRefreshSeconds = 120;
     $scope.autoRefreshMonitor = true;

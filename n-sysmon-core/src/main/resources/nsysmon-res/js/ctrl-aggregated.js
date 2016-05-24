@@ -20,6 +20,7 @@ angular.module('NSysMonApp').controller('CtrlAggregated', function($scope, $log,
     });
 
 
+    $('title').text("NSysmon - Aggregated Measurement");
     $scope.expansionModel = {};
     $scope.markedNodes = {};
     $scope.rootLevel = 0;
