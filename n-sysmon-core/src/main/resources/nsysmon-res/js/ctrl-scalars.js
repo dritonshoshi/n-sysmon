@@ -1,5 +1,5 @@
 
-angular.module('NSysMonApp').controller('CtrlScalars', function($scope, $log, Rest, formatNumber, startsWith) {
+angular.module('NSysMonApp').controller('CtrlScalars', function($scope, $log, $timeout, Rest, formatNumber, startsWith) {
     var effectiveNumCpus = 1;
 
     $('title').text("NSysmon - Scalars");
@@ -59,7 +59,7 @@ angular.module('NSysMonApp').controller('CtrlScalars', function($scope, $log, Re
         }
 
         var oldCounter = autoRefreshCounter;
-        setTimeout(function() {
+        $timeout(function() {
             if(autoRefreshCounter !== oldCounter+1) {
                 return;
             }

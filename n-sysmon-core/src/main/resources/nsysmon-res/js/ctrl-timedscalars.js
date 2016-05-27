@@ -89,7 +89,7 @@ angular.module('NSysMonApp').controller('CtrlTimedScalars', function($scope, $ti
 
         var oldCounter = autoRefreshCounter;
         $scope.activePage = $location.path();
-        setTimeout(function() {
+        $timeout(function() {
             if(autoRefreshCounter !== oldCounter+1) {
                 return;
             }

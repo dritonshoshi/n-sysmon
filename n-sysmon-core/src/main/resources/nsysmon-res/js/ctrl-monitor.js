@@ -29,7 +29,7 @@ angular.module('NSysMonApp').controller('CtrlMonitor', function($scope, $timeout
         }
         var oldCounter = autoRefreshMonitorCounter;
         $scope.activePage = $location.path();
-        setTimeout(function() {
+        $timeout(function() {
             if(autoRefreshMonitorCounter !== oldCounter+1) {
                 return;
             }

@@ -1,4 +1,4 @@
-angular.module('NSysMonApp').controller('CtrlMemGc', function($scope, $log, Rest, $location) {
+angular.module('NSysMonApp').controller('CtrlMemGc', function($scope, $timeout, $log, Rest, $location) {
     $('.btn').tooltip({
         container: 'body',
         html: true
@@ -57,7 +57,7 @@ angular.module('NSysMonApp').controller('CtrlMemGc', function($scope, $log, Rest
         }
 
         var oldCounter = autoRefreshCounter;
-        setTimeout(function() {
+        $timeout(function() {
             if(autoRefreshCounter !== oldCounter+1) {
                 return;
             }

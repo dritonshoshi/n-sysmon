@@ -16,7 +16,7 @@ angular.module('NSysMonApp').controller('CtrlAggregated', function($scope, $log,
     reinitTooltips();
     $scope.$watch('isStarted', function() {
         $('.btn').tooltip('hide');
-        setTimeout(reinitTooltips, 0);
+        $timeout(reinitTooltips, 0);
     });
 
 
