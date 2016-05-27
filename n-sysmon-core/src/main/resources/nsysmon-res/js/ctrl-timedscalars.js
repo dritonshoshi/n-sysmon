@@ -49,6 +49,7 @@ angular.module('NSysMonApp').controller('CtrlTimedScalars', function($scope, $ti
 
     $('title').text("NSysmon - Timed Scalars");
 
+    $scope.activePage = "";
     $scope.autoRefresh = true;
     $scope.autoRefreshSeconds = 120;
     $scope.useFilterMinutes = false;
@@ -87,11 +88,14 @@ angular.module('NSysMonApp').controller('CtrlTimedScalars', function($scope, $ti
         }
 
         var oldCounter = autoRefreshCounter;
+        $scope.activePage = $location.path();
         setTimeout(function() {
             if(autoRefreshCounter !== oldCounter+1) {
                 return;
             }
-            $scope.refresh();
+            if ($location.path() == $scope.activePage){
+                $scope.refresh();
+            }
         }, $scope.autoRefreshSeconds * 1000);
         autoRefreshCounter += 1;
     }

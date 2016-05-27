@@ -1,7 +1,8 @@
 angular.module('NSysMonApp').controller('CtrlMonitor', function($scope, $timeout, $log, Rest, $location) {
 
-    $('title').text("NSysmon - Monitoring");
+    $('title').text("NSysmon - Measurement Monitor");
 
+    $scope.activePage = "";
     $scope.autoRefreshMonitor = true;
     $scope.autoRefreshSecondsMonitor = 10;
     $scope.entriesToLoadDataFor = [];
@@ -26,16 +27,15 @@ angular.module('NSysMonApp').controller('CtrlMonitor', function($scope, $timeout
         if(! $scope.autoRefreshMonitor) {
             return;
         }
-        if ($location.search().loadfile) {
-            return;
-        }
-
         var oldCounter = autoRefreshMonitorCounter;
+        $scope.activePage = $location.path();
         setTimeout(function() {
             if(autoRefreshMonitorCounter !== oldCounter+1) {
                 return;
             }
-            $scope.refreshMonitor();
+            if ($location.path() == $scope.activePage){
+                $scope.refreshMonitor();
+            }
         }, $scope.autoRefreshSecondsMonitor * 1000);
         autoRefreshMonitorCounter += 1;
     }
@@ -46,10 +46,6 @@ angular.module('NSysMonApp').controller('CtrlMonitor', function($scope, $timeout
     }
 
     $scope.refreshMonitor = function() {
-        if ($location.search().loadfile) {
-            return;
-        }
-
         var selectedEntriesForServer = "";
         if (typeof $scope.timedScalars == 'undefined'){
             return;
