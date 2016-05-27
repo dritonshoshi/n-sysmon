@@ -109,7 +109,6 @@ public class MonitorPageDefinition extends TimedScalarsPageDefinition{
         json.writeKey("avgValue");
         json.writeNumberLiteral(avg.getValue(), avg.getNumFracDigits());
 
-        //TODO FOX088S check if evaluation should be changed to double
         AScalarMeasurer.EvaluatedValue evaluatedValue = evaluateValue(key, avg.getValue());
         json.writeKey("threshold");
         json.writeStringLiteral(evaluatedValue.name());
