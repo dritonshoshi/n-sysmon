@@ -51,15 +51,11 @@ angular.module('NSysMonApp').controller('CtrlTimedScalars', function($scope, $ti
 
     $scope.autoRefresh = true;
     $scope.autoRefreshSeconds = 120;
-    $scope.autoRefreshMonitor = true;
-    $scope.autoRefreshSecondsMonitor = 10;
     $scope.useFilterMinutes = false;
     $scope.displayFilterMinutes = 5;
     $scope.entriesToLoadDataFor = [];
-    $scope.timedScalarsWithMonitoringData = [];
     // to invalidate auto-refresh if there was a manual refresh in between
     var autoRefreshCounter = 0;
-    var autoRefreshMonitorCounter = 0;
 
     function initGraphDataFromResponse(data) {
         $scope.loadedGraphData = data;
@@ -81,8 +77,6 @@ angular.module('NSysMonApp').controller('CtrlTimedScalars', function($scope, $ti
 
     $scope.$watch('autoRefresh', triggerAutoRefresh);
     $scope.$watch('autoRefreshSeconds', triggerAutoRefresh);
-    $scope.$watch('autoRefreshSecondsMonitor', triggerAutoRefreshMonitor);
-    $scope.$watch('autoRefreshMonitor', triggerAutoRefreshMonitor);
 
     function triggerAutoRefresh() {
         if(! $scope.autoRefresh) {
@@ -100,24 +94,6 @@ angular.module('NSysMonApp').controller('CtrlTimedScalars', function($scope, $ti
             $scope.refresh();
         }, $scope.autoRefreshSeconds * 1000);
         autoRefreshCounter += 1;
-    }
-
-    function triggerAutoRefreshMonitor() {
-        if(! $scope.autoRefreshMonitor) {
-            return;
-        }
-        if ($location.search().loadfile) {
-            return;
-        }
-
-        var oldCounter = autoRefreshMonitorCounter;
-        setTimeout(function() {
-            if(autoRefreshMonitorCounter !== oldCounter+1) {
-                return;
-            }
-            $scope.refreshMonitor();
-        }, $scope.autoRefreshSecondsMonitor * 1000);
-        autoRefreshMonitorCounter += 1;
     }
 
     $scope.refresh = function() {
@@ -145,36 +121,6 @@ angular.module('NSysMonApp').controller('CtrlTimedScalars', function($scope, $ti
         }else {
             //remove old graph-data
             $scope.rc.api.updateWithData([]);
-        }
-
-    };
-
-    function initMonitorDataFromResponse(data) {
-        $scope.timedScalarsWithMonitoringData = data;
-        if ($location.search().loadfile) {
-            //TODO FOX088S do we need this?
-            return;
-        }
-        triggerAutoRefreshMonitor();
-    }
-
-    $scope.refreshMonitor = function() {
-        if ($location.search().loadfile) {
-            return;
-        }
-
-        var selectedEntriesForServer = "";
-        if (typeof $scope.timedScalars == 'undefined'){
-            return;
-        }
-
-        for (var keyData in $scope.timedScalars) {
-            selectedEntriesForServer = selectedEntriesForServer.concat(keyData);
-            selectedEntriesForServer = selectedEntriesForServer.concat(",");
-        }
-        
-        if (selectedEntriesForServer.length > 1) {
-            Rest.call('getMonitoringData/' + selectedEntriesForServer, initMonitorDataFromResponse);
         }
 
     };
