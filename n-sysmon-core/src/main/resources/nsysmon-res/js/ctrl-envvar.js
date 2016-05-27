@@ -5,6 +5,7 @@ angular.module('NSysMonApp').controller('CtrlEnvVar', function($scope, $log, Res
         html: true
     });
 
+    $('title').text("NSysmon - Environment");
     var rootLevel = 0;
     var nodesByFqn = {};
 

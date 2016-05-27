@@ -5,6 +5,7 @@ angular.module('NSysMonApp').controller('CtrlThreadDump', function($scope, $http
         html: true
     });
 
+    $('title').text("NSysmon - Threaddump");
     $scope.expansionModel = {}; // bound to the DOM, used for initial rendering
     $scope.shadowExpansionModel = {}; // continually updated, kept separate to allow for jQuery animations
 

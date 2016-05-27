@@ -1,5 +1,6 @@
 angular.module('NSysMonApp').controller('CtrlOverviewDebugging', function($scope, $log, Rest, escapeHtml, $timeout) {
 
+    $('title').text("NSysmon - Debugging Configuration");
     $scope.currentCollectSqlParameters = false;
     $scope.currentCollectTooltips = false;
 

@@ -6,7 +6,11 @@ import com.nsysmon.data.AScalarDataPoint;
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.lang.management.ThreadMXBean;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
+
+import static com.nsysmon.measure.scalar.ACpuUtilizationMeasurer.KEY_ALL_USED;
 
 public class ThreadingMeasurer implements AScalarMeasurer {
 
@@ -62,5 +66,10 @@ public class ThreadingMeasurer implements AScalarMeasurer {
             return "Threads created in the last time period.";
         }
         return null;
+    }
+
+    @Override
+    public List<String> getConfigurationParameters() {
+        return Arrays.asList(THREAD_COUNT, DAEMON_THREAD_COUNT, THREADS_CREATED);
     }
 }

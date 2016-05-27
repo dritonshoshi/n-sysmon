@@ -12,10 +12,15 @@ import com.nsysmon.servlet.overview.DataFileGeneratorSupporter;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URLDecoder;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 
@@ -56,10 +61,13 @@ public class TimedScalarsPageDefinition implements APresentationPageDefinition, 
     @Override
     public boolean handleRestCall(String service, List<String> params, AJsonSerHelper json) throws IOException {
         if ("getData".equals(service)) {
-            serveData(json, params);
+            serveData(json, params, sysMon);
             return true;
         }else if ("getGraphData".equals(service)) {
             serveGraphData(json, params);
+            return true;
+        }else if ("getLatestGraphData".equals(service)) {
+            serveLatestGraphData(json, params);
             return true;
         }
 
@@ -80,7 +88,7 @@ public class TimedScalarsPageDefinition implements APresentationPageDefinition, 
             for (String key : scalars.keySet()) {
                 if (key.equalsIgnoreCase(paramWithoutHtml)) {
                     json.startObject();
-                    addMetainfos(json, key);
+                    addMetainfos(json, key, sysMon);
 
                     json.writeKey("values");
                     json.startArray();
@@ -94,26 +102,55 @@ public class TimedScalarsPageDefinition implements APresentationPageDefinition, 
 
     }
 
-    private void addMetainfos(AJsonSerHelper json, String key) throws IOException {
+    private void serveLatestGraphData(final AJsonSerHelper json, List<String> params) throws IOException {
+        if (params == null || params.size() < 1){
+            return;
+        }
+        String selectedEntries = params.get(0);
+        Duration newerThan = Duration.ofMinutes(Long.parseLong(params.get(1)));
+
+
+        json.startArray();
+        for (String param : selectedEntries.split(",")) {
+            String paramWithoutHtml = URLDecoder.decode(param, "UTF-8");
+            final Map<String, ARingBuffer<AScalarDataPoint>> scalars = sysMon.getTimedScalarMeasurements();
+
+            for (String key : scalars.keySet()) {
+                if (key.equalsIgnoreCase(paramWithoutHtml)) {
+                    json.startObject();
+                    addMetainfos(json, key, sysMon);
+
+                    json.writeKey("values");
+                    json.startArray();
+                    writeRingBufferIntoJson(json, scalars.get(key), newerThan);
+                    json.endArray();
+                    json.endObject();
+                }
+            }
+        }
+        json.endArray();
+    }
+
+    protected void addMetainfos(AJsonSerHelper json, String key, NSysMonApi givenSysMon) throws IOException {
         json.writeKey("key");
         json.writeStringLiteral(key);
 
-        String description = findDescriptionForKey(key);
+        String description = findDescriptionForKey(key, givenSysMon);
         if (description != null) {
             json.writeKey("description");
             json.writeStringLiteral(description);
         }
 
-        String group = findGroupForKey(key);
+        String group = findGroupForKey(key, givenSysMon);
         if (group != null) {
             json.writeKey("group");
             json.writeStringLiteral(group);
         }
     }
 
-    private String findGroupForKey(String key) {
+    private String findGroupForKey(String key, NSysMonApi givenSysMon) {
         String tmp;
-        for (AScalarMeasurer initialTimedScalarMeasurer : sysMon.getConfig().initialTimedScalarMeasurers) {
+        for (AScalarMeasurer initialTimedScalarMeasurer : givenSysMon.getConfig().initialTimedScalarMeasurers) {
             tmp = initialTimedScalarMeasurer.getGroupnameOfMeasurement(key);
             if (tmp != null){
                 return tmp;
@@ -122,9 +159,9 @@ public class TimedScalarsPageDefinition implements APresentationPageDefinition, 
         return "other";
     }
 
-    private String findDescriptionForKey(String key) {
+    private String findDescriptionForKey(String key, NSysMonApi givenSysMon) {
         String tmp;
-        for (AScalarMeasurer initialTimedScalarMeasurer : sysMon.getConfig().initialTimedScalarMeasurers) {
+        for (AScalarMeasurer initialTimedScalarMeasurer : givenSysMon.getConfig().initialTimedScalarMeasurers) {
             tmp = initialTimedScalarMeasurer.getDescriptionOfMeasurement(key);
             if (tmp != null){
                 return tmp;
@@ -133,8 +170,8 @@ public class TimedScalarsPageDefinition implements APresentationPageDefinition, 
         return null;
     }
 
-    private void serveData(final AJsonSerHelper json, List<String> params) throws IOException {
-        final Map<String, ARingBuffer<AScalarDataPoint>> scalars = sysMon.getTimedScalarMeasurements();
+    protected void serveData(final AJsonSerHelper json, List<String> params, NSysMonApi givenSysMon) throws IOException {
+        final Map<String, ARingBuffer<AScalarDataPoint>> scalars = givenSysMon.getTimedScalarMeasurements();
         json.startObject();
 
         json.writeKey("timedScalars");
@@ -143,7 +180,7 @@ public class TimedScalarsPageDefinition implements APresentationPageDefinition, 
         for (String key : scalars.keySet()) {
             json.writeKey(key);
             json.startObject();
-            addMetainfos(json, key);
+            addMetainfos(json, key, givenSysMon);
             json.writeKey("selected");
             json.writeBooleanLiteral(params.contains(key));
             json.endObject();
@@ -169,7 +206,49 @@ public class TimedScalarsPageDefinition implements APresentationPageDefinition, 
                 LOG.error(e);
             }
         }
+    }
 
+    private TreeSet<AScalarDataPoint> filterByTimestamp(final ARingBuffer<AScalarDataPoint> buffer, Duration newerThan){
+        Set<AScalarDataPoint> tmpRc = new TreeSet<>(new AScalarDataPointTimestampComparator());
+        TreeSet<AScalarDataPoint> rc = new TreeSet<>(new AScalarDataPointTimestampComparator());
+
+        final LocalDateTime localDateTime = LocalDateTime.now();
+        for (AScalarDataPoint scalarDataPoint : buffer) {
+
+            long timeStamp = scalarDataPoint.getTimestamp();
+            long latestMillis = localDateTime
+                    .minus(newerThan)
+                    .toEpochSecond(ZoneOffset.systemDefault().getRules().getOffset(localDateTime))
+                    *1000;
+
+            if (latestMillis >= timeStamp) {
+                //entry too old
+                continue;
+            }
+            tmpRc.add(scalarDataPoint);
+        }
+        tmpRc.forEach(rc::add);
+        return rc;
+    }
+
+    private void writeRingBufferIntoJson(final AJsonSerHelper json, final ARingBuffer<AScalarDataPoint> buffer, Duration newerThan) throws IOException {
+
+        for (AScalarDataPoint scalarDataPoint : filterByTimestamp(buffer, newerThan)) {
+            try {
+                long timeStamp = scalarDataPoint.getTimestamp();
+
+                json.startObject();
+
+                json.writeKey("x");
+                json.writeNumberLiteral(timeStamp, 0);
+                json.writeKey("y");
+                json.writeNumberLiteral(scalarDataPoint.getValue(), scalarDataPoint.getNumFracDigits());
+
+                json.endObject();
+            } catch (IOException e) {
+                LOG.error(e);
+            }
+        }
     }
 
     @Override

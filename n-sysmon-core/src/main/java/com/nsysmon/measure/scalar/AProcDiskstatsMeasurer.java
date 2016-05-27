@@ -52,6 +52,7 @@ public class AProcDiskstatsMeasurer implements AScalarMeasurer {
     @Override public void contributeMeasurements(Map<String, AScalarDataPoint> data, long timestamp, Map<String, Object> mementos) throws Exception {
         //this measurement isn't working on windows
         if (isWindows){
+            contributeDiskSizeWindows(data, timestamp);
             return;
         }
         contributeDiskSize(data, timestamp);
@@ -117,6 +118,30 @@ public class AProcDiskstatsMeasurer implements AScalarMeasurer {
             final long usedKb = Long.valueOf(split[2]);
             final long availableKb = Long.valueOf(split[3]);
 //            final String mountPoint = split[5];
+
+            add(data, timestamp, getSizeKey(dev), sizeKb * 100 / (1024*1024), 2);
+            add(data, timestamp, getUsedKey(dev), usedKb * 100 / (1024*1024), 2);
+            add(data, timestamp, getAvailableKey(dev), availableKb * 100 / (1024*1024), 2);
+        }
+    }
+
+
+    private static void contributeDiskSizeWindows(Map<String, AScalarDataPoint> data, long timestamp) throws Exception {
+        File[] roots = File.listRoots();
+
+        /* For each filesystem root, print some info */
+        for (File root : roots) {
+            //File system root:
+            final String dev = root.getAbsolutePath().replace(":", "").replace("\\", "");
+            //Total space (bytes):
+            final long sizeKb = root.getTotalSpace() / 1024;
+
+            //Free space (bytes):
+            final long availableKb = root.getFreeSpace() / 1024;
+            //Usable space (bytes):
+            //root.getUsableSpace();
+
+            final long usedKb = sizeKb - availableKb;
 
             add(data, timestamp, getSizeKey(dev), sizeKb * 100 / (1024*1024), 2);
             add(data, timestamp, getUsedKey(dev), usedKb * 100 / (1024*1024), 2);

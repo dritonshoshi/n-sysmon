@@ -1,0 +1,37 @@
+<div ng-app='NSysMonApp' ng-controller='CtrlMonitor' style="{position:relative;vertical-align: top}">
+    <div class="options-header">
+        <div class="button-box">
+            <a class="btn btn-default" ng-click="refreshMonitor()" data-toggle="tooltip"
+               title="Fetch fresh data from the server">Refresh</a>
+        </div>
+        <div class="input-group">
+            <span class="input-group-addon">
+                <span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span>
+                <input type="checkbox" ng-model="autoRefreshMonitor" title="Activate autorefreshing for monitoring">
+            </span>
+            <div ng-hide="autoRefreshMonitor==false" >
+                <input type="text" class="form-control" ng-model="autoRefreshSecondsMonitor" style="width:50px" title="duration">
+                <span>Automatically refresh Monitor after {{autoRefreshSecondsMonitor}} seconds</span>
+            </div>
+            <div ng-hide="autoRefreshMonitor==true" >
+                <!--very ugly hack to prevent the checkbox resizing-->
+                &nbsp;
+            </div>
+        </div>
+    </div>
+
+
+    <div style="clear:both"></div>
+
+    <!-- TODO FOX088S Add sorting -->
+    <div ng-repeat="entry in timedScalarsWithMonitoringData" width = "10" title="{{entry.description}}">
+        <div class=timed-scalar-monitoring-segment">
+            <div class="timed-scalar-monitoring-segment timed-scalar-monitoring-segment-description">{{entry.key}}</div>
+            <div class="timed-scalar-monitoring-segment timed-scalar-monitoring-segment-min">{{entry.minValue}}</div>
+            <div class="timed-scalar-monitoring-segment timed-scalar-monitoring-segment-avg timed-scalar-monitoring-{{entry.threshold|lowercase}}">{{entry.avgValue}}</div>
+            <div class="timed-scalar-monitoring-segment timed-scalar-monitoring-segment-max">{{entry.maxValue}}</div>
+        </div>
+        <div style="clear: both; float: left; display: block; position: relative;"></div>
+    </div>
+
+</div>

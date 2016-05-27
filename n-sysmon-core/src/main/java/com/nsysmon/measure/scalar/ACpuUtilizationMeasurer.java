@@ -6,9 +6,13 @@ import com.ajjpj.afoundation.io.AFile;
 import com.nsysmon.data.AScalarDataPoint;
 
 import java.io.IOException;
+import java.lang.management.ManagementFactory;
+import java.lang.management.OperatingSystemMXBean;
 import java.nio.charset.Charset;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -25,6 +29,7 @@ public class ACpuUtilizationMeasurer implements AScalarMeasurer {
     public static final String KEY_AVAILABLE = KEY_PREFIX + "available";
     public static final String KEY_ALL_USED = KEY_PREFIX + "all-used";
     public static final String KEY_PREFIX_MHZ = KEY_PREFIX + "freq-mhz:";
+    public static final String KEY_SELF_KERNEL = KEY_PREFIX + "self-kernel";
     private final boolean isWindows;
 
     public ACpuUtilizationMeasurer(){
@@ -34,14 +39,26 @@ public class ACpuUtilizationMeasurer implements AScalarMeasurer {
     @Override public void prepareMeasurements(Map<String, Object> mementos) throws IOException {
         //this measurement isn't working on windows
         if (isWindows){
-            return;
+           return;
         }
         mementos.put(KEY_MEMENTO, createSnapshot());
+    }
+
+    private void fillForWindows(Map<String, AScalarDataPoint> data, long timestamp, Map<String, Object> mementos) {
+        OperatingSystemMXBean operatingSystemMXBean = ManagementFactory.getOperatingSystemMXBean();
+        if (operatingSystemMXBean instanceof com.sun.management.OperatingSystemMXBean) {
+            com.sun.management.OperatingSystemMXBean bean = (com.sun.management.OperatingSystemMXBean) operatingSystemMXBean;
+            long value = bean.getAvailableProcessors() * 1000;
+            data.put(KEY_AVAILABLE, new AScalarDataPoint(timestamp, KEY_AVAILABLE, Math.max(0, value), 1));
+            value = (long) (bean.getSystemCpuLoad() * 1000);
+            data.put(KEY_SELF_KERNEL, new AScalarDataPoint(timestamp, KEY_SELF_KERNEL, Math.max(0, value), 1));
+        }
     }
 
     @Override public void contributeMeasurements(Map<String, AScalarDataPoint> data, long timestamp, Map<String, Object> mementos) throws IOException {
         //this measurement isn't working on windows
         if (isWindows){
+            fillForWindows(data, timestamp, mementos);
             return;
         }
         final Map<String, Snapshot> allCurrent = createSnapshot();
@@ -132,4 +149,10 @@ public class ACpuUtilizationMeasurer implements AScalarMeasurer {
     @Override public AOption<Long> getTimeoutInMilliSeconds() {
         return AOption.none();
     }
+
+    @Override
+    public List<String> getConfigurationParameters() {
+        return Arrays.asList(KEY_SELF_KERNEL, KEY_ALL_USED);
+    }
+
 }

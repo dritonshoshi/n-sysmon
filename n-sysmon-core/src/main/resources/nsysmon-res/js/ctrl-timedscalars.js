@@ -47,8 +47,13 @@ angular.module('NSysMonApp').controller('CtrlTimedScalars', function($scope, $ti
 
     $scope.graphData = []; //can leave empty
 
+    $('title').text("NSysmon - Timed Scalars");
+
+    $scope.activePage = "";
     $scope.autoRefresh = true;
     $scope.autoRefreshSeconds = 120;
+    $scope.useFilterMinutes = false;
+    $scope.displayFilterMinutes = 5;
     $scope.entriesToLoadDataFor = [];
     // to invalidate auto-refresh if there was a manual refresh in between
     var autoRefreshCounter = 0;
@@ -83,11 +88,14 @@ angular.module('NSysMonApp').controller('CtrlTimedScalars', function($scope, $ti
         }
 
         var oldCounter = autoRefreshCounter;
+        $scope.activePage = $location.path();
         setTimeout(function() {
             if(autoRefreshCounter !== oldCounter+1) {
                 return;
             }
-            $scope.refresh();
+            if ($location.path() == $scope.activePage){
+                $scope.refresh();
+            }
         }, $scope.autoRefreshSeconds * 1000);
         autoRefreshCounter += 1;
     }
@@ -110,7 +118,9 @@ angular.module('NSysMonApp').controller('CtrlTimedScalars', function($scope, $ti
                 }
             }
         }
-        if (selectedEntriesForServer.length > 1) {
+        if (selectedEntriesForServer.length > 1 && $scope.useFilterMinutes && $scope.displayFilterMinutes > 0) {
+            Rest.call('getLatestGraphData/' + selectedEntriesForServer + "/" + $scope.displayFilterMinutes, initGraphDataFromResponse);
+        } else if (selectedEntriesForServer.length > 1) {
             Rest.call('getGraphData/' + selectedEntriesForServer, initGraphDataFromResponse);
         }else {
             //remove old graph-data

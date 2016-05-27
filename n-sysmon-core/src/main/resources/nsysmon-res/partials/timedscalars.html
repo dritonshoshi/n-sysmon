@@ -5,9 +5,32 @@
                title="Fetch fresh data from the server">Refresh</a>
         </div>
         <div class="input-group">
-            <span class="input-group-addon"><input type="checkbox" ng-model="autoRefresh" title="Activate autorefresh"></span>
-            <input type="text" class="form-control" ng-model="autoRefreshSeconds" style="width:50px" title="duration"> Automatically
-            refresh graph after {{autoRefreshSeconds}} seconds
+            <span class="input-group-addon">
+                <span class="glyphicon glyphicon-random" aria-hidden="true"></span>
+                <input type="checkbox" ng-model="autoRefresh" title="Activate autorefresh">
+            </span>
+            <div ng-hide="autoRefresh==false" >
+                <input type="text" class="form-control" ng-model="autoRefreshSeconds" style="width:50px" title="duration">
+                <span>Automatically refresh graph after {{autoRefreshSeconds}} seconds</span>
+            </div>
+            <div ng-hide="autoRefresh==true" >
+                <!--very ugly hack to prevent the checkbox resizing-->
+                &nbsp;
+            </div>
+        </div>
+        <div class="input-group">
+            <span class="input-group-addon">
+                <span class="glyphicon glyphicon-hourglass" aria-hidden="true"></span>
+                <input type="checkbox" ng-model="useFilterMinutes" title="Use DisplayFilter">
+            </span>
+            <div ng-hide="useFilterMinutes==false" >
+                <input type="text" class="form-control" ng-model="displayFilterMinutes" style="width:50px" title="duration">
+                Show only last {{displayFilterMinutes}} minutes
+            </div>
+            <div ng-hide="useFilterMinutes==true" >
+                <!--very ugly hack to prevent the checkbox resizing-->
+                &nbsp;
+            </div>
         </div>
     </div>
 
@@ -29,7 +52,6 @@
 
             <div ng-if="entry.group"
                  class="{{entriesToLoadDataFor.indexOf(entry.key) == -1 ? 'timedScalarHeaderOff' : 'timedScalarHeaderOn'}}">
-                <!--TODO FOX088S decide if to request icon or not -->
                 <b>{{entry.group}}</b>
             </div>
 

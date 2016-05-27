@@ -2,6 +2,7 @@
 angular.module('NSysMonApp').controller('CtrlScalars', function($scope, $log, Rest, formatNumber, startsWith) {
     var effectiveNumCpus = 1;
 
+    $('title').text("NSysmon - Scalars");
     $scope.autoRefresh = true;
     $scope.autoRefreshSeconds = 60;
     var autoRefreshCounter = 0; // to invalidate auto-refresh if there was a manual refresh in between
@@ -238,7 +239,14 @@ angular.module('NSysMonApp').controller('CtrlScalars', function($scope, $log, Re
 
     function htmlForDisk() {
         var result = '<table class="table table-condensed table-striped">';
-        result += '<tr><th clas="scalar-name">Device</th><th class="scalar-name">Mounted</th><th class="scalar-value-centered">Available GB</th><th class="scalar-value-centered">Read MB/s</th><th class="scalar-value-centered">Write MB/s</th><th class="scalar-value-centered">Running</th></tr>';
+        result += '<tr>' +
+            '<th clas="scalar-name">Device</th>' +
+            '<th class="scalar-name">Mounted</th>' +
+            '<th class="scalar-value-centered">Available GB</th>' +
+            '<th class="scalar-value-centered">Read MB/s</th>' +
+            '<th class="scalar-value-centered">Write MB/s</th>' +
+            '<th class="scalar-value-centered">Running</th>' +
+            '</tr>';
 
         angular.forEach(diskDevs(), function(dev) {
             function asDisplayedRate(raw) {

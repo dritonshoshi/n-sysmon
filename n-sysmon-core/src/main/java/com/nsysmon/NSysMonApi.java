@@ -60,6 +60,7 @@ public interface NSysMonApi {
     List<AEnvironmentData> getEnvironmentMeasurements() throws Exception;
 
     Map<String,ARingBuffer<AScalarDataPoint>> getTimedScalarMeasurements();
+    Map<String,ARingBuffer<AScalarDataPoint>> getTimedScalarMeasurementsForMonitoring();
 
     void addTimedScalarMeasurement(AScalarDataPoint... dataPoint);
 }

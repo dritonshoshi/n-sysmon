@@ -65,7 +65,7 @@ public class NSysMonImpl implements AShutdownable, NSysMonApi {
 
         ScheduledExecutorService scheduledPool = Executors.newSingleThreadScheduledExecutor(new DaemonThreadFactory());
 
-        timedScalarMeasureRunnable = new TimedScalarDataWrapper(config.maxNumMeasurementsPerTimedScalar);
+        timedScalarMeasureRunnable = new TimedScalarDataWrapper(config.maxNumMeasurementsPerTimedScalar, config.maxNumMeasurementsForMonitoring);
         scheduledPool.scheduleAtFixedRate(timedScalarMeasureRunnable, 0, config.durationOfOneTimedScalar, TimeUnit.SECONDS);
         config.initialTimedScalarMeasurers.forEach(this::addTimedScalarMeasurer);
 
@@ -242,6 +242,22 @@ public class NSysMonImpl implements AShutdownable, NSysMonApi {
         }
 
         result = timedScalarMeasureRunnable.getMeasurements();
+
+        return result;
+    }
+
+    @Override public Map<String, ARingBuffer<AScalarDataPoint>> getTimedScalarMeasurementsForMonitoring() {
+        /*
+            Note: The measurements for monitoring could also be extracted from the total data.
+            It was done by using a second list, so the processing-time overall is less.
+            If you use the filtering, every monitor-call must parse every datapoint of every timedscalar.
+         */
+        Map<String, ARingBuffer<AScalarDataPoint>> result = new TreeMap<>();
+        if(NSysMonConfig.isGloballyDisabled()) {
+            return result;
+        }
+
+        result = timedScalarMeasureRunnable.getMeasurementsForMonitoring();
 
         return result;
     }

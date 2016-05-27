@@ -13,6 +13,7 @@ import com.nsysmon.util.timer.ATimer;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -27,6 +28,7 @@ public class NSysMonConfigBuilder {
     private int maxNestedMeasurements = 100;
     private int maxNumMeasurementsPerHierarchy = 100_000;
     private int maxNumMeasurementsPerTimedScalar = 500;
+    private int maxNumMeasurementsForCockpit = 50;
 
     private long measurementTimeoutNanos = 20_000_000;
     private int maxNumMeasurementTimeouts = 3;
@@ -51,6 +53,7 @@ public class NSysMonConfigBuilder {
     private final List<APresentationMenuEntry> presentationMenuEntries = new ArrayList<>();
     private String defaultPage;
     private Map<String, String> additionalConfigurationParameters;
+    private Map<String, Long> timedScalarMonitoringParameters = new HashMap<>();
 
     public NSysMonConfigBuilder(AApplicationInfoProvider appInfo) {
         this.appInfo = appInfo;
@@ -84,6 +87,10 @@ public class NSysMonConfigBuilder {
 
     public NSysMonConfigBuilder setMaxNumMeasurementsPerTimedScalar(int maxNum) {
         this.maxNumMeasurementsPerTimedScalar = maxNum;
+        return this;
+    }
+    public NSysMonConfigBuilder setMaxNumMeasurementsForCockpit(int maxNum) {
+        this.maxNumMeasurementsForCockpit = maxNum;
         return this;
     }
 
@@ -181,13 +188,17 @@ public class NSysMonConfigBuilder {
                 appInfo,
                 averagingDelayForScalarsMillis, durationOfOneTimedScalar,
                 maxNestedMeasurements, maxNumMeasurementsPerHierarchy, maxNumMeasurementsPerTimedScalar,
-                measurementTimeoutNanos, maxNumMeasurementTimeouts,
+                maxNumMeasurementsForCockpit, measurementTimeoutNanos, maxNumMeasurementTimeouts,
                 dataSinkTimeoutNanos, maxNumDataSinkTimeouts,
                 timer, httpRequestAnalyzer,
                 environmentMeasurers, scalarMeasurers, scalarTimedMeasurers, dataSinks,
                 defaultPage, presentationMenuEntries, additionalConfigurationParameters,
-                collectSqlParameters, collectTooltips, pathDatafiles
+                collectSqlParameters, collectTooltips, pathDatafiles, timedScalarMonitoringParameters
                 );
+    }
+
+    public void addTimedScalarMonitoringParmameter(String key, Long value) {
+        this.timedScalarMonitoringParameters.put(key, value);
     }
 
     public void setAdditionalConfigurationParameters(Map<String, String> additionalConfigurationParameters) {
