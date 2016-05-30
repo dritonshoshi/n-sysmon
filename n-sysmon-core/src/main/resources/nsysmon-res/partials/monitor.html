@@ -24,14 +24,14 @@
     <div style="clear:both"></div>
 
     <!-- TODO FOX088S Add sorting -->
-    <div ng-repeat="entry in timedScalarsWithMonitoringData" width = "10" title="{{entry.description}}">
-        <div class=timed-scalar-monitoring-segment">
-            <div class="timed-scalar-monitoring-segment timed-scalar-monitoring-segment-description">{{entry.key}}</div>
-            <div class="timed-scalar-monitoring-segment timed-scalar-monitoring-segment-min">{{entry.minValue}}</div>
-            <div class="timed-scalar-monitoring-segment timed-scalar-monitoring-segment-avg timed-scalar-monitoring-{{entry.threshold|lowercase}}">{{entry.avgValue}}</div>
-            <div class="timed-scalar-monitoring-segment timed-scalar-monitoring-segment-max">{{entry.maxValue}}</div>
+    <div>
+        <div class="timed-scalar-monitoring-segment"
+             ng-repeat="entry in timedScalarsWithMonitoringData" title="{{entry.description}}">
+            <div class="timed-scalar-monitoring-segment-common timed-scalar-monitoring-segment-description  timed-scalar-monitoring-{{entry.threshold|lowercase}}">{{entry.key}}</div>
+            <div class="timed-scalar-monitoring-segment-common timed-scalar-monitoring-segment-min">{{entry.minValue}}</div>
+            <div class="timed-scalar-monitoring-segment-common timed-scalar-monitoring-segment-avg">{{entry.avgValue}}</div>
+            <div class="timed-scalar-monitoring-segment-common timed-scalar-monitoring-segment-max">{{entry.maxValue}}</div>
         </div>
-        <div style="clear: both; float: left; display: block; position: relative;"></div>
     </div>
 
 </div>

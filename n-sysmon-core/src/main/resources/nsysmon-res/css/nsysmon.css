@@ -34,7 +34,7 @@ fieldset legend {
 .scalar-group .scalar-load-progress {
     position: relative;
     width: 100px;
-    margin: 0px;
+    margin: 0;
 }
 .scalar-value {
     text-align: right;
@@ -111,7 +111,7 @@ div.button-box {
     height: 60px;
 }
 .affix-top + .affix-placeholder {
-    height: 0px;
+    height: 0;
 }
 
 .abtn {
@@ -144,7 +144,7 @@ div.button-box {
   margin-left: 6px;
 }
 .abtn-group>.abtn {
-  border-radius: 0px;
+  border-radius: 0;
   margin-left: -6px;
 }
 .abtn-group>.abtn:first-child {
@@ -435,7 +435,7 @@ div.mem-gc-zoom-container {
     overflow: hidden;
     border-radius: 4px;
     background-color: rgb(245, 245, 245);
-    box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.1) inset;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1) inset;
 }
 div.mem-gc-zoom-range {
     float: left;
@@ -520,49 +520,59 @@ div.env-value {
 }
 
 .timed-scalar-monitoring-medium {
-    background-color: #f2e063 !important;
+    background-color: #f0ad4e !important;
 }
 
 .timed-scalar-monitoring-high {
-    background-color: #f27b80 !important;;
+    background-color: firebrick !important;
+    color: white !important;
 }
 
 .timed-scalar-monitoring-segment{
     height: 40px;
     line-height: 40px;
-    border: 1px solid gray;
     text-align: center;
     vertical-align: middle;
     border-radius: 15px;
-    display: inline-block;
-    position: relative;
+    white-space: nowrap;
+    float: left;
+    margin: 3px;
 }
+
+.timed-scalar-monitoring-segment-common {
+    height: 40px;
+    line-height: 40px;
+    text-align: center;
+    vertical-align: middle;
+    white-space: nowrap;
+    float: left;
+    display: inline-block;
+    border: 1px solid lightgray;
+}
+
 
 .timed-scalar-monitoring-segment-description{
     width: 250px;
-    float: left;
     text-align: left;
     padding-left: 10px;
-    border-radius: 15px 0px 0px 15px;
+    border-radius: 15px 0 0 15px;
 }
 
 .timed-scalar-monitoring-segment-min{
     width: 100px;
-    float: left;
-    border-radius: 0px 0px 0px 0px;
+    border-radius: 0 0 0 0;
     background-color: rgba(44, 253, 15, 0.05);
 }
 
 .timed-scalar-monitoring-segment-avg{
+    height: 99%;
     width: 100px;
-    float: left;
-    border-radius: 0px 0px 0px 0px;
+    border-radius: 0 0 0 0;
     background-color: rgba(238, 253, 6, 0.05);
 }
 
 .timed-scalar-monitoring-segment-max{
     width: 100px;
-    float: left;
-    border-radius: 0px 15px 15px 0px;
+    border-radius: 0 15px 15px 0;
     background-color: rgba(253, 15, 72, 0.03);
 }
