@@ -298,7 +298,7 @@ angular.module('NSysMonApp').controller('CtrlAggregated', function($scope, $log,
             $scope.rootLevel = node.level;
         });
         renderTree();
-    };
+    }
     
     $scope.togglePickMode = function() {
         $scope.isInPickMode = ! $scope.isInPickMode;

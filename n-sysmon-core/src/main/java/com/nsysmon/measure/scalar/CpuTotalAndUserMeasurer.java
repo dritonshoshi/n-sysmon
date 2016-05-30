@@ -12,6 +12,8 @@ public class CpuTotalAndUserMeasurer implements AScalarMeasurer {
 
     private static final String CPU_TOTAL = "CPU Total";
     private static final String CPU_USER = "CPU User";
+    private static final String CPU_AVAILABLE = "cpu:available";
+    private static final String CPU_SELF_KERNEL = "cpu:self-kernel";
 
     private final boolean isWindows;
 
@@ -51,6 +53,10 @@ public class CpuTotalAndUserMeasurer implements AScalarMeasurer {
             return "System";
         } else if (CPU_USER.equalsIgnoreCase(measurement)) {
             return "System";
+        } else if (CPU_AVAILABLE.equalsIgnoreCase(measurement)) {
+            return "System";
+        } else if (CPU_SELF_KERNEL.equalsIgnoreCase(measurement)) {
+            return "System";
         }
         return null;
     }
@@ -61,7 +67,12 @@ public class CpuTotalAndUserMeasurer implements AScalarMeasurer {
             return "Total usage of the CPU including everything on the system.";
         } else if (CPU_USER.equalsIgnoreCase(measurement)) {
             return "CPU usage by this user.";
+        } else if (CPU_AVAILABLE.equalsIgnoreCase(measurement)) {
+            return "CPU available overall.";
+        } else if (CPU_SELF_KERNEL.equalsIgnoreCase(measurement)) {
+            return "CPU usage of kernel-threads.";
         }
         return null;
     }
+
 }
