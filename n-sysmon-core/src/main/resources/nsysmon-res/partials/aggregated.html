@@ -14,25 +14,26 @@
                     <a class="btn btn-default" ng-click="collapseAll()" data-toggle="tooltip" title="Collapse All"><img src="_$_nsysmon_$_/static/img/treenode-open.png" />&nbsp;</a>
                     <a class="btn btn-default" ng-click="expandLongest()" data-toggle="tooltip" title="Expand Longest"><span class="glyphicon glyphicon-time"></span>&nbsp;</a>
                 </div>
+
                 <div class="btn-group">
-                    <a class="btn {{pickClass()}}" ng-click="togglePickMode()" data-toggle="tooltip" title="Click on a node to show only that node and its children">Pick</a>
-                    <a id="unpick" class="btn btn-default" ng-click="unpick()" data-toggle="tooltip" title="Undo the effect of previous 'pick' operation, showing all root nodes">Unpick</a>
-                </div>
-                <div class="btn-group">
+                    <a ng-hide="traces !== pickedTraces" class="btn {{pickClass()}}" ng-click="togglePickMode()" data-toggle="tooltip" title="Click on a node to show only that node and its children">Pick</a>
+                    <a ng-hide="traces === pickedTraces" id="unpick" class="btn btn-default" ng-click="unpick()" data-toggle="tooltip" title="Undo the effect of previous 'pick' operation, showing all root nodes">Unpick</a>
                     <a class="btn btn-default" ng-click="refresh()" data-toggle="tooltip" title="Fetch fresh data from the server">Refresh</a>
-                    <a class="btn btn-default" ng-click="clear()" data-toggle="tooltip" title="Discard recorded data in the server">Clear</a>
                     <a class="btn btn-default" ng-if="!isStarted" ng-click="start()" data-toggle="tooltip" title="Start recording data in the server">Start</a>
-                    <a class="btn btn-default" ng-if="isStarted" ng-click="stop()" data-toggle="tooltip" title="Stop recording data in the server">Stop</a>
                 </div>
                 <div class="btn-group" role="group">
                     <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
                         <span class="glyphicon glyphicon-folder-open"></span>&nbsp;
                     </button>
                     <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="dLabel">
-                        <li><a href="{{getJsonDownloadLink()}}" data-toggle="tooltip" title="Directly download data from server" download="{{getJsonFilename()}}"><span class="glyphicon glyphicon-cloud-download"></span> JSON Export</a></li>
-                        <li><a data-toggle="tooltip" title="Import JSON Data" onclick="$('#file').click();"><span class="glyphicon glyphicon-cloud-upload"></span> JSON Import</a></li>
+                        <li><a ng-if="isStarted" ng-click="stop()" data-toggle="tooltip" title="Stop recording data in the server"><span class="glyphicon glyphicon-off"></span> Stop data recording</a></li>
+                        <li><a ng-click="clear()" data-toggle="tooltip" title="Discard recorded data in the server"><span class="glyphicon glyphicon-trash"></span> Clear Data on server</a></li>
                         <li role="separator" class="divider"></li>
-                        <li><a ng-click="doExportAsExcel()" data-toggle="tooltip" title="Export currently visible data to Excel as CSV"><span class="glyphicon glyphicon-th-list"></span> CSV Export</a></li>
+                        <li><a href="{{getJsonDownloadLink()}}" data-toggle="tooltip" title="Directly download data from server" download="{{getJsonFilename()}}"><span class="glyphicon glyphicon-cloud-download"></span> JSON export new from server</a></li>
+                        <li ng-hide = "!loadDataForExportToRam || !data"><a ng-click="doExportVisibleAsJSON()" data-toggle="tooltip" title="Export currently visible as JSON"><span class="glyphicon glyphicon-th-list"></span> JSON export visible</a></li>
+                        <li><a ng-click="doExportVisibleAsExcel()" data-toggle="tooltip" title="Export currently visible data to Excel as CSV"><span class="glyphicon glyphicon-th-list"></span> CSV export currently visible</a></li>
+                        <li role="separator" class="divider"></li>
+                        <li><a data-toggle="tooltip" title="Import JSON Data" onclick="$('#file').click();"><span class="glyphicon glyphicon-cloud-upload"></span> JSON Import</a></li>
                     </ul>
                 </div>
             </div>
@@ -42,6 +43,7 @@
                 <input type="checkbox" ng-model="hideTitleRows" ng-checked="true" title="Hide titles between trees"/>Hide titles between trees<br>
                 <input type="checkbox" ng-model="showDataTooltips" ng-checked="false" title="Show data in tooltips"/>Show data in tooltips<br>
                 <input type="checkbox" ng-model="hideSearchNonMatchingNodes" ng-checked="true" title="Hide non-matching child-nodes"/>Hide non-matching child-nodes<br>
+                <input type="checkbox" ng-model="loadDataForExportToRam" ng-checked="true" title="Load nodes to ram, for wysiwyg export"/>Load nodes to ram, for wysiwyg export<br>
                 <input type="file" id="file" onchange="angular.element(this).scope().doImportJSON()" style="visibility:hidden;"/>
             </div>
         </div>

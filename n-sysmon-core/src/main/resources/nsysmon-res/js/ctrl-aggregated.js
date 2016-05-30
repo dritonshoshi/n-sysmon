@@ -29,6 +29,7 @@ angular.module('NSysMonApp').controller('CtrlAggregated', function($scope, $log,
 
     $scope.hideSearchNonMatchingNodes = true;
     $scope.expandSearchMatchingNodes = true;
+    $scope.loadDataForExportToRam = true;
 
     /* Delayed Search - Start */
     var timeoutPromise;
@@ -55,6 +56,9 @@ angular.module('NSysMonApp').controller('CtrlAggregated', function($scope, $log,
 
     function initFromResponse(data) {
 //        $log.log('init from response');
+        if ($scope.loadDataForExportToRam) {
+            $scope.data = angular.toJson(data);
+        }
         $scope.isStarted = data.isStarted;
         $scope.columnDefs = data.columnDefs.reverse();
         $scope.traces = data.traces;
@@ -287,9 +291,6 @@ angular.module('NSysMonApp').controller('CtrlAggregated', function($scope, $log,
         });
     }
 
-    $scope.$watch('traces === pickedTraces', function() {
-        $('#unpick').attr('disabled', $scope.traces === $scope.pickedTraces);
-    });
     function pickTreeNode(node) {
         $scope.$apply(function() {
             $scope.pickedTraces = [node];
@@ -297,50 +298,44 @@ angular.module('NSysMonApp').controller('CtrlAggregated', function($scope, $log,
             $scope.rootLevel = node.level;
         });
         renderTree();
-    }
+    };
+    
     $scope.togglePickMode = function() {
         $scope.isInPickMode = ! $scope.isInPickMode;
     };
+    
     $scope.unpick = function() {
         $scope.pickedTraces = $scope.traces;
         $scope.rootLevel = 0;
         renderTree();
     };
-
-
     
-    $scope.getJsonDownloadLink= function() {
+    $scope.getJsonDownloadLink = function() {
         return Rest.getDataUrl('getData');
     };
 
     $scope.getJsonFilename = function() {
-        function pad2(n) {
-            var result = n.toString();
-            while(result.length < 2) {
-                result = '0' + result;
-            }
-            return result;
-        }
-        var now = new Date();
-        var formattedNow = now.getFullYear() + '-' + pad2((now.getMonth()+1)) + '-' + pad2(now.getDate()) + '-' + pad2(now.getHours()) + '-' + pad2(now.getMinutes()) + '-' + pad2(now.getSeconds());
-        return "nsysmon-export-" + formattedNow + '.json';
+        return "nsysmon-export-" + getFormattedNow() + '.json';
     };
     
     $scope.doImportJSON = function() {
         $scope.uploadFile();
     };
 
-    $scope.uploadFile = function(){
-        var file = document.getElementById('file').files[0],
-            reader = new FileReader();
-            // block gui while uploading file
-            blockGui(true);
+    $scope.doExportVisibleAsJSON = function() {
+        var blob = new Blob([$scope.data], {type: "application/json;charset=utf-8"});
+        saveAs(blob, "nsysmon-export-" + getFormattedNow() + '.json');
+    };
 
-            reader.onloadend = function(e){
+    $scope.uploadFile = function(){
+        var file = document.getElementById('file').files[0], reader = new FileReader();
+        // block gui while uploading file
+        blockGui(true);
+
+        reader.onloadend = function(e){
             $scope.$apply(function() {
                 initFromResponse(angular.fromJson(e.target.result));
             });
-
         };
         reader.readAsBinaryString(file);
     };
@@ -355,17 +350,20 @@ angular.module('NSysMonApp').controller('CtrlAggregated', function($scope, $log,
         }
     }
 
-    $scope.doExportAsExcel = function() {
-        function pad2(n) {
-            var result = n.toString();
-            while(result.length < 2) {
-                result = '0' + result;
-            }
-            return result;
+    function pad2(n) {
+        var result = n.toString();
+        while(result.length < 2) {
+            result = '0' + result;
         }
-        var now = new Date();
-        var formattedNow = now.getFullYear() + '-' + pad2((now.getMonth()+1)) + '-' + pad2(now.getDate()) + '-' + pad2(now.getHours()) + '-' + pad2(now.getMinutes()) + '-' + pad2(now.getSeconds());
+        return result;
+    }
 
+    function getFormattedNow() {
+        var now = new Date();
+        return now.getFullYear() + '-' + pad2((now.getMonth() + 1)) + '-' + pad2(now.getDate()) + '-' + pad2(now.getHours()) + '-' + pad2(now.getMinutes()) + '-' + pad2(now.getSeconds());
+    }
+
+    $scope.doExportVisibleAsExcel = function() {
         var data = 'Name\tLevel';
         for(var i=0; i<$scope.columnDefs.length; i++) {
             data += '\t' + $scope.columnDefs[revIdx(i)].name;
@@ -388,7 +386,7 @@ angular.module('NSysMonApp').controller('CtrlAggregated', function($scope, $log,
         }
 
         var blob = new Blob([data], {type: "application/excel;charset=utf-8"});
-        saveAs(blob, "nsysmon-export-" + formattedNow + '.xls');
+        saveAs(blob, "nsysmon-export-" + getFormattedNow() + '.xls');
     };
 
 
