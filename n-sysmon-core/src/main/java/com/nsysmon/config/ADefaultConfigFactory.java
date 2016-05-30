@@ -6,6 +6,7 @@ import com.ajjpj.afoundation.util.AUnchecker;
 import com.nsysmon.config.appinfo.AApplicationInfoProvider;
 import com.nsysmon.config.log.NLog4JLoggerFactory;
 import com.nsysmon.config.log.NStdOutLoggerFactory;
+import com.nsysmon.config.log.NSysMonLogger;
 import com.nsysmon.config.log.NSysMonLoggerFactory;
 import com.nsysmon.config.presentation.APresentationPageDefinition;
 import com.nsysmon.config.wiring.ConfigPropsFile;
@@ -212,12 +213,11 @@ public class ADefaultConfigFactory implements AConfigFactory {
     private void readTimedScalarMonitoringThreshold(ConfigPropsFile props, NSysMonConfigBuilder builder, String parameterToUse) {
         Long value = props.get(parameterToUse, Long.class);
         if (value == null) {
-            // TODO FOX088S add Logging
             String message = "No configuration valueAsString found for " + parameterToUse + "!";
+            NSysMonLogger.get(ADefaultConfigFactory.class).error(message);
             value = 0L;
         }
-        // TODO FOX088S add Logging
-        System.out.println("INFO: using " + value + " as value for " + parameterToUse);
+        NSysMonLogger.get(ADefaultConfigFactory.class).info("INFO: " + parameterToUse + "=" + value);
         builder.addTimedScalarMonitoringParmameter(parameterToUse, value);
     }
 }
