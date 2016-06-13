@@ -88,6 +88,23 @@ public class AMeasurementHierarchyImplTest {
         Assert.assertEquals(1, dataSink.data.size());
     }
 
+    @Test public void maxNumMeasurementsPerHierarchy_VeryMuch() {
+        final CollectingDataSink dataSink = new CollectingDataSink();
+        configBuilder.setMaxNumMeasurementsPerHierarchy(10);
+        final NSysMonApi sysMon = createSysMon(dataSink);
+
+        ASimpleMeasurement simpleMeasurement = sysMon.start("Start");
+
+        performVeryLongMeasurement(sysMon, 5, 3);
+        simpleMeasurement.finish();
+
+        Assert.assertFalse(sysMon.hasRunningMeasurement());
+
+        Assert.assertEquals(true, dataSink.data.get(0).getRootNode().isWasKilled());
+        Assert.assertEquals(1, dataSink.numStarted);
+        Assert.assertEquals(1, dataSink.data.size());
+    }
+
     private void performMeasurement(final NSysMonApi sysMon) {
         sysMon.measure("A11", m -> {
             sysMon.measure("B11", m1 -> {
@@ -120,5 +137,29 @@ public class AMeasurementHierarchyImplTest {
             });
 
         });
+    }
+
+    private void performVeryLongMeasurement(final NSysMonApi sysMon, final long nrMeasurements, final long nrLevels) {
+        sysMon.measure("A11", m -> {
+
+            for (int measurement = 0; measurement < nrMeasurements; measurement++) {
+                String name = "Measurement_" + measurement;
+                sysMon.measure(name, m1 -> {
+//                    System.out.println(name);
+                    addMeasurement(sysMon, nrLevels - 1);
+                });
+            }
+
+        });
+    }
+
+    private void addMeasurement(NSysMonApi sysMon, final long nrLevels) {
+        if (nrLevels > 1) {
+            String name = "Level_" + nrLevels;
+            sysMon.measure(name, m2 -> {
+//                System.out.println(name);
+                addMeasurement(sysMon, nrLevels - 1);
+            });
+        }
     }
 }

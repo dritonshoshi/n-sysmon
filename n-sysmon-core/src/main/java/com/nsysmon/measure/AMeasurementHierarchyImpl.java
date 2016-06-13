@@ -25,7 +25,7 @@ public class AMeasurementHierarchyImpl implements AMeasurementHierarchy {
 
     private Set<ACollectingMeasurement> collectingMeasurements = new HashSet<>();
 
-    private int size = 0; // total number of measurements in this hierarchy
+    protected int size = 0; // total number of measurements in this hierarchy
 
     private final ArrayStack<ASimpleSerialMeasurementImpl> unfinished = new ArrayStack<>();
     private final ArrayStack<List<AHierarchicalData>> childrenStack = new ArrayStack<>();
@@ -37,11 +37,6 @@ public class AMeasurementHierarchyImpl implements AMeasurementHierarchy {
      * shows if this measurement was finished in an orderly fashion
      */
     private boolean isFinished = false;
-
-    /**
-     * shows if this measurement was killed forcibly e.g. because there was an overflow on the stack
-     */
-    private boolean wasKilled = false;
 
     private boolean killedDueSize = false;
 
@@ -93,7 +88,7 @@ public class AMeasurementHierarchyImpl implements AMeasurementHierarchy {
     }
 
     private void checkMaxSize () {
-        if (wasKilled || size < config.maxNumMeasurementsPerHierarchy || killedDueSize) {
+        if (size < config.maxNumMeasurementsPerHierarchy || killedDueSize) {
             return;
         }
 
@@ -106,15 +101,11 @@ public class AMeasurementHierarchyImpl implements AMeasurementHierarchy {
     }
 
     private void checkMaxDepth () {
-        if (wasKilled || unfinished.size() < config.maxNestedMeasurements || killedDueSize) {
+        if (unfinished.size() < config.maxNestedMeasurements || killedDueSize) {
             return;
         }
 
         doKill();
-    }
-
-    private void logWasKilled() {
-        log.debug ((AFunction0NoThrow<String>) () -> "Interacting with a forcefully killed measurement. This is a consequence of N-SysMon cleaning up a (suspected) memory leak. It has no consequences aside from potentially weird measurements being reported.");
     }
 
     @Override public void finish(ASimpleSerialMeasurementImpl measurement) {
@@ -122,10 +113,6 @@ public class AMeasurementHierarchyImpl implements AMeasurementHierarchy {
             return;
         }
 
-        if(wasKilled) {
-            logWasKilled();
-            return;
-        }
         if (checkNotFinished ()) {
             return;
         }
@@ -174,10 +161,6 @@ public class AMeasurementHierarchyImpl implements AMeasurementHierarchy {
             return;
         }
 
-        if(wasKilled) {
-            logWasKilled();
-            return;
-        }
         if (checkNotFinished ()) {
             return;
         }
@@ -211,10 +194,6 @@ public class AMeasurementHierarchyImpl implements AMeasurementHierarchy {
             return;
         }
 
-        if(wasKilled) {
-            logWasKilled();
-            return;
-        }
         if (checkNotFinished ()) {
             return;
         }
