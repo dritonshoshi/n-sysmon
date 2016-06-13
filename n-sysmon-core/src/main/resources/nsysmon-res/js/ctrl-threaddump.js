@@ -146,7 +146,7 @@ angular.module('NSysMonApp').controller('CtrlThreadDump', function($scope, $http
 
     $scope.runningMillis = function(thread) {
         if(! thread.runningMillis) {
-            return '';
+            return '? ms';
         }
         return formatNumber(thread.runningMillis) + ' ms';
     };
