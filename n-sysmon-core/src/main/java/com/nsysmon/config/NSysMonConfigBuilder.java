@@ -53,7 +53,7 @@ public class NSysMonConfigBuilder {
     private final List<APresentationMenuEntry> presentationMenuEntries = new ArrayList<>();
     private String defaultPage;
     private Map<String, String> additionalConfigurationParameters;
-    private Map<String, Long> timedScalarMonitoringParameters = new HashMap<>();
+    private Map<String, Object> timedScalarMonitoringParameters = new HashMap<>();
 
     public NSysMonConfigBuilder(AApplicationInfoProvider appInfo) {
         this.appInfo = appInfo;
@@ -197,7 +197,11 @@ public class NSysMonConfigBuilder {
                 );
     }
 
-    public void addTimedScalarMonitoringParmameter(String key, Long value) {
+    public void addTimedScalarMonitoringParameter(String key, Long value) {
+        this.timedScalarMonitoringParameters.put(key, value);
+    }
+
+    public void addTimedScalarMonitoringParameter(String key, Boolean value) {
         this.timedScalarMonitoringParameters.put(key, value);
     }
 

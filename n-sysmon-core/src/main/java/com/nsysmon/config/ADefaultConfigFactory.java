@@ -204,6 +204,7 @@ public class ADefaultConfigFactory implements AConfigFactory {
             for (String parameterValue : configurationParameters) {
                 readTimedScalarMonitoringThreshold(props, builder, "timedscalar." + timedScalarClass.getClass().getSimpleName() + "." + parameterValue + ".medium");
                 readTimedScalarMonitoringThreshold(props, builder, "timedscalar." + timedScalarClass.getClass().getSimpleName() + "." + parameterValue + ".high");
+                readTimedScalarMonitoringActivation(props, builder, "timedscalar." + timedScalarClass.getClass().getSimpleName() + "." + parameterValue + ".active");
             }
         }
 
@@ -213,11 +214,22 @@ public class ADefaultConfigFactory implements AConfigFactory {
     private void readTimedScalarMonitoringThreshold(ConfigPropsFile props, NSysMonConfigBuilder builder, String parameterToUse) {
         Long value = props.get(parameterToUse, Long.class);
         if (value == null) {
-            String message = "No configuration valueAsString found for " + parameterToUse + "!";
+            String message = "No configuration valueAsString found for " + parameterToUse + "! Using value=0.";
             NSysMonLogger.get(ADefaultConfigFactory.class).error(message);
             value = 0L;
         }
         NSysMonLogger.get(ADefaultConfigFactory.class).info("INFO: " + parameterToUse + "=" + value);
-        builder.addTimedScalarMonitoringParmameter(parameterToUse, value);
+        builder.addTimedScalarMonitoringParameter(parameterToUse, value);
+    }
+
+    private void readTimedScalarMonitoringActivation(ConfigPropsFile props, NSysMonConfigBuilder builder, String parameterToUse) {
+        Boolean value = props.get(parameterToUse, AOption.some(Boolean.FALSE), Boolean.class);
+        if (value == null) {
+            String message = "No configuration valueAsString found for " + parameterToUse + "! Using value=false";
+            NSysMonLogger.get(ADefaultConfigFactory.class).error(message);
+            value = Boolean.FALSE;
+        }
+        NSysMonLogger.get(ADefaultConfigFactory.class).info("INFO: " + parameterToUse + "=" + value);
+        builder.addTimedScalarMonitoringParameter(parameterToUse, value);
     }
 }

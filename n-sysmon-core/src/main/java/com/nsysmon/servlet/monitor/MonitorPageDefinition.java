@@ -72,7 +72,7 @@ public class MonitorPageDefinition extends TimedScalarsPageDefinition{
             final Map<String, ARingBuffer<AScalarDataPoint>> scalars = sysMon.getTimedScalarMeasurementsForMonitoring();
 
             for (String key : scalars.keySet()) {
-                if (key.equalsIgnoreCase(paramWithoutHtml)) {
+                if (key.equalsIgnoreCase(paramWithoutHtml) && isMonitoringActive(key)) {
                     fillMonitoringData(json, scalars, key);
                 }
             }
@@ -116,24 +116,35 @@ public class MonitorPageDefinition extends TimedScalarsPageDefinition{
         json.endObject();
     }
 
+    private boolean isMonitoringActive(String key) {
+        Optional<Map.Entry<String, Object>> value = NSysMon.get().getConfig().getTimedScalarMonitoringParameters()
+                .entrySet()
+                .stream()
+                .filter(s -> s.getKey().endsWith(AScalarMeasurer.KEY_CONFIGURATION_ACTIVE))
+                .filter(s -> s.getKey().contains(key))
+                .findFirst();
+        boolean rc = value.isPresent() && (Boolean) value.get().getValue();
+        return rc;
+    }
+
     private AScalarMeasurer.EvaluatedValue evaluateValue(String key, double value) {
-        Optional<Map.Entry<String, Long>> highValue = NSysMon.get().getConfig().getTimedScalarMonitoringParameters()
+        Optional<Map.Entry<String, Object>> highValue = NSysMon.get().getConfig().getTimedScalarMonitoringParameters()
                 .entrySet()
                 .stream()
                 .filter(s -> s.getKey().endsWith(AScalarMeasurer.KEY_CONFIGURATION_HIGH))
                 .filter(s -> s.getKey().contains(key))
                 .findFirst();
-        if (highValue.isPresent() && highValue.get().getValue() < value){
+        if (highValue.isPresent() && ((Long)highValue.get().getValue()) < value){
             return AScalarMeasurer.EvaluatedValue.HIGH;
         }
 
-        Optional<Map.Entry<String, Long>> mediumValue = NSysMon.get().getConfig().getTimedScalarMonitoringParameters()
+        Optional<Map.Entry<String, Object>> mediumValue = NSysMon.get().getConfig().getTimedScalarMonitoringParameters()
                 .entrySet()
                 .stream()
                 .filter(s -> s.getKey().endsWith(AScalarMeasurer.KEY_CONFIGURATION_MEDIUM))
                 .filter(s -> s.getKey().contains(key))
                 .findFirst();
-        if (mediumValue.isPresent() && mediumValue.get().getValue() < value){
+        if (mediumValue.isPresent() && ((Long)mediumValue.get().getValue()) < value){
             return AScalarMeasurer.EvaluatedValue.MEDIUM;
         }
 
