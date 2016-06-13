@@ -182,9 +182,13 @@ public class AMeasurementHierarchyImpl implements AMeasurementHierarchy {
             return ACollectingMeasurement.createDisabled ();
         }
         else {
+            size += 1;
+            checkOverflow();
+            if (killedDueSize){
+                return ACollectingMeasurement.createDisabled ();
+            }
             final ACollectingMeasurement result = ACollectingMeasurement.createRegular (config, this, isSerial, identifier, childrenStack.peek());
             collectingMeasurements.add(result);
-            size += 1;
             return result;
         }
     }
