@@ -1,5 +1,5 @@
 
-angular.module('NSysMonApp').controller('CtrlThreadDump', function($scope, $http, $log, Rest, formatNumber) {
+angular.module('NSysMonApp').controller('CtrlThreadDump', function($scope, $http, $log, Rest, formatNumber, $timeout) {
     $('.btn').tooltip({
         container: 'body',
         html: true
@@ -11,6 +11,21 @@ angular.module('NSysMonApp').controller('CtrlThreadDump', function($scope, $http
 
     $scope.hideReflection = true;
     $scope.hideLibraries = true;
+
+    /* Delayed Search - Start */
+    var timeoutPromise;
+    var searchDelayInMs = 500;
+    $scope.$watch('dumpSearchText', function (val) {
+        if ($scope.dumpSearchText){
+            $timeout.cancel(timeoutPromise);
+        }
+        var tempFilterText = val;
+        timeoutPromise = $timeout(function () {
+            $scope.dumpSearchText = tempFilterText;
+            //TODO perform repaint
+        }, searchDelayInMs); // delay
+    });
+    /* Delayed Search - End */
 
     function initFromResponse(data) {
         $scope.title = data.title;
@@ -50,6 +65,7 @@ angular.module('NSysMonApp').controller('CtrlThreadDump', function($scope, $http
         }
         return result;
     };
+    
     $scope.nonActiveThreads = function() {
         var result = [];
         if($scope.threads) {
@@ -139,6 +155,9 @@ angular.module('NSysMonApp').controller('CtrlThreadDump', function($scope, $http
             if($scope.hideLibraries && ste.isHideableLib) {
                 continue;
             }
+            if($scope.isValidSearchActive() && !ste.repr.toLowerCase().contains($scope.dumpSearchText.toLowerCase())) {
+                continue;
+            }
             result.push(ste);
         }
         return result;
@@ -150,6 +169,24 @@ angular.module('NSysMonApp').controller('CtrlThreadDump', function($scope, $http
         }
         return formatNumber(thread.runningMillis) + ' ms';
     };
+
+    $scope.isValidSearchActive = function() {
+        return isValidSearchActiveFor($scope.dumpSearchText);
+    };
+
+    $scope.clearSearch = function() {
+        $scope.dumpSearchText = undefined;
+    };
+
+    $scope.isSearchTooShort = function() {
+        return ($scope.dumpSearchText && $scope.dumpSearchText.length < 4);
+
+    };
+
+    function isValidSearchActiveFor(stringToSearchFor) {
+        return !(!stringToSearchFor || stringToSearchFor.length < 4);
+    }
+
 });
 
 

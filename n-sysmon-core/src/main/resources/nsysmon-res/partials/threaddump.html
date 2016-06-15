@@ -1,21 +1,42 @@
 
 <div class="options-header">
-    <div class="button-box">
-        <a class="btn btn-default" ng-click="refresh()" data-toggle="tooltip" title="Fetch a new thread dump from the server">Refresh</a>
-    </div>
+    <div class="row">
 
-    <input type="checkbox" ng-model="hideLibraries" title="Hide library frames"> Hide library frames <br>
-    <input type="checkbox" ng-model="hideReflection" title="Hide reflection"> Hide reflection <br>
-    <input type="checkbox" ng-model="stacktraceWithSourceOnly" title="Hide stack trace elements without source"> Hide stack trace elements without source
+        <div class="col-sm-4">
+            <div class="input-group">
+                <span class="input-group-addon glyphicon glyphicon-search" style="top: 0px;"></span>
+                <input type="text" class="form-control" aria-describedby="sizing-addon2" placeholder="Search for..." ng-model="dumpSearchText">
+            </div>
+        </div>
+
+        <div class="col-sm-4  pull-right">
+            <div class="button-box">
+                <a class="btn btn-default" ng-click="refresh()" data-toggle="tooltip" title="Fetch a new thread dump from the server">Refresh</a>
+            </div>
+        </div>
+
+        <div class="col-sm-4">
+            <input type="checkbox" ng-model="hideLibraries" title="Hide library frames"> Hide library frames <br>
+            <input type="checkbox" ng-model="hideReflection" title="Hide reflection"> Hide reflection <br>
+            <input type="checkbox" ng-model="stacktraceWithSourceOnly" title="Hide stack trace elements without source"> Hide stack trace elements without source
+        </div>
+
+    </div>
 </div>
 
+<div style="clear:both"></div>
+
+<div ng-if="isValidSearchActive()" class="alert alert-warning" role="alert">Some elements aren't displayed because they don't match the search.  <a ng-click="clearSearch()" class="alert-link">Clear</a> search.</div>
+<div ng-if="isSearchTooShort()" class="alert alert-warning" role="alert">Search text is too short, must have at least 4 characters.</div>
+
+<div class="affix-placeholder"></div>
 <h2>Active Application Threads</h2>
 
 <div style="margin-top: -20px;">&nbsp;
     <div style="float: right;">Time in Current Rrequest</div>
 </div>
 <div ng-repeat="t in activeThreads()">
-    <div class="data-row data-row-0" ng-click="toggleTreeNode($event, t)">
+    <div ng-hide="!filteredStackTrace(t).length > 0" class="data-row data-row-0" ng-click="toggleTreeNode($event, t)">
         <div class="node-icon {{nodeIconClass(t)}}">&nbsp;</div>
         <div class="thread-state thread-state-{{t.state}}">{{t.state}}</div>
         {{t.name}}
@@ -29,10 +50,11 @@
 
 <hr />
 
+<div class="affix-placeholder"></div>
 <h2>Other Threads</h2>
 
 <div ng-repeat="t in nonActiveThreads()">
-    <div class="data-row data-row-0" ng-click="toggleTreeNode($event, t)">
+    <div ng-hide="!filteredStackTrace(t).length > 0" class="data-row data-row-0" ng-click="toggleTreeNode($event, t)">
         <div class="node-icon {{nodeIconClass(t)}}">&nbsp;</div>
         <div class="thread-state thread-state-{{t.state}}">{{t.state}}</div>
         {{t.name}}
