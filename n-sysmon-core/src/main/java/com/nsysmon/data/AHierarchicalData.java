@@ -83,7 +83,7 @@ public class AHierarchicalData {
         return children == null ? Collections.EMPTY_LIST : Collections.unmodifiableList(children);
     }
 
-    //TODO FOX088S add this to rest
+    //TODO TKT add this to rest
     public boolean isWasKilled() {
         return wasKilled;
     }
