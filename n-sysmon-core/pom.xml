@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>com.n-sysmon</groupId>
+        <groupId>com.github.dritonshoshi.n-sysmon</groupId>
         <artifactId>n-sysmon-parent</artifactId>
         <version>1.3.6-SNAPSHOT</version>
     </parent>
