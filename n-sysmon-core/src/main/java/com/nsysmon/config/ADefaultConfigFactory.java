@@ -212,6 +212,10 @@ public class ADefaultConfigFactory implements AConfigFactory {
     }
 
     private void readTimedScalarMonitoringThreshold(ConfigPropsFile props, NSysMonConfigBuilder builder, String parameterToUse) {
+        if (NSysMonConfig.isGloballyDisabled()) {
+            return;
+        }
+
         Long value = props.get(parameterToUse, Long.class);
         if (value == null) {
             String message = "No configuration valueAsString found for " + parameterToUse + "! Using value=0.";
