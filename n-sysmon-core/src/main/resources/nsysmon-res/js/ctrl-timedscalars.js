@@ -7,7 +7,7 @@ angular.module('NSysMonApp').controller('CtrlTimedScalars', function($scope, $ti
               "top": 20,
               "right": 20,
               "bottom": 20,
-              "left": 20
+              "left": 40
             },
             color: d3.scale.category10().range(),
             useInteractiveGuideline: true,
