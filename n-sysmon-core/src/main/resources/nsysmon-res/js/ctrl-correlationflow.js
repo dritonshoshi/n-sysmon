@@ -1,4 +1,4 @@
-angular.module('NSysMonApp').controller('CtrlCorrelationFlow', function($scope, $log, Rest, escapeHtml, $timeout) {
+angular.module('NSysMonApp').controller('CtrlCorrelationFlow', function($scope, $log, Rest) {
 
     $('title').text("NSysmon - Correlations");
     $scope.refresh = function() {

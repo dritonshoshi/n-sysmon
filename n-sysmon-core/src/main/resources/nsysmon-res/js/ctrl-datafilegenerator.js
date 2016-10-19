@@ -1,4 +1,4 @@
-angular.module('NSysMonApp').controller('CtrlDataFileGenerator', function($scope, $log, Rest, escapeHtml, $timeout) {
+angular.module('NSysMonApp').controller('CtrlDataFileGenerator', function($scope, $log, Rest) {
     $('title').text("NSysmon - Datafiles");
     $scope.refresh = function() {
         sendCommand('getData');

@@ -1,5 +1,4 @@
-angular.module('NSysMonApp').controller('CtrlLoadableServerDataFiles', function($scope, $log, Rest, escapeHtml, $timeout) {
-
+angular.module('NSysMonApp').controller('CtrlLoadableServerDataFiles', function ($scope, $log, Rest) {
     $('title').text("NSysmon - Loadable Files");
     $scope.refresh = function() {
         sendCommand('getFiles');
