@@ -56,7 +56,7 @@ public class LongestCallsPageDefinition extends AAbstractNsysmonPerformancePageD
 
     @Override
     public String getId() {
-        return "longestCalls";
+        return "longestCalls" + this.findRegEx;
     }
 
     @Override
