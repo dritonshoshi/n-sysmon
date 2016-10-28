@@ -235,6 +235,12 @@ public class NSysMonImpl implements AShutdownable, NSysMonApi {
         return result;
     }
 
+    @Override
+    public AList<RobustScalarMeasurerWrapper> getTimedScalarTODO() {
+        AList<RobustScalarMeasurerWrapper> timedScalarMeasurers = timedScalarMeasureRunnable.getTimedScalarMeasurers();
+        return timedScalarMeasurers;
+    }
+
     @Override public Map<String, ARingBuffer<AScalarDataPoint>> getTimedScalarMeasurements() {
         Map<String, ARingBuffer<AScalarDataPoint>> result = new TreeMap<>();
         if(NSysMonConfig.isGloballyDisabled()) {

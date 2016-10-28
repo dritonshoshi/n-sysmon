@@ -4,6 +4,7 @@ import com.ajjpj.afoundation.collection.immutable.AOption;
 import com.nsysmon.config.log.NSysMonLogger;
 import com.nsysmon.data.AScalarDataPoint;
 import com.nsysmon.measure.scalar.AScalarMeasurer;
+import com.nsysmon.measure.scalar.ScalarMeasurerStatus;
 
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -14,7 +15,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  *
  * @author arno
  */
-class RobustScalarMeasurerWrapper {
+public class RobustScalarMeasurerWrapper {
     private static final NSysMonLogger log = NSysMonLogger.get(RobustScalarMeasurerWrapper.class);
 
     private final AScalarMeasurer inner;
@@ -23,6 +24,16 @@ class RobustScalarMeasurerWrapper {
     private final int maxNumTimeouts;
 
     private final AtomicInteger numTimeouts = new AtomicInteger(0);
+
+    public ScalarMeasurerStatus getStatus(String key) {
+        if (!inner.isResponsibleForMeasurement(key)){
+            return new ScalarMeasurerStatus(ScalarMeasurerStatus.Status.UNKNOWN);
+        }
+        if (strategy == DISABLED){
+            return new ScalarMeasurerStatus(ScalarMeasurerStatus.Status.STOPPED);
+        }
+        return new ScalarMeasurerStatus(ScalarMeasurerStatus.Status.RUNNING);
+    }
 
     private interface Strategy {
         void prepareMeasurements(Map<String, Object> mementos);

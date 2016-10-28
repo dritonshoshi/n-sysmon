@@ -25,9 +25,11 @@ import java.util.Map;
  *  <code>prepareMeasurements()</code> and the entire memento mechanism.
  */
 public interface AScalarMeasurer extends AShutdownable {
+
     String KEY_CONFIGURATION_ACTIVE = "active";
     String KEY_CONFIGURATION_MEDIUM = "medium";
     String KEY_CONFIGURATION_HIGH = "high";
+
 
     enum EvaluatedValue{
         LOW, MEDIUM, HIGH
@@ -40,6 +42,7 @@ public interface AScalarMeasurer extends AShutdownable {
     default String getGroupnameOfMeasurement(String measurement){
         return null;
     }
+
     default String getDescriptionOfMeasurement(String measurement){
         return null;
     }
@@ -47,5 +50,10 @@ public interface AScalarMeasurer extends AShutdownable {
     default List<String> getConfigurationParameters(){
         return Collections.emptyList();
     }
+
+    default boolean isResponsibleForMeasurement(String key) {
+        return getDescriptionOfMeasurement(key) != null;
+    }
+
 
 }

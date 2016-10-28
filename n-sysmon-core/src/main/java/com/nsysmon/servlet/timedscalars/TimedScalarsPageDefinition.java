@@ -6,7 +6,9 @@ import com.nsysmon.NSysMonApi;
 import com.nsysmon.config.log.NSysMonLogger;
 import com.nsysmon.config.presentation.APresentationPageDefinition;
 import com.nsysmon.data.AScalarDataPoint;
+import com.nsysmon.impl.RobustScalarMeasurerWrapper;
 import com.nsysmon.measure.scalar.AScalarMeasurer;
+import com.nsysmon.measure.scalar.ScalarMeasurerStatus;
 import com.nsysmon.servlet.overview.DataFileGeneratorSupporter;
 
 import java.io.IOException;
@@ -146,6 +148,13 @@ public class TimedScalarsPageDefinition implements APresentationPageDefinition, 
             json.writeKey("group");
             json.writeStringLiteral(group);
         }
+
+        //TODO FOX088S add status-text
+        String status = findStatusForKey(key, givenSysMon).getStatus().name();
+        if (group != null) {
+            json.writeKey("status");
+            json.writeStringLiteral(status);
+        }
     }
 
     private String findGroupForKey(String key, NSysMonApi givenSysMon) {
@@ -157,6 +166,16 @@ public class TimedScalarsPageDefinition implements APresentationPageDefinition, 
             }
         }
         return "other";
+    }
+
+    private ScalarMeasurerStatus findStatusForKey(String key, NSysMonApi givenSysMon) {
+        for (RobustScalarMeasurerWrapper robustScalarMeasurerWrapper : givenSysMon.getTimedScalarTODO()) {
+            ScalarMeasurerStatus status = robustScalarMeasurerWrapper.getStatus(key);
+            if (status.getStatus() != ScalarMeasurerStatus.Status.UNKNOWN) {
+                return status;
+            }
+        }
+        return new ScalarMeasurerStatus(ScalarMeasurerStatus.Status.UNKNOWN);
     }
 
     private String findDescriptionForKey(String key, NSysMonApi givenSysMon) {

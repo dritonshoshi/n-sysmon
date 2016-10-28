@@ -1,10 +1,12 @@
 package com.nsysmon;
 
+import com.ajjpj.afoundation.collection.immutable.AList;
 import com.ajjpj.afoundation.collection.mutable.ARingBuffer;
 import com.nsysmon.config.NSysMonConfig;
 import com.nsysmon.data.ACorrelationId;
 import com.nsysmon.data.AHierarchicalDataRoot;
 import com.nsysmon.data.AScalarDataPoint;
+import com.nsysmon.impl.RobustScalarMeasurerWrapper;
 import com.nsysmon.measure.ACollectingMeasurement;
 import com.nsysmon.measure.AMeasureCallback;
 import com.nsysmon.measure.AMeasureCallbackVoid;
@@ -59,6 +61,7 @@ public interface NSysMonApi {
 
     List<AEnvironmentData> getEnvironmentMeasurements() throws Exception;
 
+    AList<RobustScalarMeasurerWrapper> getTimedScalarTODO();
     Map<String,ARingBuffer<AScalarDataPoint>> getTimedScalarMeasurements();
     Map<String,ARingBuffer<AScalarDataPoint>> getTimedScalarMeasurementsForMonitoring();
 

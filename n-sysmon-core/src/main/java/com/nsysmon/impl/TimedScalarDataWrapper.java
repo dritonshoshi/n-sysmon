@@ -68,4 +68,8 @@ class TimedScalarDataWrapper implements Runnable {
             dataBufferMonitoring.get(name).put(point);
         }
     }
+
+    public AList<RobustScalarMeasurerWrapper> getTimedScalarMeasurers() {
+        return timedScalarMeasurers;
+    }
 }
