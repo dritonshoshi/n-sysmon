@@ -68,16 +68,27 @@ angular.module('NSysMonApp').controller('CtrlTimedScalars', function($scope, $ti
             var variableKey;
             for (var myKey in $scope.loadedGraphData) {
                 variableKey = data[myKey].key;
-                $scope.timedScalars[variableKey] = {key: data[myKey].key, selected: false};
+                $scope.timedScalars[variableKey] = {key: variableKey, selected: false};
             }
         }else{
             $scope.rc.api.updateWithData(data);
+            refreshButtons()
             triggerAutoRefresh();
         }
     }
 
     $scope.$watch('autoRefresh', triggerAutoRefresh);
     $scope.$watch('autoRefreshSeconds', triggerAutoRefresh);
+
+    function refreshButtons(){
+        for (var myKey in $scope.loadedGraphData) {
+            variableKey = $scope.loadedGraphData[myKey].key;
+            status = $scope.loadedGraphData[myKey].status;
+            // console.log(variableKey);
+            // console.log(status);
+            $scope.timedScalars[variableKey].status = status;
+        }
+    }
 
     function triggerAutoRefresh() {
         if(! $scope.autoRefresh) {

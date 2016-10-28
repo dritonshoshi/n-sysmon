@@ -55,12 +55,6 @@
                 <b>{{entry.group}}</b>
             </div>
 
-            <div ng-if="entry.status != 'RUNNING'"
-                 style="background-color: palevioletred">
-                <!-- TODO FOX088S move color to class-->
-                <b>{{entry.status}}</b>
-            </div>
-
             <div>
                 <small><b>{{entry.key}}</b></small>
             </div>
@@ -68,6 +62,13 @@
             <div ng-if="entry.description">
                 <small><small>{{entry.description}}</small></small>
             </div>
+
+            <div ng-if="entry.status != 'RUNNING'"
+                 style="background-color: palevioletred">
+                <!-- TODO FOX088S move color to class-->
+                <b>{{entry.status}}</b>
+            </div>
+
         </div>
     </div>
 

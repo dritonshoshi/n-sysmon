@@ -44,4 +44,9 @@ public class RandomValues implements AScalarMeasurer {
         }
         return null;
     }
+
+    @Override
+    public boolean isResponsibleForMeasurement(String key) {
+        return new Random().nextBoolean();
+    }
 }
