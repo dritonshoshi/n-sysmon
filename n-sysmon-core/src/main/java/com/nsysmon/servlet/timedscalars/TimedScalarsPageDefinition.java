@@ -71,6 +71,9 @@ public class TimedScalarsPageDefinition implements APresentationPageDefinition, 
         }else if ("getLatestGraphData".equals(service)) {
             serveLatestGraphData(json, params);
             return true;
+        }else if ("restartTimedScalar".equals(service)) {
+            restartTimedScalar(json, params, sysMon);
+            return true;
         }
 
         return false;
@@ -169,7 +172,7 @@ public class TimedScalarsPageDefinition implements APresentationPageDefinition, 
     }
 
     private ScalarMeasurerStatus findStatusForKey(String key, NSysMonApi givenSysMon) {
-        for (RobustScalarMeasurerWrapper robustScalarMeasurerWrapper : givenSysMon.getTimedScalarTODO()) {
+        for (RobustScalarMeasurerWrapper robustScalarMeasurerWrapper : givenSysMon.getTimedScalarForDirectAccess()) {
             ScalarMeasurerStatus status = robustScalarMeasurerWrapper.getStatus(key);
             if (status.getStatus() != ScalarMeasurerStatus.Status.UNKNOWN) {
                 return status;
@@ -207,6 +210,16 @@ public class TimedScalarsPageDefinition implements APresentationPageDefinition, 
 
         json.endObject();
         json.endObject();
+    }
+
+    protected void restartTimedScalar(final AJsonSerHelper json, List<String> params, NSysMonApi givenSysMon) throws IOException {
+        String key = params.get(0);
+        for (RobustScalarMeasurerWrapper measurerWrapper : givenSysMon.getTimedScalarForDirectAccess()) {
+            if (measurerWrapper.restartIfResponsible(key)) {
+                break;
+            }
+        }
+        serveData(json, params, givenSysMon);
     }
 
     private void writeRingBufferIntoJson(final AJsonSerHelper json, final ARingBuffer buffer) throws IOException {

@@ -47,28 +47,41 @@
     <div>
         <div ng-repeat="entry in timedScalars | timedScalarEntrySorter"
              class="timedScalar-option {{entriesToLoadDataFor.indexOf(entry.key) == -1 ? 'timedScalarOff' : 'timedScalarOn'}}"
-             ng-click="toggleGraphData(entry.key)" >
+        >
 
+            <div
+                    ng-click="toggleGraphData(entry.key)"
+            >
+                <div ng-if="entry.group"
+                     class="{{entriesToLoadDataFor.indexOf(entry.key) == -1 ? 'timedScalarHeaderOff' : 'timedScalarHeaderOn'}}">
+                    <b>{{entry.group}}</b>
+                </div>
 
-            <div ng-if="entry.group"
-                 class="{{entriesToLoadDataFor.indexOf(entry.key) == -1 ? 'timedScalarHeaderOff' : 'timedScalarHeaderOn'}}">
-                <b>{{entry.group}}</b>
+                <div>
+                    <small><b>{{entry.key}}</b></small>
+                </div>
+
+                <div ng-if="entry.description">
+                    <small><small>{{entry.description}}</small></small>
+                </div>
+
             </div>
-
-            <div>
-                <small><b>{{entry.key}}</b></small>
+            <div
+                    ng-if="entry.status != 'RUNNING'"
+                    class="timed-scalar-status-{{entry.status}}"
+            >
+                <div
+                        class="left timed-scalar-status-{{entry.status}}"
+                >
+                    <b>{{entry.status}}</b>
+                </div>
+                <div
+                        class="right"
+                        ng-click="restartTimedScalar(entry)"
+                >
+                    <span class="glyphicon glyphicon-refresh"/>
+                </div>
             </div>
-
-            <div ng-if="entry.description">
-                <small><small>{{entry.description}}</small></small>
-            </div>
-
-            <div ng-if="entry.status != 'RUNNING'"
-                 style="background-color: palevioletred">
-                <!-- TODO FOX088S move color to class-->
-                <b>{{entry.status}}</b>
-            </div>
-
         </div>
     </div>
 

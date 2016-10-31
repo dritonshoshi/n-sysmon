@@ -236,7 +236,7 @@ public class NSysMonImpl implements AShutdownable, NSysMonApi {
     }
 
     @Override
-    public AList<RobustScalarMeasurerWrapper> getTimedScalarTODO() {
+    public AList<RobustScalarMeasurerWrapper> getTimedScalarForDirectAccess() {
         AList<RobustScalarMeasurerWrapper> timedScalarMeasurers = timedScalarMeasureRunnable.getTimedScalarMeasurers();
         return timedScalarMeasurers;
     }

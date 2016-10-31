@@ -72,7 +72,7 @@ angular.module('NSysMonApp').controller('CtrlTimedScalars', function($scope, $ti
             }
         }else{
             $scope.rc.api.updateWithData(data);
-            refreshButtons()
+            refreshButtons();
             triggerAutoRefresh();
         }
     }
@@ -186,6 +186,11 @@ angular.module('NSysMonApp').controller('CtrlTimedScalars', function($scope, $ti
             //only, if not loaded from a file
             $scope.refresh();
         }
+    };
+
+    $scope.restartTimedScalar = function(entry) {
+        console.log(JSON.stringify(entry));
+        Rest.call('restartTimedScalar/' + entry.key, refreshButtons);
     };
 
     // check if data from other sources should be loaded

@@ -576,3 +576,32 @@ div.env-value {
     border-radius: 0 15px 15px 0;
     background-color: rgba(253, 15, 72, 0.03);
 }
+
+.timed-scalar-status-RUNNING{
+    background-color: rgba(44, 253, 15, 1);
+    color: black;
+    vertical-align: middle;
+}
+
+.timed-scalar-status-UNKNOWN{
+    background-color: rgba(238, 253, 6, 1);
+    color: black;
+    vertical-align: middle;
+}
+
+.timed-scalar-status-STOPPED{
+    background-color: rgba(253, 15, 72, 1);
+    color: lightsteelblue;
+    vertical-align: middle;
+}
+
+.left {
+    float: left;
+    text-align: left;
+}
+
+.right {
+    float: right;
+    text-align: right;
+}
+

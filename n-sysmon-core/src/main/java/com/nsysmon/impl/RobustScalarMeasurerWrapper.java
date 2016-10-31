@@ -35,6 +35,19 @@ public class RobustScalarMeasurerWrapper {
         return new ScalarMeasurerStatus(ScalarMeasurerStatus.Status.RUNNING);
     }
 
+    public boolean restartIfResponsible(String key) {
+        if (!inner.isResponsibleForMeasurement(key)){
+            return false;
+        }
+        restart();
+        return true;
+    }
+
+    private void restart() {
+        log.warn("Restarting scalar measurer " + inner.getClass().getName() + " due user request.");
+        strategy = ENABLED;
+    }
+
     private interface Strategy {
         void prepareMeasurements(Map<String, Object> mementos);
         void contributeMeasurements(Map<String, AScalarDataPoint> data, long timestamp, Map<String, Object> mementos);
