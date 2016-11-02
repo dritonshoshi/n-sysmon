@@ -1,5 +1,6 @@
 package com.nsysmon.measure.environment.impl;
 
+import com.nsysmon.NSysMon;
 import com.nsysmon.measure.environment.AEnvironmentMeasurer;
 
 import java.io.BufferedReader;
@@ -15,6 +16,10 @@ public class ACpuEnvironmentMeasurer implements AEnvironmentMeasurer {
     public static final String KEY_CPUS = "cpus";
 
     @Override public void contributeMeasurements(EnvironmentCollector data) throws Exception {
+        if (NSysMon.isWindows()){
+            return;
+        }
+
         final BufferedReader br = new BufferedReader(new FileReader(new File("/proc/cpuinfo")));
         try {
             String line;

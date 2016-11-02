@@ -1,6 +1,7 @@
 package com.nsysmon.measure.scalar;
 
 import com.ajjpj.afoundation.collection.immutable.AOption;
+import com.nsysmon.NSysMon;
 import com.nsysmon.data.AScalarDataPoint;
 import com.sun.management.OperatingSystemMXBean;
 
@@ -15,18 +16,12 @@ public class CpuTotalAndUserMeasurer implements AScalarMeasurer {
     private static final String CPU_AVAILABLE = "cpu:available";
     private static final String CPU_SELF_KERNEL = "cpu:self-kernel";
 
-    private final boolean isWindows;
-
-    public CpuTotalAndUserMeasurer(){
-        isWindows = System.getProperty("os.name").toLowerCase().contains("win");
-    }
-
     @Override public void prepareMeasurements(Map<String, Object> mementos) throws IOException {
     }
 
     @Override public void contributeMeasurements(Map<String, AScalarDataPoint> data, long timestamp, Map<String, Object> mementos) throws IOException {
         //this measurement isn't working on windows
-        if (isWindows){
+        if (NSysMon.isWindows()){
             return;
         }
 

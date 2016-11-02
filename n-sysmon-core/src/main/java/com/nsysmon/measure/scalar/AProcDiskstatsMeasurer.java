@@ -3,6 +3,7 @@ package com.nsysmon.measure.scalar;
 import com.ajjpj.afoundation.collection.immutable.AOption;
 import com.ajjpj.afoundation.io.AFile;
 import com.ajjpj.afoundation.proc.CliCommand;
+import com.nsysmon.NSysMon;
 import com.nsysmon.data.AScalarDataPoint;
 import com.nsysmon.measure.environment.impl.AFileSystemsEnvironmentMeasurer;
 
@@ -35,15 +36,13 @@ public class AProcDiskstatsMeasurer implements AScalarMeasurer {
     private static final String KEY_MOUNTPOINT = ":mountpoint:";
     private static final Pattern PATTERN = Pattern.compile("\\s+");
 
-    private final boolean isWindows;
 
     public AProcDiskstatsMeasurer(){
-        isWindows = System.getProperty("os.name").toLowerCase().contains("win");
     }
 
     @Override public void prepareMeasurements(Map<String, Object> mementos) throws Exception {
         //this measurement isn't working on windows
-        if (isWindows){
+        if (NSysMon.isWindows()){
             return;
         }
         mementos.put(KEY_MEMENTO, createSnapshot());
@@ -51,7 +50,7 @@ public class AProcDiskstatsMeasurer implements AScalarMeasurer {
 
     @Override public void contributeMeasurements(Map<String, AScalarDataPoint> data, long timestamp, Map<String, Object> mementos) throws Exception {
         //this measurement isn't working on windows
-        if (isWindows){
+        if (NSysMon.isWindows()){
             contributeDiskSizeWindows(data, timestamp);
             return;
         }

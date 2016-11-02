@@ -86,6 +86,7 @@ public class NSysMonConfig {
         this.collectTooltips = collectTooltips;
         this.pathDatafiles = pathDatafiles;
         this.timedScalarMonitoringParameters = timedScalarMonitoringParameters;
+
     }
 
     /**
@@ -138,4 +139,5 @@ public class NSysMonConfig {
     public Map<String, Object> getTimedScalarMonitoringParameters() {
         return timedScalarMonitoringParameters;
     }
+
 }

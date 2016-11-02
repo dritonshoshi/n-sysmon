@@ -1,6 +1,7 @@
 package com.nsysmon.measure.scalar;
 
 import com.ajjpj.afoundation.collection.immutable.AOption;
+import com.nsysmon.NSysMon;
 import com.nsysmon.data.AScalarDataPoint;
 
 import java.io.BufferedReader;
@@ -13,11 +14,6 @@ public class SystemLoadOneMinuteMeasurer implements AScalarMeasurer {
     private static final String IDENT_LOAD_1_MIN = "Load";
 
     private final File procFile = new File("/proc/loadavg");
-    private final boolean isWindows;
-
-    public SystemLoadOneMinuteMeasurer(){
-        isWindows = System.getProperty("os.name").toLowerCase().contains("win");
-    }
 
     @Override public void prepareMeasurements(Map<String, Object> mementos) {
     }
@@ -25,7 +21,7 @@ public class SystemLoadOneMinuteMeasurer implements AScalarMeasurer {
     @Override
     public void contributeMeasurements(Map<String, AScalarDataPoint> result, long timestamp, Map<String, Object> mementos) throws IOException {
         //this measurement isn't working on windows
-        if (isWindows){
+        if (NSysMon.isWindows()){
             return;
         }
 

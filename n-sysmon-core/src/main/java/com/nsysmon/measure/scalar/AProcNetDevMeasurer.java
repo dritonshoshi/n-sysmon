@@ -2,6 +2,7 @@ package com.nsysmon.measure.scalar;
 
 import com.ajjpj.afoundation.collection.immutable.AOption;
 import com.ajjpj.afoundation.io.AFile;
+import com.nsysmon.NSysMon;
 import com.nsysmon.data.AScalarDataPoint;
 
 import java.io.IOException;
@@ -25,15 +26,10 @@ public class AProcNetDevMeasurer implements AScalarMeasurer {
     private static final String KEY_SUFFIX_SENT_PACKETS = ":sent-pkt";
     private static final String KEY_SUFFIX_COLLISIONS = ":collisions";
     private static final Pattern PATTERN_1 = Pattern.compile("\\s+");
-    private final boolean isWindows;
-
-    public AProcNetDevMeasurer(){
-        isWindows = System.getProperty("os.name").toLowerCase().contains("win");
-    }
 
     @Override public void prepareMeasurements(Map<String, Object> mementos) throws Exception {
         //this measurement isn't working on windows
-        if (isWindows){
+        if (NSysMon.isWindows()){
             return;
         }
         mementos.put(KEY_MEMENTO, createSnapshot());
@@ -41,7 +37,7 @@ public class AProcNetDevMeasurer implements AScalarMeasurer {
 
     @Override public void contributeMeasurements(Map<String, AScalarDataPoint> data, long timestamp, Map<String, Object> mementos) throws Exception {
         //this measurement isn't working on windows
-        if (isWindows){
+        if (NSysMon.isWindows()){
             return;
         }
         final Snapshot prev = (Snapshot) mementos.get(KEY_MEMENTO);

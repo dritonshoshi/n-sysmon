@@ -26,6 +26,9 @@ public class NSysMon {
         return NSysMonInstanceHolder.INSTANCE;
     }
 
+    public static boolean isWindows(){
+        return System.getProperty("os.name").toLowerCase().contains("win");
+    }
     /**
      * this class has the sole purpose of providing really lazy init of the singleton instance
      */

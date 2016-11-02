@@ -3,6 +3,7 @@ package com.nsysmon.measure.scalar;
 import com.ajjpj.afoundation.collection.immutable.AOption;
 import com.ajjpj.afoundation.function.AFunction1;
 import com.ajjpj.afoundation.io.AFile;
+import com.nsysmon.NSysMon;
 import com.nsysmon.data.AScalarDataPoint;
 
 import java.io.IOException;
@@ -30,15 +31,10 @@ public class ACpuUtilizationMeasurer implements AScalarMeasurer {
     public static final String KEY_ALL_USED = KEY_PREFIX + "all-used";
     public static final String KEY_PREFIX_MHZ = KEY_PREFIX + "freq-mhz:";
     public static final String KEY_SELF_KERNEL = KEY_PREFIX + "self-kernel";
-    private final boolean isWindows;
-
-    public ACpuUtilizationMeasurer(){
-        isWindows = System.getProperty("os.name").toLowerCase().contains("win");
-    }
 
     @Override public void prepareMeasurements(Map<String, Object> mementos) throws IOException {
         //this measurement isn't working on windows
-        if (isWindows){
+        if (NSysMon.isWindows()){
            return;
         }
         mementos.put(KEY_MEMENTO, createSnapshot());
@@ -57,7 +53,7 @@ public class ACpuUtilizationMeasurer implements AScalarMeasurer {
 
     @Override public void contributeMeasurements(Map<String, AScalarDataPoint> data, long timestamp, Map<String, Object> mementos) throws IOException {
         //this measurement isn't working on windows
-        if (isWindows){
+        if (NSysMon.isWindows()){
             fillForWindows(data, timestamp, mementos);
             return;
         }
