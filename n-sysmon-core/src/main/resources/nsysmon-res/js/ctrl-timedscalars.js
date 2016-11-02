@@ -6,8 +6,8 @@ angular.module('NSysMonApp').controller('CtrlTimedScalars', function($scope, $ti
             "margin": {
               "top": 20,
               "right": 20,
-              "bottom": 20,
-              "left": 40
+              "bottom": 40,
+              "left": 60
             },
             color: d3.scale.category10().range(),
             useInteractiveGuideline: true,
@@ -19,13 +19,14 @@ angular.module('NSysMonApp').controller('CtrlTimedScalars', function($scope, $ti
                     return d3.time.format('%m.%d %H:%M:%S')(new Date(d))
                 },
                 showMaxMin: false,
-                axisLabel: "Time"
+                axisLabel: "Time",
+                rotateLabels: "-10",
             },
             "x2Axis": {
                tickFormat: function(d) {
-                    return d3.time.format('%m.%d %H:%M:%S')(new Date(d))
+                    return d3.time.format('%H:%M:%S')(new Date(d))
                 },
-                showMaxMin: false
+                showMaxMin: false,
             },
             "yAxis": {
               "axisLabel": "Value",
