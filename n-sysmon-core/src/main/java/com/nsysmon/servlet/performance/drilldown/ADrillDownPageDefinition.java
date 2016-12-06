@@ -16,12 +16,12 @@ public class ADrillDownPageDefinition extends AAbstractNsysmonPerformancePageDef
     private static final int MILLION = 1_000_000;
 
     private static final List<ColDef> colDefs = Arrays.asList(
-            new ColDef("%", true, 1, ColWidth.Medium),
-            new ColDef("#", false, 2, ColWidth.Long),
-            new ColDef("total ms", false, 0, ColWidth.Long),
-            new ColDef("avg ms", false, 0, ColWidth.Medium),
-            new ColDef("min ms", false, 0, ColWidth.Medium),
-            new ColDef("max ms", false, 0, ColWidth.Medium)
+            new ColDef("%", true, 1, ColWidth.Medium, false),
+            new ColDef("#", false, 2, ColWidth.Long, false),
+            new ColDef("total ms", false, 0, ColWidth.Long, false),
+            new ColDef("avg ms", false, 0, ColWidth.Medium, false),
+            new ColDef("min ms", false, 0, ColWidth.Medium, false),
+            new ColDef("max ms", false, 0, ColWidth.Medium, false)
     );
 
     private final boolean initiallyStarted;

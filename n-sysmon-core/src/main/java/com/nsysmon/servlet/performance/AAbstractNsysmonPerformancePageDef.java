@@ -89,6 +89,9 @@ public abstract class AAbstractNsysmonPerformancePageDef implements APresentatio
         json.writeKey("isPercentage");
         json.writeBooleanLiteral(colDef.isPercentage);
 
+        json.writeKey("isTimestamp");
+        json.writeBooleanLiteral(colDef.isTimestamp);
+
         json.writeKey("numFracDigits");
         json.writeNumberLiteral(colDef.numFracDigits, 0);
 
@@ -171,14 +174,16 @@ public abstract class AAbstractNsysmonPerformancePageDef implements APresentatio
     protected static class ColDef {
         public final String name;
         public final boolean isPercentage;
+        public final boolean isTimestamp;
         public final int numFracDigits;
         public final ColWidth width;
 
-        public ColDef(String name, boolean isPercentage, int numFracDigits, ColWidth width) {
+        public ColDef(String name, boolean isPercentage, int numFracDigits, ColWidth width, boolean isTimestamp) {
             this.name = name;
             this.isPercentage = isPercentage;
             this.numFracDigits = numFracDigits;
             this.width = width;
+            this.isTimestamp = isTimestamp;
         }
     }
 

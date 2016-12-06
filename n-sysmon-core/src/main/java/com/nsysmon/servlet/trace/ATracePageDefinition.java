@@ -29,10 +29,10 @@ public class ATracePageDefinition extends AAbstractNsysmonPerformancePageDef imp
     private final ATraceCollectingDataSink collector;
 
     private static final List<ColDef> colDefs = Arrays.asList(
-            new ColDef("%", true, 1, ColWidth.Medium),
-            new ColDef("total &mu;s", false, 0, ColWidth.Long),
-            new ColDef("self &mu;s", false, 0, ColWidth.Long),
-            new ColDef("start @", false, 0, ColWidth.Long)
+            new ColDef("%", true, 1, ColWidth.Medium, false),
+            new ColDef("total &mu;s", false, 0, ColWidth.Long, false),
+            new ColDef("self &mu;s", false, 0, ColWidth.Long, false),
+            new ColDef("start @", false, 0, ColWidth.Long, true)
     );
 
 

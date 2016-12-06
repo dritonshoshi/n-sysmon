@@ -15,12 +15,12 @@ public abstract class ABottomUpPageDefinition extends AAbstractNsysmonPerformanc
     private volatile ABottomUpDataSink collector;
 
     public static final List<ColDef> COL_DEFS = Arrays.asList(
-            new ColDef("%", true, 1, ColWidth.Medium),
-            new ColDef("%local", false, 1, ColWidth.Medium),
-            new ColDef("#calls", false, 0, ColWidth.Medium),
-            new ColDef("avg ms", false, 0, ColWidth.Medium),
-            new ColDef("min ms", false, 0, ColWidth.Medium),
-            new ColDef("max ms", false, 0, ColWidth.Medium)
+            new ColDef("%", true, 1, ColWidth.Medium, false),
+            new ColDef("%local", false, 1, ColWidth.Medium, false),
+            new ColDef("#calls", false, 0, ColWidth.Medium, false),
+            new ColDef("avg ms", false, 0, ColWidth.Medium, false),
+            new ColDef("min ms", false, 0, ColWidth.Medium, false),
+            new ColDef("max ms", false, 0, ColWidth.Medium, false)
     );
 
     public static final int MILLION = 1000*1000;

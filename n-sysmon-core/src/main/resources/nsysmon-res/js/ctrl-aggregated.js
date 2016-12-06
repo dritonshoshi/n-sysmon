@@ -551,6 +551,10 @@ angular.module('NSysMonApp').controller('CtrlAggregated', function($scope, $log,
                     dataCols += '<div class="aprogress-background"><div class="aprogress-bar" style="' + $scope.progressWidthStyle(curNode.data[revIdx(colIdx)]) + '">' + formattedValue + '</div></div>';
                 else
                     dataCols += '<div class="subdued-progress-background">' + formattedValue + '</div>';
+            }else if(curCol.isTimestamp) {
+                //console.log(new Date((new Date().getTime() + curNode.data[revIdx(colIdx)])).toLocaleTimeString());
+                var timeString = new Date((new Date().getTime() + curNode.data[revIdx(colIdx)])).toLocaleTimeString();
+                dataCols += '<span title="' + timeString + '">' + formattedValue + '</span>';
             }
             else {
                 dataCols += formattedValue;
@@ -575,6 +579,24 @@ angular.module('NSysMonApp').controller('CtrlAggregated', function($scope, $log,
         result += htmlForChildrenDiv(curNode);
 
         return result;
+    }
+
+    function secondsToTime(secs) {
+        secs = Math.round(secs/1000);
+        var hours = Math.floor(secs / (60 * 60));
+
+        var divisor_for_minutes = secs % (60 * 60);
+        var minutes = Math.floor(divisor_for_minutes / 60);
+
+        var divisor_for_seconds = divisor_for_minutes % 60;
+        var seconds = Math.ceil(divisor_for_seconds);
+
+        var obj = {
+            "h": hours,
+            "m": minutes,
+            "s": seconds
+        };
+        return obj;
     }
 
     function renderDisplayNameForNode(curNode){

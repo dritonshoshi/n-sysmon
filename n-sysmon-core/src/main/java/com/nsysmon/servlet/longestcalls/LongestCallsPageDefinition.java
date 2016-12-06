@@ -25,10 +25,10 @@ public class LongestCallsPageDefinition extends AAbstractNsysmonPerformancePageD
     private final String findRegEx;
 
     private static final List<ColDef> colDefs = Arrays.asList(
-            new ColDef("%", true, 1, ColWidth.Medium),
-            new ColDef("total µs", false, 0, ColWidth.Long),
-            new ColDef("self µs", false, 0, ColWidth.Long),
-            new ColDef("start @", false, 0, ColWidth.Long)
+            new ColDef("%", true, 1, ColWidth.Medium, false),
+            new ColDef("total µs", false, 0, ColWidth.Long, false),
+            new ColDef("self µs", false, 0, ColWidth.Long, false),
+            new ColDef("start @", false, 0, ColWidth.Long, true)
     );
 
 
