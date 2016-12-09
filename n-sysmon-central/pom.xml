@@ -40,6 +40,11 @@
 
     <dependencies>
         <dependency>
+            <groupId>com.github.dritonshoshi</groupId>
+            <artifactId>n-sysmon-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.mongodb</groupId>
             <artifactId>mongo-java-driver</artifactId>
             <version>${mongodb.version}</version>

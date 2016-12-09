@@ -1,8 +1,8 @@
 package com.nsysmon.central;
 
 import com.google.gson.Gson;
-import com.nsysmon.central.transfer.TransferMeasurementRequest;
-import com.nsysmon.central.transfer.TransferMeasurementResponse;
+import com.nsysmon.datasink.transfer.types.TransferMeasurementRequest;
+import com.nsysmon.datasink.transfer.types.TransferMeasurementResponse;
 import org.apache.http.client.fluent.Content;
 import org.apache.http.client.fluent.Request;
 import org.apache.http.entity.StringEntity;

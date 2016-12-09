@@ -6,13 +6,15 @@ import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
 import com.mongodb.MongoClient;
 import com.mongodb.util.JSON;
-import com.nsysmon.central.transfer.TransferMeasurementRequest;
-import com.nsysmon.central.transfer.TransferMeasurementResponse;
+import com.nsysmon.central.queries.Overview;
+import com.nsysmon.datasink.transfer.types.TransferMeasurementRequest;
+import com.nsysmon.datasink.transfer.types.TransferMeasurementResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import spark.Request;
 
 import static spark.Spark.before;
+import static spark.Spark.get;
 import static spark.Spark.port;
 import static spark.Spark.post;
 import static spark.Spark.staticFileLocation;
@@ -26,6 +28,7 @@ public class HelloServer {
 
         //FIXME currently no MongoCredential credential = MongoCredential.createCredential("userName", "n-sysmon", "password".toCharArray());
         //FIXME currently no authentification! MongoClient mongoClient = new MongoClient(new ServerAddress("localhost", 27017), Arrays.asList(credential));
+        //TODO make server and port configurable
         MongoClient mongoClient = new MongoClient("localhost", 27017);
         DB db = mongoClient.getDB("nsysmon");
         collection = db.getCollection("measurements");
@@ -49,6 +52,7 @@ public class HelloServer {
         Gson gson = new Gson();
 
         post("/transferMeasurement", (request, response) -> processRequestForJsonCalc(request), gson::toJson);
+        get("/getDataOverview", (request, response) -> new Overview(gson, collection).process(request), gson::toJson);
 
     }
 
@@ -56,11 +60,9 @@ public class HelloServer {
         Gson gson = new Gson();
         TransferMeasurementRequest transferRequest = gson.fromJson(request.body(), TransferMeasurementRequest.class);
 
+        System.out.println(transferRequest.getDataString().substring(0, Math.min(50, transferRequest.getDataString().length()-1)));
+
         DBObject doc = (DBObject) JSON.parse(transferRequest.getDataString());
-//        BasicDBObject doc = new BasicDBObject("name", "MongoDB")
-//                .append("type", "database")
-//                .append("count", 1)
-//                .append("info", new BasicDBObject("json", transferRequest.getDataString()));
         collection.insert(doc);
 
         System.out.println("Entries in db: " + collection.find().count());

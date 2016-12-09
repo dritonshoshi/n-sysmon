@@ -1,4 +1,4 @@
-package com.nsysmon.central.transfer;
+package com.nsysmon.datasink.transfer.types;
 
 public class TransferMeasurementRequest {
     private String dataString;
