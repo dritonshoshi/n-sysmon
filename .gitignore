@@ -5,3 +5,4 @@ tomcat.*
 mongo
 *.db
 n-sysmon-central-web/node_nodule
+*.log

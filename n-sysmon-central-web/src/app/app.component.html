@@ -1,6 +1,9 @@
 <h1>
   {{title}}
 </h1>
-{{data == undefined ? "": data.totalDataEntriesInDb}}
+Total: {{data == undefined ? "?": data.totalDataEntriesInDb}}
+<ul>
+<li *ngFor="let item of data.entriesByType | keys">{{item.key}}: {{item.value}}</li>
+</ul>
 <hr>
-{{getData()}}
+<!--{{getData()}}-->

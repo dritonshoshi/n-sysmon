@@ -1,6 +1,7 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, Pipe, PipeTransform} from '@angular/core';
 import {Http, Response} from '@angular/http';
 import {PartialObserver} from "rxjs/Observer";
+import {OverviewResponse} from "./overviewresponse";
 import 'rxjs/add/operator/map'
 
 @Component({
@@ -10,7 +11,7 @@ import 'rxjs/add/operator/map'
 })
 export class AppComponent implements OnInit {
     private title: string;
-    private data:any;
+    private data:OverviewResponse = new OverviewResponse;
 
     constructor(private http: Http) {
     };
@@ -26,4 +27,15 @@ export class AppComponent implements OnInit {
         return JSON.stringify(this.data);
     }
 
+}
+
+@Pipe({name: 'keys'})
+export class KeysPipe implements PipeTransform {
+    transform(value, args:string[]) : any {
+        let keys = [];
+        for (let key in value) {
+            keys.push({key: key, value: value[key]});
+        }
+        return keys;
+    }
 }
