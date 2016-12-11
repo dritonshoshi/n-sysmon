@@ -1,0 +1,7 @@
+<button (click)="reloadDataFromServer()">Reload Data</button>
+
+
+<!--{{dataAsJSON()}}-->
+<ul>
+    <li *ngFor="let item of _data.entries">{{item.identifier}}</li>
+</ul>

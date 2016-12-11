@@ -21,7 +21,7 @@
         <apache.version>4.5.2</apache.version>
         <hsqldb.version>2.3.2</hsqldb.version>
         <log4j.version>2.4.1</log4j.version>
-        <mongodb.version>2.13.3</mongodb.version>
+        <mongodb.version>3.0.4</mongodb.version>
     </properties>
 
     <build>
@@ -51,7 +51,7 @@
         </dependency>
         <dependency>
             <groupId>org.mongodb</groupId>
-            <artifactId>bson</artifactId>
+            <artifactId>mongodb-driver-async</artifactId>
             <version>${mongodb.version}</version>
         </dependency>
         <dependency>

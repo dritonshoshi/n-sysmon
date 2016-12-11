@@ -3,29 +3,40 @@ package com.nsysmon.datasink.transfer;
 import com.google.gson.Gson;
 import com.nsysmon.data.AHierarchicalDataRoot;
 import com.nsysmon.datasink.ADataSink;
-import com.nsysmon.datasink.transfer.types.TransferMeasurementRequest;
-import org.apache.http.HttpEntity;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
-public class TransmittingDatasink implements ADataSink {
+public class TransmittingDataSink implements ADataSink {
 
-    private List<AHierarchicalDataRoot> toTransmit;
-    private Gson gson = new Gson();
+    private final List<AHierarchicalDataRoot> toTransmit = new ArrayList<>();;
+    private final Gson gson = new Gson();
     private final CloseableHttpClient httpClient = HttpClients.createDefault(); //TODO make timeout values configurable
     private final String uri;
+    private final ScheduledExecutorService sendingExecutorService;
+    private final long maxWaittimeInMs = 1000;
+    private final TransmittingService transmittingService;
 
-    public TransmittingDatasink(String uri) {
-        toTransmit = new ArrayList<>();
+    public TransmittingDataSink(String uri) {
         this.uri = uri;
+        transmittingService = new TransmittingService();
+
+        sendingExecutorService = Executors.newSingleThreadScheduledExecutor();
+        sendingExecutorService.scheduleAtFixedRate((Runnable) () -> {
+            try {
+                transmittingService.transmit(toTransmit, uri, gson, httpClient);
+            } catch (IOException e) {
+                //TODO TKT
+                e.printStackTrace();
+            }
+        }, 0, maxWaittimeInMs, TimeUnit.MILLISECONDS);
+
     }
 
     @Override
@@ -49,24 +60,8 @@ public class TransmittingDatasink implements ADataSink {
     }
 
     private void nodgeTransmitter() throws IOException {
-        //TODO perform transmition
-
-        Iterator<AHierarchicalDataRoot> iterator = toTransmit.iterator();
-        while (iterator.hasNext()) {
-            AHierarchicalDataRoot data = iterator.next();
-            final HttpPost httpPost = new HttpPost(uri);
-
-            HttpEntity entity = new StringEntity(gson.toJson(new TransferMeasurementRequest(gson.toJson(data))));
-            httpPost.setEntity(entity);
-
-            final CloseableHttpResponse response = httpClient.execute(httpPost);
-            try {
-                //TODO response with commands for monitoring this app?!
-            } finally {
-                response.close();
-            }
-            iterator.remove();
-        }
+        //TODO perform transmittion
+        //TODO remove?
     }
 
     private synchronized void storeDataForTransmittion(AHierarchicalDataRoot data) {
