@@ -22,6 +22,7 @@ import org.bson.Document;
 import spark.Request;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -77,6 +78,7 @@ public class HelloServer {
         post("/transferMeasurement", (request, response) -> processRequestForJsonCalc(request), gson::toJson);
         get("/getDataOverview", (request, response) -> new Overview(gson, collectionMeasurements, collectionRoots).process(request), gson::toJson);
         get("/getAllMeasurements", (request, response) -> new AllMeasurements(gson, collectionMeasurements, collectionRoots).process(request), gson::toJson);
+        post("/getDirectChildrenForMeasurement", (request, response) -> new AllMeasurements(gson, collectionMeasurements, collectionRoots).getDirectChildrenForMeasurement(request), gson::toJson);
 
     }
 
@@ -87,7 +89,7 @@ public class HelloServer {
 
 //        System.out.println(transferRequest.getDataString().substring(0, Math.min(50, transferRequest.getDataString().length()-1)));
 
-        // System.out.println("Start "+new Date());
+         System.out.println("Start "+new Date());
         List<Document> children = new ArrayList<>();
         for (InnerTransferMeasurementsRequest transferRequest : transferRequests.getEntries()) {
             final Object idRoot = addRoot(gson, transferRequest);
@@ -102,8 +104,8 @@ public class HelloServer {
         }
         collectionMeasurements.insertMany(children, (aVoid, throwable) -> {
             collectionMeasurements.count((aLong, throwable1) -> {
-                // System.out.println("\tEntries in db: " + aLong);
-                // System.out.println("End "+new Date());
+                 System.out.println("\tEntries in db: " + aLong);
+                 System.out.println("End "+new Date());
             });
         });
 

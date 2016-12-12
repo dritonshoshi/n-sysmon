@@ -16,6 +16,7 @@ export class AllMeasurementsComponent implements OnInit {
     }
 
     ngOnInit() {
+        //this.reloadDataFromServer();
     }
 
     public reloadDataFromServer(): void {

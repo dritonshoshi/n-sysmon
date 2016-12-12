@@ -5,16 +5,18 @@ import {HttpModule} from '@angular/http';
 
 import {AppComponent} from './app.component';
 import {AllMeasurementsComponent} from './all-measurements/all-measurements.component';
-import {MeasurementSourceFilterComponent} from './measurement-source-filter/measurement-source-filter.component';
 import {KeysPipe} from "./pipes/keys.pipe";
 import {MeasurementSourceFilterHolderService} from "./services/measurement-source-filter-holder.service";
+import {MeasurementSourceFilterComponent} from "./components/measurement-source-filter/measurement-source-filter.component";
+import {MeasurementEntryComponent} from "./components/measurement-entry/measurement-entry.component";
 
 @NgModule({
     declarations: [
         AppComponent,
         KeysPipe,
         AllMeasurementsComponent,
-        MeasurementSourceFilterComponent
+        MeasurementSourceFilterComponent,
+        MeasurementEntryComponent
     ],
     imports: [
         BrowserModule,

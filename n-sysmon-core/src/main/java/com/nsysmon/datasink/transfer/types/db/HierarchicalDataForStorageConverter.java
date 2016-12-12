@@ -16,15 +16,17 @@ public class HierarchicalDataForStorageConverter {
     }
 
     public static HierarchicalDataForStorage fromChild(AHierarchicalData data, long level) {
-        return new HierarchicalDataForStorage(data.getIdentifier(), data.getStartTimeMillis(), data.getParameters(), data.getChildren().isEmpty(), level, Long.toString(level), null);
+        return new HierarchicalDataForStorage(data.getIdentifier(), data.getStartTimeMillis(), data.getParameters(), data.getChildren().isEmpty(), level, Long.toString(level), null, null);
     }
 
-    public static void fromChilds(List<AHierarchicalData> dataEntries, List<HierarchicalDataForStorage> rc, long level, String localIdentifier, String parentIdentifier) {
+    public static void fromChilds(List<AHierarchicalData> dataEntries, List<HierarchicalDataForStorage> rc, long level, String parentIdentifier) {
         int cnt = 0;
+        String localIdentifier;
         for (AHierarchicalData dataEntry : dataEntries) {
-            HierarchicalDataForStorage result = new HierarchicalDataForStorage(dataEntry.getIdentifier(), dataEntry.getStartTimeMillis(), dataEntry.getParameters(), dataEntry.getChildren().isEmpty(), level, localIdentifier, parentIdentifier);
+            localIdentifier = parentIdentifier+ "." + cnt++;
+            HierarchicalDataForStorage result = new HierarchicalDataForStorage(dataEntry.getIdentifier(), dataEntry.getStartTimeMillis(), dataEntry.getParameters(), dataEntry.getChildren().isEmpty(), level, localIdentifier, parentIdentifier, null);
             rc.add(result);
-            fromChilds(dataEntry.getChildren(), rc, level + 1, localIdentifier + "." + cnt++, localIdentifier);
+            fromChilds(dataEntry.getChildren(), rc, level + 1, localIdentifier);
         }
     }
 }

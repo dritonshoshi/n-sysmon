@@ -12,6 +12,7 @@ import com.nsysmon.central.common.NSysmonRequestProcessor;
 import com.nsysmon.datasink.transfer.types.db.HierarchicalDataForStorage;
 import org.bson.Document;
 import org.bson.conversions.Bson;
+import org.bson.types.ObjectId;
 import spark.Request;
 
 import java.util.ArrayList;
@@ -56,7 +57,13 @@ public class AllMeasurements extends NSysmonRequestProcessor<AllMeasurementsResp
             @Override
             public void apply(Document data) {
                 //TODO add this to response data.remove("_id");
+                String tmp1 = data.get("idRoot").toString();;
+                String tmp2 = data.get("_id").toString();
+                data.remove("_id");
+                data.remove("idRoot");
                 HierarchicalDataForStorage fromJson = gson.fromJson(JSON.serialize(data), HierarchicalDataForStorage.class);
+                fromJson.setIdRoot(tmp1);
+                fromJson.set_id(tmp2);
                 entries.add(fromJson);
 //                System.out.println();
             }
@@ -64,6 +71,53 @@ public class AllMeasurements extends NSysmonRequestProcessor<AllMeasurementsResp
             @Override
             public void onResult(Void result, Throwable t) {
                 response.setEntries(entries);
+                marker.countDown();
+                if (t != null){
+                    t.printStackTrace(System.err);
+                }
+            }
+        });
+    }
+
+    public AllMeasurementsDirectChildrenResponse getDirectChildrenForMeasurement(Request request) {
+        AllMeasurementsDirectChildrenRequest parsedRequest = gson.fromJson(request.body(), AllMeasurementsDirectChildrenRequest.class);
+        AllMeasurementsDirectChildrenResponse response = new AllMeasurementsDirectChildrenResponse();
+
+        CountDownLatch marker = new CountDownLatch(1);
+
+        getChildren(parsedRequest, marker, response);
+
+        waitForLatch(marker);
+
+        return response;
+    }
+
+    private void getChildren(AllMeasurementsDirectChildrenRequest parsedRequest, CountDownLatch marker, AllMeasurementsDirectChildrenResponse response) {
+        Bson filter = new BasicDBObject("parentIdentifier", parsedRequest.localIdentifier)
+                .append("idRoot", new ObjectId(parsedRequest.idRoot));
+//        Bson filter = new BasicDBObject("idRoot", new ObjectId(parsedRequest.idRoot))
+//                .append("parentIdentifier", parsedRequest.localIdentifier);
+        //TODO are we missing a dataentry to the direct parent? .append("id", parsedRequest.idMeasurement);
+        List<HierarchicalDataForStorage> entries = new ArrayList<>();
+
+        FindIterable findIterable = collectionMeasurements.find(filter);
+        findIterable.forEach(new Block<Document>() {
+            @Override
+            public void apply(Document data) {
+                //TODO add this to response: data.remove("_id");
+                String tmp1 = data.get("idRoot").toString();
+                String tmp2 = data.get("_id").toString();
+                data.remove("_id");
+                data.remove("idRoot");
+                HierarchicalDataForStorage fromJson = gson.fromJson(JSON.serialize(data), HierarchicalDataForStorage.class);
+                fromJson.setIdRoot(tmp1);
+                fromJson.set_id(tmp2);
+                entries.add(fromJson);
+            }
+        }, new SingleResultCallback<Void>() {
+            @Override
+            public void onResult(Void result, Throwable t) {
+                response.getChildren().addAll(entries);
                 marker.countDown();
                 if (t != null){
                     t.printStackTrace(System.err);

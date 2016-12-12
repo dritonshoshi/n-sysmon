@@ -1,0 +1,8 @@
+<div>
+    <div (click)="loadChildren(measurement)">[+/-] {{measurement.identifier}}</div><br/>
+    <ul>
+        <li *ngFor="let item of measurement.children">
+            <app-measurement-entry [measurement]="item"></app-measurement-entry>
+        </li>
+    </ul>
+</div>

@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import {MeasurementSourceFilterHolderService} from "../services/measurement-source-filter-holder.service";
+import {MeasurementSourceFilterHolderService} from "../../services/measurement-source-filter-holder.service";
 
 @Component({
   selector: 'app-measurement-source-filter',

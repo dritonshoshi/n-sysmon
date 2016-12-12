@@ -34,7 +34,7 @@ public class TransmittingService {
             iterator.remove();
 
             List<HierarchicalDataForStorage> rc = new ArrayList<>();
-            HierarchicalDataForStorageConverter.fromChilds(data.getRootNode().getChildren(), rc, 1, "1", null);
+            HierarchicalDataForStorageConverter.fromChilds(data.getRootNode().getChildren(), rc, 1, "0");
             //TODO merge root into rootstorage
             rc.add(HierarchicalDataForStorageConverter.fromChild(data.getRootNode(), 0));
             dataToTransmitInThisTurn.add(new InnerTransferMeasurementsRequest(HierarchicalDataForStorageConverter.fromRoot(data), rc));
