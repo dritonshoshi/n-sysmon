@@ -26,21 +26,25 @@ export class MeasurementEntryComponent implements OnInit, AfterViewInit {
 
     public loadChildren(selectedMeasurement: HierarchicalDataForStorage): void {
         console.log("loadChildren called");
-        console.log("selectedMeasurement:"+JSON.stringify(selectedMeasurement));
+        console.log("selectedMeasurement:" + JSON.stringify(selectedMeasurement));
 
-        if (selectedMeasurement.children == undefined || selectedMeasurement.children.length > 0){
+        if (selectedMeasurement.children != undefined && selectedMeasurement.children.length > 0) {
             selectedMeasurement.children = [];
-        }
-        let toSend:AllMeasurementsDirectChildrenRequest = new AllMeasurementsDirectChildrenRequest(selectedMeasurement);
+        } else {
+            if (!selectedMeasurement.hasChildren){
+                //this entry has no children, so why send a request?
+            }
+            let toSend: AllMeasurementsDirectChildrenRequest = new AllMeasurementsDirectChildrenRequest(selectedMeasurement);
 
-        console.log("toSend:"+JSON.stringify(toSend));
-        this.http.post("http://localhost:4567/getDirectChildrenForMeasurement", JSON.stringify(toSend))
-            .map(res => res.json())
-            .subscribe(data => {
-                console.log("loadChildren...callback");
-                console.log("   "+JSON.stringify(data.children));
-                selectedMeasurement.children = data.children;
-            });
+            console.log("toSend:" + JSON.stringify(toSend));
+            this.http.post("http://localhost:4567/getDirectChildrenForMeasurement", JSON.stringify(toSend))
+                .map(res => res.json())
+                .subscribe(data => {
+                    console.log("loadChildren...callback");
+                    console.log("   " + JSON.stringify(data.children));
+                    selectedMeasurement.children = data.children;
+                });
+        }
     }
 
 }

@@ -1,8 +1,23 @@
-<div>
-    <div (click)="loadChildren(measurement)">[+/-] {{measurement.identifier}}</div><br/>
-    <ul>
-        <li *ngFor="let item of measurement.children">
-            <app-measurement-entry [measurement]="item"></app-measurement-entry>
-        </li>
-    </ul>
+<div style="margin-left: 20px">
+    <div (click)="loadChildren(measurement)" style="float:left;">
+        <span *ngIf="measurement.hasChildren && (measurement.children == undefined || measurement.children.length == 0)">
+            <i class="fa fa-plus-square-o" aria-hidden="true"></i>
+        </span>
+        <span *ngIf="measurement.hasChildren && (measurement.children != undefined && measurement.children.length > 0)">
+            <i class="fa fa-minus-square-o" aria-hidden="true"></i>
+        </span>
+        <span *ngIf="!measurement.hasChildren">
+            <i class="fa fa-fw" aria-hidden="true">&nbsp;</i>
+        </span>
+        {{measurement.identifier}}
+    </div>
+    <div style="float:right;margin-right: 1em;">
+        {{measurement.startTimeMillis}}
+    </div>
+    <!--TODO add other values-->
+    <!--<div style="float:right;">-->
+        <!--{{measurement.identifier}}-->
+    <!--</div>-->
+    <div style="clear:both"></div>
+    <app-measurement-entry *ngFor="let item of measurement.children" [measurement]="item"></app-measurement-entry>
 </div>

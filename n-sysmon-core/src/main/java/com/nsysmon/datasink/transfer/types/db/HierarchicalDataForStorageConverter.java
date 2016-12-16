@@ -16,15 +16,16 @@ public class HierarchicalDataForStorageConverter {
     }
 
     public static HierarchicalDataForStorage fromChild(AHierarchicalData data, long level) {
-        return new HierarchicalDataForStorage(data.getIdentifier(), data.getStartTimeMillis(), data.getParameters(), data.getChildren().isEmpty(), level, Long.toString(level), null, null);
+        return new HierarchicalDataForStorage(data.getIdentifier(), data.getStartTimeMillis(), data.getDurationNanos(), data.getParameters(), !data.getChildren().isEmpty(), level, Long.toString(level), null, null);
     }
 
     public static void fromChilds(List<AHierarchicalData> dataEntries, List<HierarchicalDataForStorage> rc, long level, String parentIdentifier) {
         int cnt = 0;
         String localIdentifier;
         for (AHierarchicalData dataEntry : dataEntries) {
-            localIdentifier = parentIdentifier+ "." + cnt++;
-            HierarchicalDataForStorage result = new HierarchicalDataForStorage(dataEntry.getIdentifier(), dataEntry.getStartTimeMillis(), dataEntry.getParameters(), dataEntry.getChildren().isEmpty(), level, localIdentifier, parentIdentifier, null);
+            localIdentifier = parentIdentifier + "." + cnt++;
+            //TODO don't use , data.getDurationNanos() remove the duration of the childs and add it as <self>, too.
+            HierarchicalDataForStorage result = new HierarchicalDataForStorage(dataEntry.getIdentifier(), dataEntry.getStartTimeMillis(), dataEntry.getDurationNanos(), dataEntry.getParameters(), !dataEntry.getChildren().isEmpty(), level, localIdentifier, parentIdentifier, null);
             rc.add(result);
             fromChilds(dataEntry.getChildren(), rc, level + 1, localIdentifier);
         }

@@ -10,21 +10,23 @@ public class HierarchicalDataForStorage {
     private final String identifier;
     private final long startTimeMillis;
     private final Map<String, String> parameters;
-    private final boolean empty;
+    private final boolean hasChildren;
     private final long level;
+    private final long durationNanos;
     private final String localIdentifier;
     private final String parentIdentifier;//TODO
     private String idRoot;
 
-    public HierarchicalDataForStorage(String identifier, long startTimeMillis, Map<String, String> parameters, boolean empty, long level, String localIdentifier, String parentIdentifier, String idRoot) {
+    public HierarchicalDataForStorage(String identifier, long startTimeMillis, long durationNanos, Map<String, String> parameters, boolean hasChildren, long level, String localIdentifier, String parentIdentifier, String idRoot) {
         this.identifier = identifier;
         this.startTimeMillis = startTimeMillis;
         this.parameters = parameters;
-        this.empty = empty;
+        this.hasChildren = hasChildren;
         this.level = level;
         this.localIdentifier = localIdentifier;
         this.parentIdentifier = parentIdentifier;
         this.idRoot = idRoot;
+        this.durationNanos = durationNanos;
     }
 
     public void set_id(String _id) {
@@ -40,8 +42,9 @@ public class HierarchicalDataForStorage {
         return "HierarchicalDataForStorage{" +
                 "identifier='" + identifier + '\'' +
                 ", startTimeMillis=" + startTimeMillis +
+                ", durationNanos=" + durationNanos +
                 ", parameters=" + parameters +
-                ", empty=" + empty +
+                ", hasChildren=" + hasChildren +
                 ", level=" + level +
                 ", localIdentifier='" + localIdentifier + '\'' +
                 ", parentIdentifier='" + parentIdentifier + '\'' +

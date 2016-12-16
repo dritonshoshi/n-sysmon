@@ -2,6 +2,8 @@
 
 
 <!--{{dataAsJSON()}}-->
-<ul>
-    <li *ngFor="let item of _data.entries"><app-measurement-entry [measurement]="item"></app-measurement-entry></li>
-</ul>
+<!--<ul>-->
+    <!--<li *ngFor="let item of _data.entries"><app-measurement-entry [measurement]="item"></app-measurement-entry></li>-->
+<!--</ul>-->
+
+<app-measurement-entry *ngFor="let item of _data.entries" [measurement]="item"></app-measurement-entry>

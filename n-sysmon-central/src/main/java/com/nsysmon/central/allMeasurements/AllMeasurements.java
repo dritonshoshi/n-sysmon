@@ -112,6 +112,7 @@ public class AllMeasurements extends NSysmonRequestProcessor<AllMeasurementsResp
                 HierarchicalDataForStorage fromJson = gson.fromJson(JSON.serialize(data), HierarchicalDataForStorage.class);
                 fromJson.setIdRoot(tmp1);
                 fromJson.set_id(tmp2);
+                fromJson.set_id(tmp2);
                 entries.add(fromJson);
             }
         }, new SingleResultCallback<Void>() {
