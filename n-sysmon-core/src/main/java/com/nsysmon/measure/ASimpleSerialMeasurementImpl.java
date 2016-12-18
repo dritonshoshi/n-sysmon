@@ -59,6 +59,10 @@ class ASimpleSerialMeasurementImpl implements ASimpleMeasurement {
         return parameters;
     }
 
+    public AMeasurementHierarchy getHierarchy() {
+        return hierarchy;
+    }
+
     @Override
     public String toString() {
         return "ASimpleMeasurement {" + identifier + " " + parameters + "}";

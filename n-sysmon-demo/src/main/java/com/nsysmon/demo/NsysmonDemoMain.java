@@ -33,6 +33,7 @@ public class NsysmonDemoMain {
         System.out.println ("access http://localhost:8181/nsysmon for n-sysmon");
         System.out.println ("access any url starting with http://localhost:8181/content/ to simulate 'regular' system access");
         System.out.println ("access any url starting with http://localhost:8181/content/small/ to simulate 'small' system access");
+        System.out.println ("access any url starting with http://localhost:8181/content/long/ to simulate a long running measurement");
         System.out.println ();
 
         server.start();

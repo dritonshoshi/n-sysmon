@@ -9,7 +9,13 @@ import com.nsysmon.data.AHierarchicalData;
 import com.nsysmon.data.AHierarchicalDataRoot;
 import com.nsysmon.datasink.ADataSink;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 
 
 /**
@@ -145,7 +151,7 @@ public class AMeasurementHierarchyImpl implements AMeasurementHierarchy {
         final AHierarchicalData newData = new AHierarchicalData(true, measurement.getStartTimeMillis(), finishedTimestamp - measurement.getStartTimeNanos(), measurement.getIdentifier(), measurement.getParameters(), children, killedDueSize);
 
         if(unfinished.isEmpty()) {
-            // copy into a separate collection because the collection is modified in the loop
+            // use separate collection because the original collection is modified in the loop
             new ArrayList<>(collectingMeasurements).forEach(this::finish);
             isFinished = true;
             dataSink.onFinishedHierarchicalMeasurement(new AHierarchicalDataRoot(newData, startedFlows, joinedFlows, killedDueSize));
@@ -153,7 +159,41 @@ public class AMeasurementHierarchyImpl implements AMeasurementHierarchy {
         }
         else {
             childrenStack.peek().add(newData);
+//            AMeasurementHierarchy h =  getTopHierarchy(measurement.getHierarchy())
+//            new ArrayList<>(collectingMeasurements).forEach(this::finish);
+//            System.out.println(measurement);
+
+            AMeasurementHierarchy mh = measurement.getHierarchy();
+            ASimpleSerialMeasurementImpl next = measurement.getHierarchy().getUnfinished().iterator().next();
+            System.out.println(next.getIdentifier() + " "+next.getStartTimeMillis());
+//            ACollectingMeasurement m = ACollectingMeasurement.createRegular(NSysMon.get().getConfig(), mh, false, "tkt", children);
+//            tkt(m);
+//            System.out.println(m.getChildrenOfParent().size());
+
+
+//            ASimpleSerialMeasurementImpl next = measurement.getHierarchy().getUnfinished().iterator().next();
+//            System.out.println(next.getIdentifier());
+//            dataSink.onWorkingStep(new AHierarchicalDataRoot(newData, startedFlows, joinedFlows, killedDueSize));
         }
+    }
+
+    private void tkt(ACollectingMeasurement m) {
+        final List<AHierarchicalData> children = new ArrayList<>(0);
+        for(String detailIdentifier: m.getDetails().keySet()) {
+            final ACollectingMeasurement.Detail detail = m.getDetails().get(detailIdentifier);
+            children.add(new AHierarchicalData(true, m.getStartTimeMillis(), detail.getTotalNanos(), detailIdentifier, Collections.emptyMap(), Collections.emptyList(), killedDueSize));
+        }
+
+        final AHierarchicalData newData = new AHierarchicalData(m.isSerial(), m.getStartTimeMillis(), m.getTotalDurationNanos(), m.getIdentifier(), m.getParameters(), children, killedDueSize);
+        m.getChildrenOfParent().add(newData);
+    }
+
+    private AMeasurementHierarchy getTopHierarchy(AMeasurementHierarchy hierarchy) {
+        Iterator<ASimpleSerialMeasurementImpl> iterator = hierarchy.getUnfinished().iterator();
+        if (iterator.hasNext()){
+            ASimpleSerialMeasurementImpl next = iterator.next();
+        }
+        return null;
     }
 
     @Override public void finish(ASimpleParallelMeasurementImpl m) {
@@ -231,6 +271,11 @@ public class AMeasurementHierarchyImpl implements AMeasurementHierarchy {
         if(!joinedFlows.add(correlationId)) {
             log.warn("called 'joinFlow' for flow " + correlationId + " twice");
         }
+    }
+
+    @Override
+    public ArrayStack<ASimpleSerialMeasurementImpl> getUnfinished() {
+        return unfinished;
     }
 }
 

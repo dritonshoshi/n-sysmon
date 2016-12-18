@@ -4,7 +4,7 @@ import com.nsysmon.data.AHierarchicalDataRoot;
 
 import java.util.Comparator;
 
-class HierarchicalDataDurationComparator implements Comparator<AHierarchicalDataRoot> {
+public class HierarchicalDataDurationComparator implements Comparator<AHierarchicalDataRoot> {
 
     @Override
     public int compare(AHierarchicalDataRoot o1, AHierarchicalDataRoot o2) {

@@ -39,7 +39,41 @@ public class AppServlet extends HttpServlet {
         }
     }
 
-    @Override protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    @Override
+    protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        if (req.getRequestURL().toString().contains("/long")) {
+            generateLongRunning(req, resp);
+        } else if (req.getRequestURL().toString().contains("/content")) {
+            generateTestContent(req, resp);
+        }
+    }
+
+    private void generateLongRunning(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        final PrintWriter out = resp.getWriter();
+        out.println("<html><head><title>N-SysMon demo content</title></head><body>");
+        out.println("<h1>N-SysMon demo content</h1>");
+        out.println("simulating slow running content");
+
+        int maxLoops = 10;
+        int waitingTime = 1000;
+        final ASimpleMeasurement mainMeasurement = NSysMon.get().start("long running measurement", false);
+        NSysMon.get().measure("outer", m -> {
+            for (int i = 0; i < maxLoops; i++) {
+                String content = "inner " + i + "/" + maxLoops;
+                NSysMon.get().measure(content, x -> {
+                    try {
+                        Thread.sleep(waitingTime);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                });
+            }
+        });
+        out.println("<br/>done!");
+        out.println("</body></html>");
+    }
+
+    private void generateTestContent(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         boolean onlySmallTree = req.getRequestURL().toString().contains("/small");
 
         final PrintWriter out = resp.getWriter();

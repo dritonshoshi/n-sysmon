@@ -24,34 +24,67 @@ class RobustDataSinkWrapper { //TO_CONSIDER provide a means for a data sink to s
 
     private interface Strategy {
         void onStartedHierarchicalMeasurement(String identifier);
+
         void onFinishedHierarchicalMeasurement(AHierarchicalDataRoot data);
+
+        void onWorkingStep(AHierarchicalDataRoot trace);
+
+        void handleDuration(long durationNanos);
     }
 
+    private void commonOnStartedHierarchicalMeasurement(String identifier, final Strategy myStrategy) {
+        try {
+            final long start = System.nanoTime();
+            inner.onStartedHierarchicalMeasurement(identifier);
+            myStrategy.handleDuration(System.nanoTime() - start);
+        } catch (Exception e) {
+            log.warn("Disabling data sink " + inner.getClass().getName() + " because an exception occurred", e);
+            strategy = DISABLED;
+        }
+    }
+
+    private void commonOnFinishedHierarchicalMeasurement(AHierarchicalDataRoot data, final Strategy myStrategy) {
+        try {
+            final long start = System.nanoTime();
+            inner.onFinishedHierarchicalMeasurement(data);
+            myStrategy.handleDuration(System.nanoTime() - start);
+        } catch (Exception e) {
+            log.warn("Disabling data sink " + inner.getClass().getName() + " because an exception occurred", e);
+            strategy = DISABLED;
+        }
+    }
+
+    private void commonOnWorkingStep(AHierarchicalDataRoot data, final Strategy myStrategy) {
+        try {
+            final long start = System.nanoTime();
+            inner.onWorkingStep(data);
+            myStrategy.handleDuration(System.nanoTime() - start);
+        } catch (Exception e) {
+            log.warn("Disabling data sink " + inner.getClass().getName() + " because an exception occurred", e);
+            strategy = DISABLED;
+        }
+    }
+
+
     private final Strategy ENABLED = new Strategy() {
-        @Override public void onStartedHierarchicalMeasurement(String identifier) {
-            try {
-                final long start = System.nanoTime();
-                inner.onStartedHierarchicalMeasurement(identifier);
-                handleDuration(System.nanoTime() - start);
-            } catch (Exception e) {
-                log.warn("Disabling data sink " + inner.getClass().getName() + " because an exception occurred", e);
-                strategy = DISABLED;
-            }
+        @Override
+        public void onStartedHierarchicalMeasurement(String identifier) {
+            commonOnStartedHierarchicalMeasurement(identifier, this);
         }
 
-        @Override public void onFinishedHierarchicalMeasurement(AHierarchicalDataRoot data) {
-            try {
-                final long start = System.nanoTime();
-                inner.onFinishedHierarchicalMeasurement(data);
-                handleDuration(System.nanoTime() - start);
-            } catch (Exception e) {
-                log.warn("Disabling data sink " + inner.getClass().getName() + " because an exception occurred", e);
-                strategy = DISABLED;
-            }
+        @Override
+        public void onFinishedHierarchicalMeasurement(AHierarchicalDataRoot data) {
+            commonOnFinishedHierarchicalMeasurement(data, this);
         }
 
-        private void handleDuration(long durationNanos) {
-            if(durationNanos > timeoutNanos) {
+        @Override
+        public void onWorkingStep(AHierarchicalDataRoot data) {
+            commonOnWorkingStep(data, this);
+        }
+
+        @Override
+        public void handleDuration(long durationNanos) {
+            if (durationNanos > timeoutNanos) {
                 log.warn("Data sink " + inner.getClass().getName() + " timed out (took " + durationNanos + "ns)");
                 numTimeouts.incrementAndGet();
                 strategy = TIMED_OUT;
@@ -60,35 +93,28 @@ class RobustDataSinkWrapper { //TO_CONSIDER provide a means for a data sink to s
     };
 
     private final Strategy TIMED_OUT = new Strategy() {
-        @Override public void onStartedHierarchicalMeasurement(String identifier) {
-            try {
-                final long start = System.nanoTime();
-                inner.onStartedHierarchicalMeasurement(identifier);
-                handleDuration(System.nanoTime() - start);
-            } catch (Exception e) {
-                log.warn("Disabling data sink " + inner.getClass().getName() + " because an exception occurred", e);
-                strategy = DISABLED;
-            }
+        @Override
+        public void onStartedHierarchicalMeasurement(String identifier) {
+            commonOnStartedHierarchicalMeasurement(identifier, this);
         }
 
-        @Override public void onFinishedHierarchicalMeasurement(AHierarchicalDataRoot data) {
-            try {
-                final long start = System.nanoTime();
-                inner.onFinishedHierarchicalMeasurement(data);
-                handleDuration(System.nanoTime() - start);
-            } catch (Exception e) {
-                log.warn("Disabling data sink " + inner.getClass().getName() + " because an exception occurred", e);
-                strategy = DISABLED;
-            }
+        @Override
+        public void onFinishedHierarchicalMeasurement(AHierarchicalDataRoot data) {
+            commonOnFinishedHierarchicalMeasurement(data, this);
         }
 
-        private void handleDuration(long durationNanos) {
-            if(durationNanos > timeoutNanos) {
-                if(numTimeouts.incrementAndGet() >= maxNumTimeouts) {
+        @Override
+        public void onWorkingStep(AHierarchicalDataRoot data) {
+            commonOnWorkingStep(data, this);
+        }
+
+        @Override
+        public void handleDuration(long durationNanos) {
+            if (durationNanos > timeoutNanos) {
+                if (numTimeouts.incrementAndGet() >= maxNumTimeouts) {
                     log.warn("Data Sink " + inner.getClass().getName() + " timed out " + maxNumTimeouts + " times in row - permanently disabling");
                     strategy = DISABLED;
-                }
-                else {
+                } else {
                     strategy = ENABLED;
                 }
             }
@@ -96,10 +122,20 @@ class RobustDataSinkWrapper { //TO_CONSIDER provide a means for a data sink to s
     };
 
     private final Strategy DISABLED = new Strategy() {
-        @Override public void onStartedHierarchicalMeasurement(String identifier) {
+        @Override
+        public void onStartedHierarchicalMeasurement(String identifier) {
         }
 
-        @Override public void onFinishedHierarchicalMeasurement(AHierarchicalDataRoot data) {
+        @Override
+        public void onFinishedHierarchicalMeasurement(AHierarchicalDataRoot data) {
+        }
+
+        @Override
+        public void onWorkingStep(AHierarchicalDataRoot trace) {
+        }
+
+        @Override
+        public void handleDuration(long durationNanos) {
         }
     };
 
@@ -117,6 +153,10 @@ class RobustDataSinkWrapper { //TO_CONSIDER provide a means for a data sink to s
 
     public void onFinishedHierarchicalMeasurement(AHierarchicalDataRoot data) {
         strategy.onFinishedHierarchicalMeasurement(data);
+    }
+
+    public void onWorkingStep(AHierarchicalDataRoot data) {
+        strategy.onWorkingStep(data);
     }
 
     public void shutdown() {

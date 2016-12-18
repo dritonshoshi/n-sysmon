@@ -1,6 +1,7 @@
 package com.nsysmon.measure;
 
 
+import com.ajjpj.afoundation.collection.mutable.ArrayStack;
 import com.nsysmon.data.ACorrelationId;
 
 /**
@@ -18,4 +19,5 @@ public interface AMeasurementHierarchy {
 
     void onStartFlow(ACorrelationId flowId);
     void onJoinFlow(ACorrelationId flowId);
+    ArrayStack<ASimpleSerialMeasurementImpl> getUnfinished();
 }

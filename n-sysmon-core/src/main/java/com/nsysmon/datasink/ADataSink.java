@@ -9,4 +9,6 @@ import com.nsysmon.util.AShutdownable;
 public interface ADataSink extends AShutdownable {
     void onStartedHierarchicalMeasurement(String identifier);
     void onFinishedHierarchicalMeasurement(AHierarchicalDataRoot data);
+    default void onWorkingStep(AHierarchicalDataRoot trace){}
+
 }

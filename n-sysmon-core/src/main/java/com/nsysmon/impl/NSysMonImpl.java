@@ -127,6 +127,13 @@ public class NSysMonImpl implements AShutdownable, NSysMonApi {
                 }
             }
 
+            @Override
+            public void onWorkingStep(AHierarchicalDataRoot trace) {
+                for(RobustDataSinkWrapper handler: handlers) {
+                    handler.onWorkingStep(trace);
+                }
+            }
+
             @Override public void shutdown() {
             }
         };
