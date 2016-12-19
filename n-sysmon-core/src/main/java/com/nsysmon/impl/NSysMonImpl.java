@@ -18,6 +18,7 @@ import com.nsysmon.measure.AMeasureCallbackVoid;
 import com.nsysmon.measure.AMeasurementHierarchy;
 import com.nsysmon.measure.AMeasurementHierarchyImpl;
 import com.nsysmon.measure.ASimpleMeasurement;
+import com.nsysmon.measure.HierarchicalParentInfo;
 import com.nsysmon.measure.environment.AEnvironmentData;
 import com.nsysmon.measure.environment.AEnvironmentMeasurer;
 import com.nsysmon.measure.scalar.AScalarMeasurer;
@@ -128,9 +129,9 @@ public class NSysMonImpl implements AShutdownable, NSysMonApi {
             }
 
             @Override
-            public void onWorkingStep(AHierarchicalDataRoot trace) {
+            public void onWorkingStep(AHierarchicalDataRoot trace, HierarchicalParentInfo parentInfo) {
                 for(RobustDataSinkWrapper handler: handlers) {
-                    handler.onWorkingStep(trace);
+                    handler.onWorkingStep(trace, parentInfo);
                 }
             }
 

@@ -3,6 +3,7 @@ package com.nsysmon.impl;
 import com.nsysmon.config.log.NSysMonLogger;
 import com.nsysmon.data.AHierarchicalDataRoot;
 import com.nsysmon.datasink.ADataSink;
+import com.nsysmon.measure.HierarchicalParentInfo;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -27,7 +28,7 @@ class RobustDataSinkWrapper { //TO_CONSIDER provide a means for a data sink to s
 
         void onFinishedHierarchicalMeasurement(AHierarchicalDataRoot data);
 
-        void onWorkingStep(AHierarchicalDataRoot trace);
+        void onWorkingStep(AHierarchicalDataRoot trace, HierarchicalParentInfo parentInfo);
 
         void handleDuration(long durationNanos);
     }
@@ -54,10 +55,10 @@ class RobustDataSinkWrapper { //TO_CONSIDER provide a means for a data sink to s
         }
     }
 
-    private void commonOnWorkingStep(AHierarchicalDataRoot data, final Strategy myStrategy) {
+    private void commonOnWorkingStep(AHierarchicalDataRoot data, final Strategy myStrategy, HierarchicalParentInfo parentInfo) {
         try {
             final long start = System.nanoTime();
-            inner.onWorkingStep(data);
+            inner.onWorkingStep(data, parentInfo);
             myStrategy.handleDuration(System.nanoTime() - start);
         } catch (Exception e) {
             log.warn("Disabling data sink " + inner.getClass().getName() + " because an exception occurred", e);
@@ -78,8 +79,8 @@ class RobustDataSinkWrapper { //TO_CONSIDER provide a means for a data sink to s
         }
 
         @Override
-        public void onWorkingStep(AHierarchicalDataRoot data) {
-            commonOnWorkingStep(data, this);
+        public void onWorkingStep(AHierarchicalDataRoot data, HierarchicalParentInfo parentInfo) {
+            commonOnWorkingStep(data, this, parentInfo);
         }
 
         @Override
@@ -104,8 +105,8 @@ class RobustDataSinkWrapper { //TO_CONSIDER provide a means for a data sink to s
         }
 
         @Override
-        public void onWorkingStep(AHierarchicalDataRoot data) {
-            commonOnWorkingStep(data, this);
+        public void onWorkingStep(AHierarchicalDataRoot data, HierarchicalParentInfo parentInfo) {
+            commonOnWorkingStep(data, this, parentInfo);
         }
 
         @Override
@@ -131,7 +132,7 @@ class RobustDataSinkWrapper { //TO_CONSIDER provide a means for a data sink to s
         }
 
         @Override
-        public void onWorkingStep(AHierarchicalDataRoot trace) {
+        public void onWorkingStep(AHierarchicalDataRoot trace, HierarchicalParentInfo parentInfo) {
         }
 
         @Override
@@ -155,8 +156,8 @@ class RobustDataSinkWrapper { //TO_CONSIDER provide a means for a data sink to s
         strategy.onFinishedHierarchicalMeasurement(data);
     }
 
-    public void onWorkingStep(AHierarchicalDataRoot data) {
-        strategy.onWorkingStep(data);
+    public void onWorkingStep(AHierarchicalDataRoot data, HierarchicalParentInfo parentInfo) {
+        strategy.onWorkingStep(data, parentInfo);
     }
 
     public void shutdown() {

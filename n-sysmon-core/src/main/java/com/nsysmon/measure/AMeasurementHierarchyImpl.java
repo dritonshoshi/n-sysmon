@@ -159,21 +159,11 @@ public class AMeasurementHierarchyImpl implements AMeasurementHierarchy {
         }
         else {
             childrenStack.peek().add(newData);
-//            AMeasurementHierarchy h =  getTopHierarchy(measurement.getHierarchy())
-//            new ArrayList<>(collectingMeasurements).forEach(this::finish);
-//            System.out.println(measurement);
 
-            AMeasurementHierarchy mh = measurement.getHierarchy();
-            ASimpleSerialMeasurementImpl next = measurement.getHierarchy().getUnfinished().iterator().next();
-            System.out.println(next.getIdentifier() + " "+next.getStartTimeMillis());
-//            ACollectingMeasurement m = ACollectingMeasurement.createRegular(NSysMon.get().getConfig(), mh, false, "tkt", children);
-//            tkt(m);
-//            System.out.println(m.getChildrenOfParent().size());
-
-
-//            ASimpleSerialMeasurementImpl next = measurement.getHierarchy().getUnfinished().iterator().next();
-//            System.out.println(next.getIdentifier());
-//            dataSink.onWorkingStep(new AHierarchicalDataRoot(newData, startedFlows, joinedFlows, killedDueSize));
+            //TODO TKT check for npe!
+            ASimpleSerialMeasurementImpl tmp = measurement.getHierarchy().getUnfinished().iterator().next();
+            HierarchicalParentInfo parentInfo = new HierarchicalParentInfo(tmp.getIdentifier() ,  tmp.getStartTimeNanos(), tmp.getHierarchy().getUnfinished().size() > 0, unfinished);
+            dataSink.onWorkingStep(new AHierarchicalDataRoot(newData, startedFlows, joinedFlows, killedDueSize), parentInfo);
         }
     }
 
