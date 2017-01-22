@@ -530,10 +530,10 @@ div.env-value {
 }
 
 .timed-scalar-monitoring-segment{
-    height: 40px;
-    line-height: 40px;
+    /*height: 80px;*/
+    /*line-height: 40px;*/
     text-align: center;
-    vertical-align: middle;
+    vertical-align: bottom;
     border-radius: 15px;
     white-space: nowrap;
     float: left;
@@ -541,10 +541,10 @@ div.env-value {
 }
 
 .timed-scalar-monitoring-segment-common {
-    height: 40px;
-    line-height: 40px;
-    text-align: center;
-    vertical-align: middle;
+    height: 50px;
+    /*text-align: center;*/
+    /*align-content: center;*/
+    /*vertical-align: middle;*/
     white-space: nowrap;
     float: left;
     display: inline-block;
@@ -553,29 +553,28 @@ div.env-value {
 
 
 .timed-scalar-monitoring-segment-description{
-    width: 250px;
+    width: 200px;
     text-align: left;
     padding-left: 10px;
     border-radius: 15px 0 0 15px;
 }
 
 .timed-scalar-monitoring-segment-min{
-    width: 100px;
+    width: 75px;
     border-radius: 0 0 0 0;
-    background-color: rgba(44, 253, 15, 0.05);
+    background-color: rgba(44, 253, 15, 0.1);
 }
 
 .timed-scalar-monitoring-segment-avg{
-    height: 99%;
     width: 100px;
     border-radius: 0 0 0 0;
-    background-color: rgba(238, 253, 6, 0.05);
+    background-color: rgba(238, 253, 6, 0.1);
 }
 
 .timed-scalar-monitoring-segment-max{
-    width: 100px;
+    width: 75px;
     border-radius: 0 15px 15px 0;
-    background-color: rgba(253, 15, 72, 0.03);
+    background-color: rgba(253, 15, 72, 0.06);
 }
 
 .timed-scalar-status-RUNNING{
@@ -594,6 +593,11 @@ div.env-value {
     background-color: rgba(253, 15, 72, 1);
     color: lightsteelblue;
     vertical-align: middle;
+}
+
+.timed-scalar-monitoring-legend {
+    font-size: 10px;
+    color: #7d7d7d;
 }
 
 .left {

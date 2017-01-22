@@ -26,12 +26,59 @@
     <!-- TODO TKT Add sorting -->
     <div>
         <div class="timed-scalar-monitoring-segment"
-             ng-repeat="entry in timedScalarsWithMonitoringData" title="{{entry.description}}">
-            <div class="timed-scalar-monitoring-segment-common timed-scalar-monitoring-segment-description  timed-scalar-monitoring-{{entry.threshold|lowercase}}">{{entry.key}}</div>
-            <div class="timed-scalar-monitoring-segment-common timed-scalar-monitoring-segment-min">{{entry.minValue}}</div>
-            <div class="timed-scalar-monitoring-segment-common timed-scalar-monitoring-segment-avg">{{entry.avgValue}}</div>
-            <div class="timed-scalar-monitoring-segment-common timed-scalar-monitoring-segment-max">{{entry.maxValue}}</div>
+             ng-repeat="entry in timedScalarsWithMonitoringData" title="{{entry.description}} - From {{asDate(entry.tsOldestMeasurement)}} to {{asDate(entry.tsLatestTimestamp)}}">
+            <div class="timed-scalar-monitoring-segment-common timed-scalar-monitoring-segment-description  timed-scalar-monitoring-{{entry.threshold|lowercase}}">
+                <span>
+                <div>
+                    <div class="timed-scalar-monitoring-legend">&nbsp;</div>
+                    <div>{{entry.key}}</div>
+                </div>
+                </span>
+            </div>
+
+            <div class="timed-scalar-monitoring-segment-common timed-scalar-monitoring-segment-min">
+                <div>
+                    <div class="timed-scalar-monitoring-legend">min</div>
+                    <div>{{entry.minValue}}</div>
+                    <div class="timed-scalar-monitoring-legend">&le;{{entry.confMinValue}}</div>
+                </div>
+            </div>
+
+            <div class="timed-scalar-monitoring-segment-common timed-scalar-monitoring-segment-avg">
+                <table border="1" cellspacing="0" style="" width="95%">
+                    <col width="10%">
+                    <col width="90%">
+                    <tr>
+                        <td class="timed-scalar-monitoring-legend" style="text-align: right">1</td>
+                        <td>
+                            <div class="timed-scalar-monitoring-legend">avg</div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="timed-scalar-monitoring-legend" style="text-align: right">2</td>
+                        <td>
+                            <div>{{entry.avgValue}}</div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="timed-scalar-monitoring-legend" style="text-align: right">3</td>
+                        <td>
+                            <div>&nbsp;</div>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+
+            <div class="timed-scalar-monitoring-segment-common timed-scalar-monitoring-segment-max">
+                <div>
+                    <div class="timed-scalar-monitoring-legend">max</div>
+                    <div>{{entry.maxValue}}</div>
+                    <div class="timed-scalar-monitoring-legend">&ge;{{entry.confMaxValue}}</div>
+                </div>
+            </div>
         </div>
     </div>
+
+    <div style="clear:both"></div>
 
 </div>

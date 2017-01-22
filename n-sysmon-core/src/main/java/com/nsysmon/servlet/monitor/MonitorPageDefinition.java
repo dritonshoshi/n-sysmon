@@ -16,7 +16,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.TreeSet;
 
-public class MonitorPageDefinition extends TimedScalarsPageDefinition{
+public class MonitorPageDefinition extends TimedScalarsPageDefinition {
 
     private volatile NSysMonApi sysMon;
 
@@ -55,7 +55,7 @@ public class MonitorPageDefinition extends TimedScalarsPageDefinition{
         if ("getData".equals(service)) {
             serveData(json, params, sysMon);
             return true;
-        }else if ("getMonitoringData".equals(service)) {
+        } else if ("getMonitoringData".equals(service)) {
             serveMonitoringData(json, params);
             return true;
         }
@@ -93,7 +93,7 @@ public class MonitorPageDefinition extends TimedScalarsPageDefinition{
         json.writeKey("maxValue");
         if (max == null) {
             json.writeNumberLiteral(0, 0);
-        }else {
+        } else {
             json.writeNumberLiteral(max.getValue(), max.getNumFracDigits());
         }
 
@@ -101,9 +101,15 @@ public class MonitorPageDefinition extends TimedScalarsPageDefinition{
         json.writeKey("minValue");
         if (min == null) {
             json.writeNumberLiteral(0, 0);
-        }else {
+        } else {
             json.writeNumberLiteral(min.getValue(), min.getNumFracDigits());
         }
+
+        json.writeKey("confMinValue");
+        json.writeStringLiteral(getConfMinValue(key));
+
+        json.writeKey("confMaxValue");
+        json.writeStringLiteral(getConfMaxValue(key));
 
         AScalarDataPoint avg = getAverageValue(monitoringDataPoints);
         json.writeKey("avgValue");
@@ -113,6 +119,14 @@ public class MonitorPageDefinition extends TimedScalarsPageDefinition{
         json.writeKey("threshold");
         json.writeStringLiteral(evaluatedValue.name());
 
+        Long tsOldestMeasurement = getOldestTimestamp(monitoringDataPoints);
+        json.writeKey("tsOldestMeasurement");
+        json.writeNumberLiteral(tsOldestMeasurement, 0);
+
+        Long tsLatestTimestamp = getLatestTimestamp(monitoringDataPoints);
+        json.writeKey("tsLatestTimestamp");
+        json.writeNumberLiteral(tsLatestTimestamp, 0);
+//
         json.endObject();
     }
 
@@ -127,6 +141,34 @@ public class MonitorPageDefinition extends TimedScalarsPageDefinition{
         return rc;
     }
 
+    private String getConfMinValue(String key) {
+        Optional<Map.Entry<String, Object>> value = NSysMon.get().getConfig().getTimedScalarMonitoringParameters()
+                .entrySet()
+                .stream()
+                .filter(s -> s.getKey().endsWith(AScalarMeasurer.KEY_CONFIGURATION_MEDIUM))
+                .filter(s -> s.getKey().contains(key))
+                .findFirst();
+
+        if (value.isPresent()) {
+            return "" + value.get().getValue();
+        }
+        return "???";
+    }
+
+    private String getConfMaxValue(String key) {
+        Optional<Map.Entry<String, Object>> value = NSysMon.get().getConfig().getTimedScalarMonitoringParameters()
+                .entrySet()
+                .stream()
+                .filter(s -> s.getKey().endsWith(AScalarMeasurer.KEY_CONFIGURATION_HIGH))
+                .filter(s -> s.getKey().contains(key))
+                .findFirst();
+
+        if (value.isPresent()) {
+            return "" + value.get().getValue();
+        }
+        return "???";
+    }
+
     private AScalarMeasurer.EvaluatedValue evaluateValue(String key, double value) {
         Optional<Map.Entry<String, Object>> highValue = NSysMon.get().getConfig().getTimedScalarMonitoringParameters()
                 .entrySet()
@@ -134,7 +176,7 @@ public class MonitorPageDefinition extends TimedScalarsPageDefinition{
                 .filter(s -> s.getKey().endsWith(AScalarMeasurer.KEY_CONFIGURATION_HIGH))
                 .filter(s -> s.getKey().contains(key))
                 .findFirst();
-        if (highValue.isPresent() && ((Long)highValue.get().getValue()) < value){
+        if (highValue.isPresent() && ((Long) highValue.get().getValue()) < value) {
             return AScalarMeasurer.EvaluatedValue.HIGH;
         }
 
@@ -144,14 +186,14 @@ public class MonitorPageDefinition extends TimedScalarsPageDefinition{
                 .filter(s -> s.getKey().endsWith(AScalarMeasurer.KEY_CONFIGURATION_MEDIUM))
                 .filter(s -> s.getKey().contains(key))
                 .findFirst();
-        if (mediumValue.isPresent() && ((Long)mediumValue.get().getValue()) < value){
+        if (mediumValue.isPresent() && ((Long) mediumValue.get().getValue()) < value) {
             return AScalarMeasurer.EvaluatedValue.MEDIUM;
         }
 
         return AScalarMeasurer.EvaluatedValue.LOW;
     }
 
-    private AScalarDataPoint getAverageValue(TreeSet<AScalarDataPoint> filteredDataPoints ){
+    private AScalarDataPoint getAverageValue(TreeSet<AScalarDataPoint> filteredDataPoints) {
         AScalarDataPoint latestDataPoint = filteredDataPoints.last();
 
         final long[] sum = {0L};
@@ -161,9 +203,25 @@ public class MonitorPageDefinition extends TimedScalarsPageDefinition{
             cnt[0]++;
         });
 
-        sum[0] = (long) (sum[0] * Math.pow(10, latestDataPoint.getNumFracDigits()+1));
+        sum[0] = (long) (sum[0] * Math.pow(10, latestDataPoint.getNumFracDigits() + 1));
         long value = sum[0] / cnt[0];
-        return new AScalarDataPoint(latestDataPoint.getTimestamp(), latestDataPoint.getName(), value, latestDataPoint.getNumFracDigits()+1);
+        return new AScalarDataPoint(latestDataPoint.getTimestamp(), latestDataPoint.getName(), value, latestDataPoint.getNumFracDigits() + 1);
+    }
+
+    private Long getOldestTimestamp(TreeSet<AScalarDataPoint> filteredDataPoints) {
+        AScalarDataPoint dataPoint = filteredDataPoints.stream().min((o1, o2) -> {
+            return (int) (o1.getTimestamp() - o2.getTimestamp());
+        }).get();
+
+        return dataPoint.getTimestamp();
+    }
+
+    private Long getLatestTimestamp(TreeSet<AScalarDataPoint> filteredDataPoints) {
+        AScalarDataPoint dataPoint = filteredDataPoints.stream().max((o1, o2) -> {
+            return (int) (o1.getTimestamp() - o2.getTimestamp());
+        }).get();
+
+        return dataPoint.getTimestamp();
     }
 
 }

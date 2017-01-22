@@ -1,4 +1,4 @@
-angular.module('NSysMonApp').controller('CtrlMonitor', function($scope, $timeout, $log, Rest, $location) {
+angular.module('NSysMonApp').controller('CtrlMonitor', function ($scope, $timeout, $log, Rest, $location) {
 
     $('title').text("NSysmon - Measurement Monitor");
 
@@ -24,16 +24,16 @@ angular.module('NSysMonApp').controller('CtrlMonitor', function($scope, $timeout
     }
 
     function triggerAutoRefreshMonitor() {
-        if(! $scope.autoRefreshMonitor) {
+        if (!$scope.autoRefreshMonitor) {
             return;
         }
         var oldCounter = autoRefreshMonitorCounter;
         $scope.activePage = $location.path();
-        $timeout(function() {
-            if(autoRefreshMonitorCounter !== oldCounter+1) {
+        $timeout(function () {
+            if (autoRefreshMonitorCounter !== oldCounter + 1) {
                 return;
             }
-            if ($location.path() == $scope.activePage){
+            if ($location.path() == $scope.activePage) {
                 $scope.refreshMonitor();
             }
         }, $scope.autoRefreshSecondsMonitor * 1000);
@@ -45,9 +45,9 @@ angular.module('NSysMonApp').controller('CtrlMonitor', function($scope, $timeout
         triggerAutoRefreshMonitor();
     }
 
-    $scope.refreshMonitor = function() {
+    $scope.refreshMonitor = function () {
         var selectedEntriesForServer = "";
-        if (typeof $scope.timedScalars == 'undefined'){
+        if (typeof $scope.timedScalars == 'undefined') {
             return;
         }
 
@@ -55,7 +55,7 @@ angular.module('NSysMonApp').controller('CtrlMonitor', function($scope, $timeout
             selectedEntriesForServer = selectedEntriesForServer.concat(keyData);
             selectedEntriesForServer = selectedEntriesForServer.concat(",");
         }
-        
+
         if (selectedEntriesForServer.length > 1) {
             Rest.call('getMonitoringData/' + selectedEntriesForServer, initMonitorDataFromResponse);
         }
@@ -63,5 +63,15 @@ angular.module('NSysMonApp').controller('CtrlMonitor', function($scope, $timeout
     };
 
     initialLoadData();
+
+    $scope.asDate = function (ts) {
+        var date = new Date(ts);
+        return date.toLocaleTimeString() + " " + date.toLocaleDateString();
+        // var hours = date.getHours();
+        // var minutes = "0" + date.getMinutes();
+        // var seconds = "0" + date.getSeconds();
+        // var formattedTime = hours + ':' + minutes.substr(-2) + ':' + seconds.substr(-2);
+        // return formattedTime;
+    }
 
 });
