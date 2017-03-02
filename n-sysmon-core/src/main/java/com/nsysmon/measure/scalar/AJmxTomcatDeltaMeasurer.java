@@ -34,26 +34,21 @@ public class AJmxTomcatDeltaMeasurer implements AScalarMeasurer, NSysMonAware {
 
     @Override public void contributeMeasurements(Map<String, AScalarDataPoint> data, long timestamp, Map<String, Object> mementos) throws Exception {
         final MBeanServer server = ManagementFactory.getPlatformMBeanServer();
+        final Object requestCount = server.getAttribute(new ObjectName(OBJECT_GLOBAL_REQUEST_PROCESSOR), NAME_REQUEST_COUNT);
+        final Object bytesReceived = server.getAttribute(new ObjectName(OBJECT_GLOBAL_REQUEST_PROCESSOR), NAME_BYTES_RECEIVED);
+        final Object bytesSent = server.getAttribute(new ObjectName(OBJECT_GLOBAL_REQUEST_PROCESSOR), NAME_BYTES_SENT);
 
-        try {
-            final Object requestCount = server.getAttribute(new ObjectName(OBJECT_GLOBAL_REQUEST_PROCESSOR), NAME_REQUEST_COUNT);
-            final Object bytesReceived = server.getAttribute(new ObjectName(OBJECT_GLOBAL_REQUEST_PROCESSOR), NAME_BYTES_RECEIVED);
-            final Object bytesSent = server.getAttribute(new ObjectName(OBJECT_GLOBAL_REQUEST_PROCESSOR), NAME_BYTES_SENT);
+        final int currentRequestCount = (Integer) requestCount;
+        final long currentBytesReceived = (Long) bytesReceived;
+        final long currentBytesSent = (Long) bytesSent;
 
-            final int currentRequestCount = (Integer) requestCount;
-            final long currentBytesReceived = (Long) bytesReceived;
-            final long currentBytesSent = (Long) bytesSent;
+        data.put(KEY_REQUEST_COUNT, new AScalarDataPoint(timestamp, KEY_REQUEST_COUNT, currentRequestCount - formerRequestCount, 0));
+        data.put(KEY_BYTES_RECEIVED, new AScalarDataPoint(timestamp, KEY_BYTES_RECEIVED, formatToMegaBytes(currentBytesReceived - formerBytesReceived), 3));
+        data.put(KEY_BYTES_SENT, new AScalarDataPoint(timestamp, KEY_BYTES_SENT, formatToMegaBytes(currentBytesSent - formerBytesSent), 3));
 
-            data.put(KEY_REQUEST_COUNT, new AScalarDataPoint(timestamp, KEY_REQUEST_COUNT, currentRequestCount - formerRequestCount, 0));
-            data.put(KEY_BYTES_RECEIVED, new AScalarDataPoint(timestamp, KEY_BYTES_RECEIVED, formatToMegaBytes(currentBytesReceived - formerBytesReceived), 3));
-            data.put(KEY_BYTES_SENT, new AScalarDataPoint(timestamp, KEY_BYTES_SENT, formatToMegaBytes(currentBytesSent - formerBytesSent), 3));
-
-            formerRequestCount = currentRequestCount;
-            formerBytesReceived = currentBytesReceived;
-            formerBytesSent = currentBytesSent;
-        } catch (Exception e) {
-            LOG.error(e);
-        }
+        formerRequestCount = currentRequestCount;
+        formerBytesReceived = currentBytesReceived;
+        formerBytesSent = currentBytesSent;
     }
 
     private long formatToMegaBytes(final long bytes) {
