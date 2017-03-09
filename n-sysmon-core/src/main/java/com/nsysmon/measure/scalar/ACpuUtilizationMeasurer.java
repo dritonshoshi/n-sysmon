@@ -23,6 +23,8 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class ACpuUtilizationMeasurer implements AScalarMeasurer {
     public static final AFile PROC_STAT_FILE = new AFile("/proc/stat", Charset.defaultCharset());
+    public static final AFile PROC_STAT_FILE_MACOS_ = new AFile("sysctl -a hw", Charset.defaultCharset());
+
     public static final AFile PROC_CPUINFO_FILE = new AFile("/proc/cpuinfo", Charset.defaultCharset());
 
     public static final String KEY_PREFIX = "cpu:";
@@ -36,6 +38,9 @@ public class ACpuUtilizationMeasurer implements AScalarMeasurer {
         //this measurement isn't working on windows
         if (NSysMon.isWindows()){
            return;
+        }
+        if (NSysMon.isMacOS()){
+            return;
         }
         mementos.put(KEY_MEMENTO, createSnapshot());
     }
@@ -54,6 +59,10 @@ public class ACpuUtilizationMeasurer implements AScalarMeasurer {
     @Override public void contributeMeasurements(Map<String, AScalarDataPoint> data, long timestamp, Map<String, Object> mementos) throws IOException {
         //this measurement isn't working on windows
         if (NSysMon.isWindows()){
+            fillForWindows(data, timestamp, mementos);
+            return;
+        }
+        if (NSysMon.isMacOS()){
             fillForWindows(data, timestamp, mementos);
             return;
         }

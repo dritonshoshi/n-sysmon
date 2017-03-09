@@ -32,12 +32,18 @@ public class AProcNetDevMeasurer implements AScalarMeasurer {
         if (NSysMon.isWindows()){
             return;
         }
+        if (NSysMon.isMacOS()){
+            return;
+        }
         mementos.put(KEY_MEMENTO, createSnapshot());
     }
 
     @Override public void contributeMeasurements(Map<String, AScalarDataPoint> data, long timestamp, Map<String, Object> mementos) throws Exception {
         //this measurement isn't working on windows
         if (NSysMon.isWindows()){
+            return;
+        }
+        if (NSysMon.isMacOS()){
             return;
         }
         final Snapshot prev = (Snapshot) mementos.get(KEY_MEMENTO);

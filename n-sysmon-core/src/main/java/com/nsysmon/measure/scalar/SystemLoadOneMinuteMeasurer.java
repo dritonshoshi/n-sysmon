@@ -24,6 +24,9 @@ public class SystemLoadOneMinuteMeasurer implements AScalarMeasurer {
         if (NSysMon.isWindows()){
             return;
         }
+        if (NSysMon.isMacOS()){
+            return;
+        }
 
         final BufferedReader in = new BufferedReader(new FileReader(procFile));
         final String[] raw = in.readLine().split(" ");

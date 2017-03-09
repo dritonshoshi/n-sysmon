@@ -45,12 +45,19 @@ public class AProcDiskstatsMeasurer implements AScalarMeasurer {
         if (NSysMon.isWindows()){
             return;
         }
+        if (NSysMon.isMacOS()){
+            return;
+        }
         mementos.put(KEY_MEMENTO, createSnapshot());
     }
 
     @Override public void contributeMeasurements(Map<String, AScalarDataPoint> data, long timestamp, Map<String, Object> mementos) throws Exception {
         //this measurement isn't working on windows
         if (NSysMon.isWindows()){
+            contributeDiskSizeWindows(data, timestamp);
+            return;
+        }
+        if (NSysMon.isMacOS()){
             contributeDiskSizeWindows(data, timestamp);
             return;
         }

@@ -29,6 +29,10 @@ public class NSysMon {
     public static boolean isWindows(){
         return System.getProperty("os.name").toLowerCase().contains("win");
     }
+
+    public static boolean isMacOS(){
+        return System.getProperty("os.name").toLowerCase().contains("mac");
+    }
     /**
      * this class has the sole purpose of providing really lazy init of the singleton instance
      */
