@@ -1,6 +1,6 @@
 package com.nsysmon.servlet.threaddump;
 
-import com.ajjpj.afoundation.io.AJsonSerHelper;
+import com.ajjpj.afoundation.io.AJsonSerHelperForNSysmon;
 import com.nsysmon.NSysMonApi;
 import com.nsysmon.impl.NSysMonConfigurer;
 import com.nsysmon.config.presentation.APresentationPageDefinition;
@@ -53,7 +53,7 @@ public class AThreadDumpPageDefinition implements APresentationPageDefinition {
         return "CtrlThreadDump";
     }
 
-    @Override public boolean handleRestCall(String service, List<String> params, AJsonSerHelper json) throws IOException {
+    @Override public boolean handleRestCall(String service, List<String> params, AJsonSerHelperForNSysmon json) throws IOException {
         if("getData".equals(service)) {
             serveData(json);
             return true;
@@ -62,7 +62,7 @@ public class AThreadDumpPageDefinition implements APresentationPageDefinition {
         return false;
     }
 
-    private void serveData(AJsonSerHelper json) throws IOException {
+    private void serveData(AJsonSerHelperForNSysmon json) throws IOException {
         json.startObject();
 
         json.writeKey("appPkg");
@@ -74,7 +74,7 @@ public class AThreadDumpPageDefinition implements APresentationPageDefinition {
         json.endObject();
     }
 
-    private void dumpThreads(AJsonSerHelper json, Collection<ThreadInfo> threads, Collection<Long> deadlockedThreads, Map<String, Long> startTimestamps) throws IOException {
+    private void dumpThreads(AJsonSerHelperForNSysmon json, Collection<ThreadInfo> threads, Collection<Long> deadlockedThreads, Map<String, Long> startTimestamps) throws IOException {
         json.startArray();
 
         final long now = System.currentTimeMillis();
@@ -85,7 +85,7 @@ public class AThreadDumpPageDefinition implements APresentationPageDefinition {
         json.endArray();
     }
 
-    private void dumpThread(AJsonSerHelper json, ThreadInfo ti, boolean isDeadLocked, long now, Long startTimestamp) throws IOException {
+    private void dumpThread(AJsonSerHelperForNSysmon json, ThreadInfo ti, boolean isDeadLocked, long now, Long startTimestamp) throws IOException {
         json.startObject();
 
         json.writeKey("name");
@@ -108,7 +108,7 @@ public class AThreadDumpPageDefinition implements APresentationPageDefinition {
         json.endObject();
     }
 
-    private void dumpStackTrace(AJsonSerHelper json, StackTraceElement[] stackTrace) throws IOException {
+    private void dumpStackTrace(AJsonSerHelperForNSysmon json, StackTraceElement[] stackTrace) throws IOException {
         json.startArray();
 
         for(StackTraceElement ste: stackTrace) {

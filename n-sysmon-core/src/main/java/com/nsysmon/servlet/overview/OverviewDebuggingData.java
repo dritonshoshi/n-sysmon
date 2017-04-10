@@ -1,6 +1,6 @@
 package com.nsysmon.servlet.overview;
 
-import com.ajjpj.afoundation.io.AJsonSerHelper;
+import com.ajjpj.afoundation.io.AJsonSerHelperForNSysmon;
 import com.nsysmon.NSysMon;
 import com.nsysmon.NSysMonApi;
 import com.nsysmon.config.log.NSysMonLogger;
@@ -43,7 +43,7 @@ public class OverviewDebuggingData implements APresentationPageDefinition {
     }
 
     @Override
-    public boolean handleRestCall(String service, List<String> params, AJsonSerHelper json) throws Exception {
+    public boolean handleRestCall(String service, List<String> params, AJsonSerHelperForNSysmon json) throws Exception {
         if ("getData".equals(service)) {
             serveData(json);
             return true;
@@ -74,7 +74,7 @@ public class OverviewDebuggingData implements APresentationPageDefinition {
     }
 
     //Test at http://localhost:8181/nsysmon/_$_nsysmon_$_/rest/overviewDebuggingData/getData
-    private void serveData(final AJsonSerHelper json) throws IOException {
+    private void serveData(final AJsonSerHelperForNSysmon json) throws IOException {
         json.startObject();
 
         addPageDefinitions(json);
@@ -83,7 +83,7 @@ public class OverviewDebuggingData implements APresentationPageDefinition {
         json.endObject();
     }
 
-    private void addConfiguration(final AJsonSerHelper json) throws IOException {
+    private void addConfiguration(final AJsonSerHelperForNSysmon json) throws IOException {
         json.writeKey("configurationParameters");
         json.startArray();
 
@@ -105,7 +105,7 @@ public class OverviewDebuggingData implements APresentationPageDefinition {
         json.endArray();
     }
 
-    private void addConfigEntry(String key, int value, AJsonSerHelper json) throws IOException {
+    private void addConfigEntry(String key, int value, AJsonSerHelperForNSysmon json) throws IOException {
         json.startObject();
         json.writeKey("key");
         json.writeStringLiteral(key);
@@ -114,7 +114,7 @@ public class OverviewDebuggingData implements APresentationPageDefinition {
         json.endObject();
     }
 
-    private void addConfigEntry(String key, boolean value, AJsonSerHelper json) throws IOException {
+    private void addConfigEntry(String key, boolean value, AJsonSerHelperForNSysmon json) throws IOException {
         json.startObject();
         json.writeKey("key");
         json.writeStringLiteral(key);
@@ -123,7 +123,7 @@ public class OverviewDebuggingData implements APresentationPageDefinition {
         json.endObject();
     }
 
-    private void addConfigEntry(String key, long value, AJsonSerHelper json) throws IOException {
+    private void addConfigEntry(String key, long value, AJsonSerHelperForNSysmon json) throws IOException {
         json.startObject();
         json.writeKey("key");
         json.writeStringLiteral(key);
@@ -132,7 +132,7 @@ public class OverviewDebuggingData implements APresentationPageDefinition {
         json.endObject();
     }
 
-    private void addPageDefinitions(final AJsonSerHelper json) throws IOException {
+    private void addPageDefinitions(final AJsonSerHelperForNSysmon json) throws IOException {
         final Map<String, APresentationPageDefinition> pageDefs = new ConcurrentHashMap<>();
         for (APresentationMenuEntry menuEntry : sysMon.getConfig().presentationMenuEntries) {
             for (APresentationPageDefinition pageDef : menuEntry.pageDefinitions) {

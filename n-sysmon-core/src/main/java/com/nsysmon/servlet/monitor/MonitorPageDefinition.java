@@ -1,7 +1,7 @@
 package com.nsysmon.servlet.monitor;
 
 import com.ajjpj.afoundation.collection.mutable.ARingBuffer;
-import com.ajjpj.afoundation.io.AJsonSerHelper;
+import com.ajjpj.afoundation.io.AJsonSerHelperForNSysmon;
 import com.nsysmon.NSysMon;
 import com.nsysmon.NSysMonApi;
 import com.nsysmon.data.AScalarDataPoint;
@@ -51,7 +51,7 @@ public class MonitorPageDefinition extends TimedScalarsPageDefinition {
     }
 
     @Override
-    public boolean handleRestCall(String service, List<String> params, AJsonSerHelper json) throws IOException {
+    public boolean handleRestCall(String service, List<String> params, AJsonSerHelperForNSysmon json) throws IOException {
         if ("getData".equals(service)) {
             serveData(json, params, sysMon);
             return true;
@@ -63,7 +63,7 @@ public class MonitorPageDefinition extends TimedScalarsPageDefinition {
         return false;
     }
 
-    private void serveMonitoringData(final AJsonSerHelper json, List<String> params) throws IOException {
+    private void serveMonitoringData(final AJsonSerHelperForNSysmon json, List<String> params) throws IOException {
         String selectedEntries = params.get(0);
 
         json.startArray();
@@ -80,7 +80,7 @@ public class MonitorPageDefinition extends TimedScalarsPageDefinition {
         json.endArray();
     }
 
-    private void fillMonitoringData(AJsonSerHelper json, Map<String, ARingBuffer<AScalarDataPoint>> scalars, String key) throws IOException {
+    private void fillMonitoringData(AJsonSerHelperForNSysmon json, Map<String, ARingBuffer<AScalarDataPoint>> scalars, String key) throws IOException {
         json.startObject();
         addMetainfos(json, key, sysMon);
 

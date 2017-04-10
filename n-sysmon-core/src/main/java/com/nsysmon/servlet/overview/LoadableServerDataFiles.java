@@ -1,6 +1,6 @@
 package com.nsysmon.servlet.overview;
 
-import com.ajjpj.afoundation.io.AJsonSerHelper;
+import com.ajjpj.afoundation.io.AJsonSerHelperForNSysmon;
 import com.nsysmon.NSysMon;
 import com.nsysmon.NSysMonApi;
 import com.nsysmon.config.log.NSysMonLogger;
@@ -52,7 +52,7 @@ public class LoadableServerDataFiles implements APresentationPageDefinition {
     }
 
     @Override
-    public boolean handleRestCall(String service, List<String> params, AJsonSerHelper json) throws Exception {
+    public boolean handleRestCall(String service, List<String> params, AJsonSerHelperForNSysmon json) throws Exception {
         if ("getFiles".equals(service)) {
             getFilesAsJson(json);
             return true;
@@ -63,7 +63,7 @@ public class LoadableServerDataFiles implements APresentationPageDefinition {
         return false;
     }
 
-    private void loadFile(List<String> params, AJsonSerHelper json) throws IOException {
+    private void loadFile(List<String> params, AJsonSerHelperForNSysmon json) throws IOException {
         if (params.get(0).contains("\\") || params.get(0).contains("/")) {
             LOG.error("Not loading file " + params.get(0) + " because the directory looks strange.");
             return;
@@ -92,7 +92,7 @@ public class LoadableServerDataFiles implements APresentationPageDefinition {
         }
     }
 
-    private void getFilesAsJson(AJsonSerHelper json) throws IOException {
+    private void getFilesAsJson(AJsonSerHelperForNSysmon json) throws IOException {
         DataFileTools dataTools = new DataFileTools();
 
         //temporary remember the names, so they can be used in the display
@@ -130,7 +130,7 @@ public class LoadableServerDataFiles implements APresentationPageDefinition {
 
     }
 
-    private void fillFileDataAsJson(AJsonSerHelper json, DataFileTools dataTools, Path path, String host, String installation, String dateAsString, String controllerId, String controllerName) throws IOException {
+    private void fillFileDataAsJson(AJsonSerHelperForNSysmon json, DataFileTools dataTools, Path path, String host, String installation, String dateAsString, String controllerId, String controllerName) throws IOException {
         json.writeKey("name");
         json.writeStringLiteral(path.getFileName().toString());
 

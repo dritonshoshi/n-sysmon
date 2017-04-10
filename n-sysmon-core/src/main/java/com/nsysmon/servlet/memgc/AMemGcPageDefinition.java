@@ -1,6 +1,6 @@
 package com.nsysmon.servlet.memgc;
 
-import com.ajjpj.afoundation.io.AJsonSerHelper;
+import com.ajjpj.afoundation.io.AJsonSerHelperForNSysmon;
 import com.nsysmon.NSysMonApi;
 import com.nsysmon.config.presentation.APresentationPageDefinition;
 import com.nsysmon.impl.NSysMonConfigurer;
@@ -48,7 +48,7 @@ public class AMemGcPageDefinition implements APresentationPageDefinition, DataFi
         NSysMonConfigurer.addDataSink(sysMon, gcDataSink);
     }
 
-    @Override public boolean handleRestCall(String service, List<String> params, AJsonSerHelper json) throws IOException {
+    @Override public boolean handleRestCall(String service, List<String> params, AJsonSerHelperForNSysmon json) throws IOException {
         if("getData".equals(service)) {
             serveData(json);
             return true;
@@ -57,7 +57,7 @@ public class AMemGcPageDefinition implements APresentationPageDefinition, DataFi
         return false;
     }
 
-    private void serveData(AJsonSerHelper json) throws IOException {
+    private void serveData(AJsonSerHelperForNSysmon json) throws IOException {
         json.startObject();
 
         json.writeKey("gcs");
@@ -71,7 +71,7 @@ public class AMemGcPageDefinition implements APresentationPageDefinition, DataFi
 
     }
 
-    private void serveGcDetails(AJsonSerHelper json, GcDetails gc) throws IOException {
+    private void serveGcDetails(AJsonSerHelperForNSysmon json, GcDetails gc) throws IOException {
         json.startObject();
 
         json.writeKey("type");
@@ -95,7 +95,7 @@ public class AMemGcPageDefinition implements APresentationPageDefinition, DataFi
         json.endObject();
     }
 
-    private void serveMemDetails(AJsonSerHelper json, List<GcMemDetails> memDetails) throws IOException {
+    private void serveMemDetails(AJsonSerHelperForNSysmon json, List<GcMemDetails> memDetails) throws IOException {
         json.startObject();
 
         for(GcMemDetails mem: memDetails) {
@@ -122,8 +122,8 @@ public class AMemGcPageDefinition implements APresentationPageDefinition, DataFi
 
     @Override
     public void getDataForExport(OutputStream os) throws IOException {
-        AJsonSerHelper aJsonSerHelper = new AJsonSerHelper(os);
-        serveData(aJsonSerHelper);
+        AJsonSerHelperForNSysmon aJsonSerHelperForNSysmon = new AJsonSerHelperForNSysmon(os);
+        serveData(aJsonSerHelperForNSysmon);
     }
 
     //TODO getMostRecentTimestamp

@@ -1,6 +1,6 @@
 package com.nsysmon.datasink.offloadhttpjson;
 
-import com.ajjpj.afoundation.io.AJsonSerHelper;
+import com.ajjpj.afoundation.io.AJsonSerHelperForNSysmon;
 import com.nsysmon.data.ACorrelationId;
 import com.nsysmon.data.AHierarchicalData;
 import com.nsysmon.data.AHierarchicalDataRoot;
@@ -49,7 +49,7 @@ class AJsonOffloadingEntity extends AbstractHttpEntity {
     }
 
     @Override public void writeTo(OutputStream outstream) throws IOException {
-        final AJsonSerHelper ser = new AJsonSerHelper(outstream);
+        final AJsonSerHelperForNSysmon ser = new AJsonSerHelperForNSysmon(outstream);
 
         ser.startObject(); // start 'RootNode'
 
@@ -79,7 +79,7 @@ class AJsonOffloadingEntity extends AbstractHttpEntity {
         ser.endObject();
     }
 
-    private void writeTraceRoot(AJsonSerHelper ser, AHierarchicalDataRoot trace) throws IOException {
+    private void writeTraceRoot(AJsonSerHelperForNSysmon ser, AHierarchicalDataRoot trace) throws IOException {
         ser.startObject(); // start 'TraceRootNode'
 
         ser.writeKey("uuid");
@@ -105,7 +105,7 @@ class AJsonOffloadingEntity extends AbstractHttpEntity {
         ser.endObject();
     }
 
-    private void writeCorrelationId(AJsonSerHelper ser, ACorrelationId flow) throws IOException {
+    private void writeCorrelationId(AJsonSerHelperForNSysmon ser, ACorrelationId flow) throws IOException {
         ser.startObject(); // start 'CorrelationId'
 
         ser.writeKey("kind");
@@ -117,7 +117,7 @@ class AJsonOffloadingEntity extends AbstractHttpEntity {
         ser.endObject();
     }
 
-    private void writeTraceRec(AJsonSerHelper ser, AHierarchicalData trace) throws IOException {
+    private void writeTraceRec(AJsonSerHelperForNSysmon ser, AHierarchicalData trace) throws IOException {
         ser.startObject(); // start 'TraceNode'
 
         ser.writeKey("isSerial");
@@ -150,7 +150,7 @@ class AJsonOffloadingEntity extends AbstractHttpEntity {
         ser.endObject();
     }
 
-    private void writeScalar(AJsonSerHelper ser, AScalarDataPoint scalar) throws IOException {
+    private void writeScalar(AJsonSerHelperForNSysmon ser, AScalarDataPoint scalar) throws IOException {
         ser.startObject(); // start 'ScalarNode'
 
         ser.writeKey("uuid");

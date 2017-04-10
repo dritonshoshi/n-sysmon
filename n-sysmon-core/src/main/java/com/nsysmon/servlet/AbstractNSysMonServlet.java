@@ -1,6 +1,6 @@
 package com.nsysmon.servlet;
 
-import com.ajjpj.afoundation.io.AJsonSerHelper;
+import com.ajjpj.afoundation.io.AJsonSerHelperForNSysmon;
 import org.apache.http.entity.ContentType;
 
 import javax.servlet.ServletException;
@@ -45,7 +45,7 @@ public abstract class AbstractNSysMonServlet extends HttpServlet {
                     try {
                         // special status code to indicate an exception that is reported as a JSON message
                         resp.setStatus(599);
-                        writeExceptionToJson(new AJsonSerHelper(resp.getOutputStream()), exc);
+                        writeExceptionToJson(new AJsonSerHelperForNSysmon(resp.getOutputStream()), exc);
                     }
                     catch(Exception e2) {
                         // throw the original exception if there is a problem in the special handling code
@@ -76,7 +76,7 @@ public abstract class AbstractNSysMonServlet extends HttpServlet {
         }
     }
 
-    private void writeExceptionToJson(AJsonSerHelper json, Exception exc) throws IOException {
+    private void writeExceptionToJson(AJsonSerHelperForNSysmon json, Exception exc) throws IOException {
         json.startObject();
 
         if(exc.getMessage() != null) {

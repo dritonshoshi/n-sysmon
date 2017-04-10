@@ -1,6 +1,6 @@
 package com.nsysmon.servlet.environment;
 
-import com.ajjpj.afoundation.io.AJsonSerHelper;
+import com.ajjpj.afoundation.io.AJsonSerHelperForNSysmon;
 import com.nsysmon.NSysMonApi;
 import com.nsysmon.config.presentation.APresentationPageDefinition;
 import com.nsysmon.data.AScalarDataPoint;
@@ -40,7 +40,7 @@ public class AScalarPageDefinition implements APresentationPageDefinition {
         this.sysMon = sysMon;
     }
 
-    @Override public boolean handleRestCall(String service, List<String> params, AJsonSerHelper json) throws IOException {
+    @Override public boolean handleRestCall(String service, List<String> params, AJsonSerHelperForNSysmon json) throws IOException {
         if("getData".equals(service)) {
             serveData(json);
             return true;
@@ -49,7 +49,7 @@ public class AScalarPageDefinition implements APresentationPageDefinition {
         return false;
     }
 
-    private void serveData(AJsonSerHelper json) throws IOException {
+    private void serveData(AJsonSerHelperForNSysmon json) throws IOException {
         final Map<String, AScalarDataPoint> scalars = sysMon.getScalarMeasurements();
 
         json.startObject();
@@ -65,7 +65,7 @@ public class AScalarPageDefinition implements APresentationPageDefinition {
         json.endObject();
     }
 
-    private void writeScalar(AJsonSerHelper json, AScalarDataPoint scalar) throws IOException {
+    private void writeScalar(AJsonSerHelperForNSysmon json, AScalarDataPoint scalar) throws IOException {
         json.writeKey(scalar.getName());
 
         json.startObject();

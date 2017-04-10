@@ -1,7 +1,7 @@
 package com.nsysmon.servlet.environment;
 
 import com.ajjpj.afoundation.collection.immutable.AList;
-import com.ajjpj.afoundation.io.AJsonSerHelper;
+import com.ajjpj.afoundation.io.AJsonSerHelperForNSysmon;
 import com.nsysmon.NSysMonApi;
 import com.nsysmon.config.presentation.APresentationPageDefinition;
 import com.nsysmon.measure.environment.AEnvironmentData;
@@ -41,7 +41,7 @@ public class AEnvVarPageDefinition implements APresentationPageDefinition {
         return "CtrlEnvVar";
     }
 
-    @Override public boolean handleRestCall(String service, List<String> params, AJsonSerHelper json) throws Exception {
+    @Override public boolean handleRestCall(String service, List<String> params, AJsonSerHelperForNSysmon json) throws Exception {
         if("getData".equals(service)) {
             serveData(json);
             return true;
@@ -49,7 +49,7 @@ public class AEnvVarPageDefinition implements APresentationPageDefinition {
         return false;
     }
 
-    private void serveData(AJsonSerHelper json) throws Exception {
+    private void serveData(AJsonSerHelperForNSysmon json) throws Exception {
         json.startObject();
 
         json.writeKey("envTree");
@@ -58,7 +58,7 @@ public class AEnvVarPageDefinition implements APresentationPageDefinition {
         json.endObject();
     }
 
-    private void writeEnvListRec(AJsonSerHelper json, Collection<EnvData> coll) throws IOException {
+    private void writeEnvListRec(AJsonSerHelperForNSysmon json, Collection<EnvData> coll) throws IOException {
         json.startArray();
 
         for(EnvData data: coll) {

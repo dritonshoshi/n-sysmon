@@ -1,6 +1,6 @@
 package com.nsysmon.servlet;
 
-import com.ajjpj.afoundation.io.AJsonSerHelper;
+import com.ajjpj.afoundation.io.AJsonSerHelperForNSysmon;
 import com.nsysmon.NSysMon;
 import com.nsysmon.NSysMonApi;
 import com.nsysmon.config.NSysMonConfig;
@@ -43,7 +43,7 @@ public class NSysMonServlet extends AbstractNSysMonServlet {
 
     @Override protected boolean handleRestCall(List<String> restParams, HttpServletResponse resp) throws Exception {
         //TODO This results in the JSON being one huge line. Find a way to add newlines so other tools can open the file
-        final AJsonSerHelper json = new AJsonSerHelper(resp.getOutputStream());
+        final AJsonSerHelperForNSysmon json = new AJsonSerHelperForNSysmon(resp.getOutputStream());
 
         final String pageId = restParams.remove(0);
         final String service = restParams.remove(0);
@@ -79,7 +79,7 @@ public class NSysMonServlet extends AbstractNSysMonServlet {
         out.print("angular.module('NSysMonApp').constant('configRaw', ");
         out.flush();
 
-        final AJsonSerHelper json = new AJsonSerHelper(out);
+        final AJsonSerHelperForNSysmon json = new AJsonSerHelperForNSysmon(out);
         json.startObject();
 
         json.writeKey("applicationId");
@@ -112,7 +112,7 @@ public class NSysMonServlet extends AbstractNSysMonServlet {
         out.println(");");
     }
 
-    private void writeMenuEntry(APresentationMenuEntry menuEntry, AJsonSerHelper json) throws IOException {
+    private void writeMenuEntry(APresentationMenuEntry menuEntry, AJsonSerHelperForNSysmon json) throws IOException {
         json.startObject();
 
         json.writeKey("label");

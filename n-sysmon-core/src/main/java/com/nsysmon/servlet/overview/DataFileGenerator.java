@@ -1,6 +1,6 @@
 package com.nsysmon.servlet.overview;
 
-import com.ajjpj.afoundation.io.AJsonSerHelper;
+import com.ajjpj.afoundation.io.AJsonSerHelperForNSysmon;
 import com.nsysmon.NSysMonApi;
 import com.nsysmon.config.log.NSysMonLogger;
 import com.nsysmon.config.presentation.APresentationPageDefinition;
@@ -83,7 +83,7 @@ public class DataFileGenerator implements APresentationPageDefinition {
         }
     }
 
-    @Override public boolean handleRestCall(String service, List<String> params, AJsonSerHelper json) throws Exception {
+    @Override public boolean handleRestCall(String service, List<String> params, AJsonSerHelperForNSysmon json) throws Exception {
         if ("getData".equals(service)) {
             serveData(params, json);
             return true;
@@ -92,7 +92,7 @@ public class DataFileGenerator implements APresentationPageDefinition {
     }
 
     /** Lists files which can be generated and timestamp when last generation was */
-    private void serveData(List<String> params, AJsonSerHelper json) throws IOException {
+    private void serveData(List<String> params, AJsonSerHelperForNSysmon json) throws IOException {
         //TODO list configured paths + filename-patterns
         json.startObject();
         json.writeKey("pages");
@@ -106,7 +106,7 @@ public class DataFileGenerator implements APresentationPageDefinition {
         json.endObject();
     }
 
-    private void addDataToJson(DataFileGeneratorThread thread, AJsonSerHelper json) throws IOException {
+    private void addDataToJson(DataFileGeneratorThread thread, AJsonSerHelperForNSysmon json) throws IOException {
         json.startObject();
         json.writeKey("id");
         json.writeStringLiteral(thread.getPageId());

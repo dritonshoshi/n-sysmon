@@ -1,6 +1,6 @@
 package com.nsysmon.servlet.performance;
 
-import com.ajjpj.afoundation.io.AJsonSerHelper;
+import com.ajjpj.afoundation.io.AJsonSerHelperForNSysmon;
 import com.nsysmon.NSysMon;
 import com.nsysmon.NSysMonApi;
 import com.nsysmon.config.presentation.APresentationPageDefinition;
@@ -24,7 +24,7 @@ public abstract class AAbstractNsysmonPerformancePageDef implements APresentatio
     @Override public void init(NSysMonApi sysMon) {
     }
 
-    @Override public boolean handleRestCall(String service, List<String> params, AJsonSerHelper json) throws IOException {
+    @Override public boolean handleRestCall(String service, List<String> params, AJsonSerHelperForNSysmon json) throws IOException {
         if("getData".equals(service)) {
             serveData(json);
             return true;
@@ -56,7 +56,7 @@ public abstract class AAbstractNsysmonPerformancePageDef implements APresentatio
     protected abstract List<ColDef> getColDefs();
     protected abstract List<TreeNode> getData();
 
-    protected void serveData(AJsonSerHelper json) throws IOException {
+    protected void serveData(AJsonSerHelperForNSysmon json) throws IOException {
         json.startObject();
 
         json.writeKey("isStarted");
@@ -80,7 +80,7 @@ public abstract class AAbstractNsysmonPerformancePageDef implements APresentatio
         json.endObject();
     }
 
-    private void writeColDef(AJsonSerHelper json, ColDef colDef) throws IOException {
+    private void writeColDef(AJsonSerHelperForNSysmon json, ColDef colDef) throws IOException {
         json.startObject();
 
         json.writeKey("name");
@@ -101,7 +101,7 @@ public abstract class AAbstractNsysmonPerformancePageDef implements APresentatio
         json.endObject();
     }
 
-    private void writeDataNode(AJsonSerHelper json, TreeNode node, int nr) throws IOException {
+    private void writeDataNode(AJsonSerHelperForNSysmon json, TreeNode node, int nr) throws IOException {
         json.startObject();
 
         if(node.id != null) {

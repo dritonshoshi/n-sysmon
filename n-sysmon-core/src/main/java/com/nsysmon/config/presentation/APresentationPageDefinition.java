@@ -1,6 +1,6 @@
 package com.nsysmon.config.presentation;
 
-import com.ajjpj.afoundation.io.AJsonSerHelper;
+import com.ajjpj.afoundation.io.AJsonSerHelperForNSysmon;
 import com.nsysmon.NSysMonApi;
 
 import java.util.List;
@@ -45,7 +45,7 @@ public interface APresentationPageDefinition {
      *
      * @return true iff the service could be handled
      */
-    boolean handleRestCall(String service, List<String> params, AJsonSerHelper json) throws Exception;
+    boolean handleRestCall(String service, List<String> params, AJsonSerHelperForNSysmon json) throws Exception;
 
     /**
      * called once before any of the other methods is called.

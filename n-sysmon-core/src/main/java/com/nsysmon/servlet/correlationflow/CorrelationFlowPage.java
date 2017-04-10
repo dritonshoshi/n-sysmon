@@ -1,6 +1,6 @@
 package com.nsysmon.servlet.correlationflow;
 
-import com.ajjpj.afoundation.io.AJsonSerHelper;
+import com.ajjpj.afoundation.io.AJsonSerHelperForNSysmon;
 import com.nsysmon.NSysMonApi;
 import com.nsysmon.config.log.NSysMonLogger;
 import com.nsysmon.config.presentation.APresentationPageDefinition;
@@ -47,7 +47,7 @@ public class CorrelationFlowPage implements APresentationPageDefinition {
     }
 
     @Override
-    public boolean handleRestCall(String service, List<String> params, AJsonSerHelper json) throws Exception {
+    public boolean handleRestCall(String service, List<String> params, AJsonSerHelperForNSysmon json) throws Exception {
         if ("getData".equals(service)) {
             serveData(json);
             return true;
@@ -70,7 +70,7 @@ public class CorrelationFlowPage implements APresentationPageDefinition {
     }
 
     //Test at http://localhost:8181/nsysmon/_$_nsysmon_$_/rest/correlationFlow/getData
-    private void serveData(final AJsonSerHelper json) throws IOException {
+    private void serveData(final AJsonSerHelperForNSysmon json) throws IOException {
         json.startObject();
         json.writeKey("tree");
         json.startArray();
@@ -99,7 +99,7 @@ public class CorrelationFlowPage implements APresentationPageDefinition {
         json.endObject();
     }
 
-    private void writeChildren(AJsonSerHelper json, Set<ACorrelationId> children, Map<ACorrelationId, Set<ACorrelationId>> data) throws IOException {
+    private void writeChildren(AJsonSerHelperForNSysmon json, Set<ACorrelationId> children, Map<ACorrelationId, Set<ACorrelationId>> data) throws IOException {
         if (children == null || children.isEmpty()){
             //process only filled-elements
             return;
@@ -128,7 +128,7 @@ public class CorrelationFlowPage implements APresentationPageDefinition {
 	/**
      * All children from all levels, not only the direct children.
      */
-    private void addNumberOfChildren(AJsonSerHelper json, Set<ACorrelationId> children, Map<ACorrelationId, Set<ACorrelationId>> data) throws IOException {
+    private void addNumberOfChildren(AJsonSerHelperForNSysmon json, Set<ACorrelationId> children, Map<ACorrelationId, Set<ACorrelationId>> data) throws IOException {
         if (children == null || children.isEmpty()){
             return;
         }

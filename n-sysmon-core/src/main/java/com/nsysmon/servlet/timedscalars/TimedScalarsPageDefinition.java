@@ -1,7 +1,7 @@
 package com.nsysmon.servlet.timedscalars;
 
 import com.ajjpj.afoundation.collection.mutable.ARingBuffer;
-import com.ajjpj.afoundation.io.AJsonSerHelper;
+import com.ajjpj.afoundation.io.AJsonSerHelperForNSysmon;
 import com.nsysmon.NSysMonApi;
 import com.nsysmon.config.log.NSysMonLogger;
 import com.nsysmon.config.presentation.APresentationPageDefinition;
@@ -61,7 +61,7 @@ public class TimedScalarsPageDefinition implements APresentationPageDefinition, 
     }
 
     @Override
-    public boolean handleRestCall(String service, List<String> params, AJsonSerHelper json) throws IOException {
+    public boolean handleRestCall(String service, List<String> params, AJsonSerHelperForNSysmon json) throws IOException {
         if ("getData".equals(service)) {
             serveData(json, params, sysMon);
             return true;
@@ -79,7 +79,7 @@ public class TimedScalarsPageDefinition implements APresentationPageDefinition, 
         return false;
     }
 
-    private void serveGraphData(final AJsonSerHelper json, List<String> params) throws IOException {
+    private void serveGraphData(final AJsonSerHelperForNSysmon json, List<String> params) throws IOException {
         if (params == null || params.size() < 1){
             return;
         }
@@ -107,7 +107,7 @@ public class TimedScalarsPageDefinition implements APresentationPageDefinition, 
 
     }
 
-    private void serveLatestGraphData(final AJsonSerHelper json, List<String> params) throws IOException {
+    private void serveLatestGraphData(final AJsonSerHelperForNSysmon json, List<String> params) throws IOException {
         if (params == null || params.size() < 1){
             return;
         }
@@ -136,7 +136,7 @@ public class TimedScalarsPageDefinition implements APresentationPageDefinition, 
         json.endArray();
     }
 
-    protected void addMetainfos(AJsonSerHelper json, String key, NSysMonApi givenSysMon) throws IOException {
+    protected void addMetainfos(AJsonSerHelperForNSysmon json, String key, NSysMonApi givenSysMon) throws IOException {
         json.writeKey("key");
         json.writeStringLiteral(key);
 
@@ -192,7 +192,7 @@ public class TimedScalarsPageDefinition implements APresentationPageDefinition, 
         return null;
     }
 
-    protected void serveData(final AJsonSerHelper json, List<String> params, NSysMonApi givenSysMon) throws IOException {
+    protected void serveData(final AJsonSerHelperForNSysmon json, List<String> params, NSysMonApi givenSysMon) throws IOException {
         final Map<String, ARingBuffer<AScalarDataPoint>> scalars = givenSysMon.getTimedScalarMeasurements();
         json.startObject();
 
@@ -212,7 +212,7 @@ public class TimedScalarsPageDefinition implements APresentationPageDefinition, 
         json.endObject();
     }
 
-    protected void restartTimedScalar(final AJsonSerHelper json, List<String> params, NSysMonApi givenSysMon) throws IOException {
+    protected void restartTimedScalar(final AJsonSerHelperForNSysmon json, List<String> params, NSysMonApi givenSysMon) throws IOException {
         String key = params.get(0);
         for (RobustScalarMeasurerWrapper measurerWrapper : givenSysMon.getTimedScalarForDirectAccess()) {
             if (measurerWrapper.restartIfResponsible(key)) {
@@ -222,7 +222,7 @@ public class TimedScalarsPageDefinition implements APresentationPageDefinition, 
         serveData(json, params, givenSysMon);
     }
 
-    private void writeRingBufferIntoJson(final AJsonSerHelper json, final ARingBuffer buffer) throws IOException {
+    private void writeRingBufferIntoJson(final AJsonSerHelperForNSysmon json, final ARingBuffer buffer) throws IOException {
         for (Object aBuffer : buffer) {
             AScalarDataPoint scalarDataPoint = (AScalarDataPoint) aBuffer;
             try {
@@ -263,7 +263,7 @@ public class TimedScalarsPageDefinition implements APresentationPageDefinition, 
         return rc;
     }
 
-    private void writeRingBufferIntoJson(final AJsonSerHelper json, final ARingBuffer<AScalarDataPoint> buffer, Duration newerThan) throws IOException {
+    private void writeRingBufferIntoJson(final AJsonSerHelperForNSysmon json, final ARingBuffer<AScalarDataPoint> buffer, Duration newerThan) throws IOException {
 
         for (AScalarDataPoint scalarDataPoint : filterByTimestamp(buffer, newerThan)) {
             try {
@@ -292,8 +292,8 @@ public class TimedScalarsPageDefinition implements APresentationPageDefinition, 
         }
         String selectedEntries = params.stream().collect(Collectors.joining(","));
 
-        AJsonSerHelper aJsonSerHelper = new AJsonSerHelper(os);
-        serveGraphData(aJsonSerHelper, Collections.singletonList(selectedEntries));
+        AJsonSerHelperForNSysmon aJsonSerHelperForNSysmon = new AJsonSerHelperForNSysmon(os);
+        serveGraphData(aJsonSerHelperForNSysmon, Collections.singletonList(selectedEntries));
 
     }
 

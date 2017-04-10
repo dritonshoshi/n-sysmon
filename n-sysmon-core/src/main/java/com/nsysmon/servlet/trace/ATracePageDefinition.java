@@ -1,6 +1,6 @@
 package com.nsysmon.servlet.trace;
 
-import com.ajjpj.afoundation.io.AJsonSerHelper;
+import com.ajjpj.afoundation.io.AJsonSerHelperForNSysmon;
 import com.nsysmon.NSysMonApi;
 import com.nsysmon.data.AHierarchicalData;
 import com.nsysmon.data.AHierarchicalDataRoot;
@@ -179,8 +179,8 @@ public class ATracePageDefinition extends AAbstractNsysmonPerformancePageDef imp
 
     @Override
     public void getDataForExport(OutputStream os) throws IOException {
-        AJsonSerHelper aJsonSerHelper = new AJsonSerHelper(os);
-        serveData(aJsonSerHelper);
+        AJsonSerHelperForNSysmon aJsonSerHelperForNSysmon = new AJsonSerHelperForNSysmon(os);
+        serveData(aJsonSerHelperForNSysmon);
     }
 
     class NumberSorter implements Comparator<String> {
