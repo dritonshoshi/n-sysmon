@@ -11,7 +11,7 @@
 
     <groupId>com.github.dritonshoshi</groupId>
     <artifactId>n-sysmon-parent</artifactId>
-    <version>1.4.2-SNAPSHOT</version>
+    <version>1.4.2</version>
     <packaging>pom</packaging>
 
     <name>${project.artifactId}-${project.version}</name>
@@ -50,6 +50,11 @@
             <id>sjurwareagle</id>
             <name>Torsten Kunkel</name>
             <email>github@tkunkel.de</email>
+        </developer>
+        <developer>
+            <id>tinosteinort</id>
+            <name>Tino Steinort</name>
+            <email>tinosteinort@live.de</email>
         </developer>
     </developers>
 
