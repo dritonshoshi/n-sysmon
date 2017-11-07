@@ -1,5 +1,5 @@
 # N-Sysmon
-N-Sysmon is a toolset for monitoring and exploring performance aspects of Java enterprise applications. N-Sysmoin is a fork of A-Sysmon.
+N-Sysmon is a toolset for monitoring and exploring performance aspects of Java enterprise applications. N-Sysmon is a fork of A-Sysmon.
 
 # Documentation
 
