@@ -48,6 +48,7 @@ public class NSysMonConfig {
 
     private final Boolean collectSqlParameters;
     private final Boolean collectTooltips;
+    public final boolean correlationFlowDisabled;
 
     private Boolean overrideCollectSqlParameters = null;
     private Boolean overrideCollectTooltips = null;
@@ -61,7 +62,7 @@ public class NSysMonConfig {
                          List<AEnvironmentMeasurer> environmentMeasurers, List<AScalarMeasurer> initialScalarMeasurers, List<AScalarMeasurer> initialTimedScalarMeasurers, List<ADataSink> initialDataSinks,
                          String defaultPage,
                          List<APresentationMenuEntry> presentationMenuEntries, Map<String, String> additionalConfigurationParameters, Boolean collectSqlParameters, boolean collectTooltips,
-                         String pathDatafiles, Map<String, Object> timedScalarMonitoringParameters) {
+                         String pathDatafiles, Map<String, Object> timedScalarMonitoringParameters, boolean correlationFlowDisabled) {
         this.appInfo = appInfo;
         this.averagingDelayForScalarsMillis = averagingDelayForScalarsMillis;
         this.durationOfOneTimedScalar = durationOfOneTimedScalar;
@@ -86,7 +87,7 @@ public class NSysMonConfig {
         this.collectTooltips = collectTooltips;
         this.pathDatafiles = pathDatafiles;
         this.timedScalarMonitoringParameters = timedScalarMonitoringParameters;
-
+        this.correlationFlowDisabled = correlationFlowDisabled;
     }
 
     /**
@@ -97,6 +98,7 @@ public class NSysMonConfig {
         final String s = System.getProperty(PROPNAME_GLOBALLY_DISABLED);
         return "true".equals(s);
     }
+
 
     public boolean configuredCollectTooltips() {
         return collectTooltips;

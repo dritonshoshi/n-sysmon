@@ -39,6 +39,7 @@ public class NSysMonConfigBuilder {
 
     private boolean collectSqlParameters = false;
     private boolean collectTooltips = false;
+    private boolean correlationFlowDisabled = false;
 
     private String pathDatafiles = "/tmp";
 
@@ -114,6 +115,10 @@ public class NSysMonConfigBuilder {
 
     public void setCollectSqlParameters(boolean collectSqlParameters) {
         this.collectSqlParameters = collectSqlParameters;
+    }
+
+    void setCorrelationFlowDisabled(boolean correlationFlowDisabled) {
+        this.correlationFlowDisabled = correlationFlowDisabled;
     }
 
     public boolean isCollectSqlParameters() {
@@ -193,7 +198,7 @@ public class NSysMonConfigBuilder {
                 timer, httpRequestAnalyzer,
                 environmentMeasurers, scalarMeasurers, scalarTimedMeasurers, dataSinks,
                 defaultPage, presentationMenuEntries, additionalConfigurationParameters,
-                collectSqlParameters, collectTooltips, pathDatafiles, timedScalarMonitoringParameters
+                collectSqlParameters, collectTooltips, pathDatafiles, timedScalarMonitoringParameters, correlationFlowDisabled
                 );
     }
 

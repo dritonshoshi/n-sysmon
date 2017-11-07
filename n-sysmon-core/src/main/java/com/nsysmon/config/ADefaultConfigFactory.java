@@ -60,6 +60,7 @@ public class ADefaultConfigFactory implements AConfigFactory {
 
     public static final String KEY_COLLECT_SQL_PARAMETERS = "collect-sql-parameters";
     public static final String KEY_COLLECT_TOOLTIPS = "collect-tooltips";
+    public static final String KEY_CORRELATION_FLOW = "correlation-flow-disabled";
 
     public static final String KEY_DATA_SINK_TIMEOUT_NANOS = "data-sink-timeout-nanos";
     public static final String KEY_MAX_NUM_DATA_SINK_TIMEOUTS = "max-num-data-sink-timeouts";
@@ -168,6 +169,7 @@ public class ADefaultConfigFactory implements AConfigFactory {
 
         builder.setCollectSqlParameters(props.get(KEY_COLLECT_SQL_PARAMETERS, Boolean.TYPE));
         builder.setCollectTooltips(props.get(KEY_COLLECT_TOOLTIPS, Boolean.TYPE));
+        builder.setCorrelationFlowDisabled(props.get(KEY_CORRELATION_FLOW, Boolean.TYPE));
 
         builder.setMaxNestedMeasurements(props.get(KEY_MAX_NESTED_MEASUREMENTS, Integer.TYPE));
         builder.setMaxNumMeasurementsPerHierarchy(props.get(KEY_MAX_NUM_MEASUREMENTS_PER_HIERARCHY, Integer.TYPE));

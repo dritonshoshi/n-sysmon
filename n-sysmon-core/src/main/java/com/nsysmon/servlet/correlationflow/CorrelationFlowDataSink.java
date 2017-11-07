@@ -1,6 +1,8 @@
 package com.nsysmon.servlet.correlationflow;
 
 import com.ajjpj.afoundation.collection.mutable.ARingBuffer;
+import com.nsysmon.NSysMon;
+import com.nsysmon.config.NSysMonConfig;
 import com.nsysmon.config.log.NSysMonLogger;
 import com.nsysmon.data.ACorrelationId;
 import com.nsysmon.data.AHierarchicalDataRoot;
@@ -31,6 +33,9 @@ public class CorrelationFlowDataSink implements ADataSink {
     }
 
     private void processMeasurement(Collection<ACorrelationId> startedFlows,Collection<ACorrelationId> joinedFlows) {
+		if (NSysMon.get().getConfig().correlationFlowDisabled) {
+			return;
+		}
 	    Set<ACorrelationId> flowsToProcess = new HashSet<>(startedFlows);
 	    flowsToProcess.addAll(joinedFlows);
 		int loops = flowsToProcess.size();
