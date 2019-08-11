@@ -24,6 +24,7 @@ public class RobustScalarMeasurerWrapper {
     private final int maxNumTimeouts;
 
     private final AtomicInteger numTimeouts = new AtomicInteger(0);
+    private final AtomicInteger numExceptions = new AtomicInteger(0);
 
     public ScalarMeasurerStatus getStatus(String key) {
         if (!inner.isResponsibleForMeasurement(key)){
@@ -59,9 +60,12 @@ public class RobustScalarMeasurerWrapper {
                 final long start = System.nanoTime();
                 inner.prepareMeasurements(mementos);
                 handleDuration(System.nanoTime() - start, inner.getTimeoutInMilliSeconds());
+                numExceptions.set(0);
             } catch (Exception e) {
-                log.warn("Disabling scalar measurer " + inner.getClass().getName() + " because an exception occurred", e);
-                strategy = DISABLED;
+                if (numExceptions.incrementAndGet() > maxNumTimeouts) {
+                    log.warn("Disabling scalar measurer " + inner.getClass().getName() + " because an exception occurred " + maxNumTimeouts + " times in row", e);
+                    strategy = DISABLED;
+                }
             }
         }
 
@@ -80,9 +84,12 @@ public class RobustScalarMeasurerWrapper {
                 final long start = System.nanoTime();
                 inner.contributeMeasurements(data, timestamp, mementos);
                 handleDuration(System.nanoTime() - start, inner.getTimeoutInMilliSeconds());
+                numExceptions.set(0);
             } catch (Exception e) {
-                log.warn("Disabling scalar measurer " + inner.getClass().getName() + " because an exception occurred", e);
-                strategy = DISABLED;
+                if (numExceptions.incrementAndGet() > maxNumTimeouts) {
+                    log.warn("Disabling scalar measurer " + inner.getClass().getName() + " because an exception occurred " + maxNumTimeouts + " times in row", e);
+                    strategy = DISABLED;
+                }
             }
         }
     };
@@ -93,9 +100,12 @@ public class RobustScalarMeasurerWrapper {
                 final long start = System.nanoTime();
                 inner.prepareMeasurements(mementos);
                 handleDuration(System.nanoTime() - start, inner.getTimeoutInMilliSeconds());
+                numExceptions.set(0);
             } catch (Exception e) {
-                log.warn("Disabling scalar measurer " + inner.getClass().getName() + " because an exception occurred", e);
-                strategy = DISABLED;
+                if (numExceptions.incrementAndGet() > maxNumTimeouts) {
+                    log.warn("Disabling scalar measurer " + inner.getClass().getName() + " because an exception occurred " + maxNumTimeouts + " times in row", e);
+                    strategy = DISABLED;
+                }
             }
         }
 
@@ -103,13 +113,14 @@ public class RobustScalarMeasurerWrapper {
             final long timeout = timeoutInMilliseconds.isEmpty() ? timeoutNanos : timeoutInMilliseconds.get() * 1_000_000;
 
             if(durationNanos > timeout) {
+                log.warn("Scalar measurer " + inner.getClass().getName() + " timed out (took " + durationNanos + "ns)");
                 if(numTimeouts.incrementAndGet() >= maxNumTimeouts) {
                     log.warn("Scalar measurer " + inner.getClass().getName() + " timed out " + maxNumTimeouts + " times in row - permanently disabling");
                     strategy = DISABLED;
                 }
-                else {
-                    strategy = ENABLED;
-                }
+            } else {
+                numTimeouts.set(0);
+                strategy = ENABLED;
             }
         }
 
@@ -118,9 +129,12 @@ public class RobustScalarMeasurerWrapper {
                 final long start = System.nanoTime();
                 inner.contributeMeasurements(data, timestamp, mementos);
                 handleDuration(System.nanoTime() - start, inner.getTimeoutInMilliSeconds());
+                numExceptions.set(0);
             } catch (Exception e) {
-                log.warn("Disabling scalar measurer " + inner.getClass().getName() + " because an exception occurred", e);
-                strategy = DISABLED;
+                if (numExceptions.incrementAndGet() > maxNumTimeouts) {
+                    log.warn("Disabling scalar measurer " + inner.getClass().getName() + " because an exception occurred " + maxNumTimeouts + " times in row", e);
+                    strategy = DISABLED;
+                }
             }
         }
     };

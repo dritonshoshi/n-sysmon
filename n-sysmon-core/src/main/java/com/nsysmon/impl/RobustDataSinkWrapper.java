@@ -21,6 +21,7 @@ class RobustDataSinkWrapper { //TO_CONSIDER provide a means for a data sink to s
     private final int maxNumTimeouts;
 
     private final AtomicInteger numTimeouts = new AtomicInteger(0);
+    private final AtomicInteger numExceptions = new AtomicInteger(0);
 
     private interface Strategy {
         void onStartedHierarchicalMeasurement(String identifier);
@@ -33,9 +34,12 @@ class RobustDataSinkWrapper { //TO_CONSIDER provide a means for a data sink to s
                 final long start = System.nanoTime();
                 inner.onStartedHierarchicalMeasurement(identifier);
                 handleDuration(System.nanoTime() - start);
+                numExceptions.set(0);
             } catch (Exception e) {
-                log.warn("Disabling data sink " + inner.getClass().getName() + " because an exception occurred", e);
-                strategy = DISABLED;
+                if (numExceptions.incrementAndGet() > maxNumTimeouts) {
+                    log.warn("Disabling data sink " + inner.getClass().getName() + " because an exception occurred " + maxNumTimeouts + " times in row", e);
+                    strategy = DISABLED;
+                }
             }
         }
 
@@ -44,9 +48,12 @@ class RobustDataSinkWrapper { //TO_CONSIDER provide a means for a data sink to s
                 final long start = System.nanoTime();
                 inner.onFinishedHierarchicalMeasurement(data);
                 handleDuration(System.nanoTime() - start);
+                numExceptions.set(0);
             } catch (Exception e) {
-                log.warn("Disabling data sink " + inner.getClass().getName() + " because an exception occurred", e);
-                strategy = DISABLED;
+                if (numExceptions.incrementAndGet() > maxNumTimeouts) {
+                    log.warn("Disabling data sink " + inner.getClass().getName() + " because an exception occurred " + maxNumTimeouts + " times in row", e);
+                    strategy = DISABLED;
+                }
             }
         }
 
@@ -65,9 +72,12 @@ class RobustDataSinkWrapper { //TO_CONSIDER provide a means for a data sink to s
                 final long start = System.nanoTime();
                 inner.onStartedHierarchicalMeasurement(identifier);
                 handleDuration(System.nanoTime() - start);
+                numExceptions.set(0);
             } catch (Exception e) {
-                log.warn("Disabling data sink " + inner.getClass().getName() + " because an exception occurred", e);
-                strategy = DISABLED;
+                if (numExceptions.incrementAndGet() > maxNumTimeouts) {
+                    log.warn("Disabling data sink " + inner.getClass().getName() + " because an exception occurred " + maxNumTimeouts + " times in row", e);
+                    strategy = DISABLED;
+                }
             }
         }
 
@@ -76,21 +86,25 @@ class RobustDataSinkWrapper { //TO_CONSIDER provide a means for a data sink to s
                 final long start = System.nanoTime();
                 inner.onFinishedHierarchicalMeasurement(data);
                 handleDuration(System.nanoTime() - start);
+                numExceptions.set(0);
             } catch (Exception e) {
-                log.warn("Disabling data sink " + inner.getClass().getName() + " because an exception occurred", e);
-                strategy = DISABLED;
+                if (numExceptions.incrementAndGet() > maxNumTimeouts) {
+                    log.warn("Disabling data sink " + inner.getClass().getName() + " because an exception occurred " + maxNumTimeouts + " times in row", e);
+                    strategy = DISABLED;
+                }
             }
         }
 
         private void handleDuration(long durationNanos) {
             if(durationNanos > timeoutNanos) {
+                log.warn("Data sink " + inner.getClass().getName() + " timed out (took " + durationNanos + "ns)");
                 if(numTimeouts.incrementAndGet() >= maxNumTimeouts) {
                     log.warn("Data Sink " + inner.getClass().getName() + " timed out " + maxNumTimeouts + " times in row - permanently disabling");
                     strategy = DISABLED;
                 }
-                else {
-                    strategy = ENABLED;
-                }
+            } else {
+                numTimeouts.set(0);
+                strategy = ENABLED;
             }
         }
     };
