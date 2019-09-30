@@ -80,7 +80,7 @@ public class NSysMonJdbcDriver implements Driver {
         }
 
         try {
-            final NSysMonSource sysMonSource = (NSysMonSource) Class.forName(sysmonSourceName).newInstance();
+            final NSysMonSource sysMonSource = (NSysMonSource) Class.forName(sysmonSourceName).getDeclaredConstructor().newInstance();
             return sysMonSource.getSysMon();
         } catch (Exception exc) {
             throw new SQLException("error retrieving NSysMon instance", exc);

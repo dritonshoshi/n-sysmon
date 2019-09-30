@@ -105,7 +105,7 @@ public class ADefaultConfigFactory implements AConfigFactory {
                 return defaultLogger(); // avoid the warning log entry
             }
 
-            return (NSysMonLoggerFactory) Class.forName(loggerClassName.trim()).newInstance();
+            return (NSysMonLoggerFactory) Class.forName(loggerClassName.trim()).getDeclaredConstructor().newInstance();
         }
         catch (Exception exc) {
             final NSysMonLoggerFactory logger = defaultLogger();

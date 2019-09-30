@@ -34,7 +34,7 @@ public class AHttpRequestMeasuringFilter implements Filter {
         final String analyzerFqn = filterConfig.getInitParameter(PARAM_ANALYZER_CLASS_FQN);
 
         if(analyzerFqn != null) {
-            return (AHttpRequestAnalyzer) Thread.currentThread().getContextClassLoader().loadClass(analyzerFqn).newInstance();
+            return (AHttpRequestAnalyzer) Thread.currentThread().getContextClassLoader().loadClass(analyzerFqn).getDeclaredConstructor().newInstance();
         }
 
         return getSysMon().getConfig().httpRequestAnalyzer;
