@@ -14,8 +14,14 @@ public class AEnvVarEnvironmentMeasurer implements AEnvironmentMeasurer {
         final Map<String, String> env = System.getenv();
 
         for(String envName: env.keySet()) {
-            data.add(env.get(envName), KEY_ENV_VAR, envName);
+            final String value = isAllowedInCleartext(envName) ? env.get(envName) : "********";
+
+            data.add(value, KEY_ENV_VAR, envName);
         }
+    }
+
+    private boolean isAllowedInCleartext(String envName) {
+        return !envName.toUpperCase().startsWith("SECURE_");
     }
 
     @Override
