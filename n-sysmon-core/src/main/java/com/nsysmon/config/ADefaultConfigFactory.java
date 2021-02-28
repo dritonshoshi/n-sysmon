@@ -184,6 +184,7 @@ public class ADefaultConfigFactory implements AConfigFactory {
         //TODO this need to be refactored, so measurements can be configured
         Map<String, String> additionalConfigurations = new HashMap<>();
         additionalConfigurations.put(KEY_TOMCAT_GLOBAL_REQUEST_PROCESSOR, props.get(KEY_TOMCAT_GLOBAL_REQUEST_PROCESSOR, String.class));
+        additionalConfigurations.put(KEY_TOMCAT_THREAD_POOL, props.get(KEY_TOMCAT_THREAD_POOL, String.class));
 
         builder.setAdditionalConfigurationParameters(additionalConfigurations);
 
