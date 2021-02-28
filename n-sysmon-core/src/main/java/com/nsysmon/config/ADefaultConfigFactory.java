@@ -66,6 +66,7 @@ public class ADefaultConfigFactory implements AConfigFactory {
     public static final String KEY_MAX_NUM_DATA_SINK_TIMEOUTS = "max-num-data-sink-timeouts";
 
     public static final String KEY_TOMCAT_GLOBAL_REQUEST_PROCESSOR = "tomcat-global-request-processor";
+    public static final String KEY_TOMCAT_THREAD_POOL = "tomcat-thread-pool";
     public static final String KEY_DATAFILE_PATH = "datafile-path";
 
     private static volatile NSysMonLoggerFactory configuredLogger;
