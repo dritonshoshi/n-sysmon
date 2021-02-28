@@ -6,11 +6,11 @@
     <parent>
         <groupId>com.github.dritonshoshi</groupId>
         <artifactId>n-sysmon-parent</artifactId>
-        <version>1.4.6</version>
+        <version>1.4.7-SNAPSHOT</version>
     </parent>
 
     <artifactId>n-sysmon-server</artifactId>
-    <version>1.4.6</version>
+    <version>1.4.7-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>${project.artifactId}-${project.version}</name>
