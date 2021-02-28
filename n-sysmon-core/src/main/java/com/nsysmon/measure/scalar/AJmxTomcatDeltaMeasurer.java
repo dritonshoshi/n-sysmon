@@ -70,6 +70,7 @@ public class AJmxTomcatDeltaMeasurer implements AScalarMeasurer, NSysMonAware {
 
     @Override public void setNSysMon(NSysMonApi sysMon) {
         OBJECT_GLOBAL_REQUEST_PROCESSOR = sysMon.getConfig().additionalConfigurationParameters.get(ADefaultConfigFactory.KEY_TOMCAT_GLOBAL_REQUEST_PROCESSOR);
+        OBJECT_THREAD_POOL = sysMon.getConfig().additionalConfigurationParameters.get(ADefaultConfigFactory.KEY_TOMCAT_THREAD_POOL);
     }
 
     @Override
