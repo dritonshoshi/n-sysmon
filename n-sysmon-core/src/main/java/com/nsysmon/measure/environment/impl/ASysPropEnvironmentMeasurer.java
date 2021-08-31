@@ -11,11 +11,17 @@ public class ASysPropEnvironmentMeasurer implements AEnvironmentMeasurer {
 
     @Override public void contributeMeasurements(EnvironmentCollector data) throws Exception {
         for(String propName: System.getProperties().stringPropertyNames()) {
-            data.add(System.getProperty(propName), KEY_SYSTEM_PROPERTY, propName);
+            final String value = isAllowedInCleartext(propName) ? System.getProperty(propName) : "********";
+
+            data.add(value, KEY_SYSTEM_PROPERTY, propName);
         }
     }
 
     @Override
     public void shutdown() throws Exception {
+    }
+
+    private boolean isAllowedInCleartext(String envName) {
+        return !envName.toLowerCase().startsWith("secure");
     }
 }
