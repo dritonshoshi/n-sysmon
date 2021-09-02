@@ -4,6 +4,7 @@ import com.ajjpj.afoundation.collection.immutable.AList;
 import com.ajjpj.afoundation.collection.mutable.ARingBuffer;
 import com.nsysmon.config.NSysMonConfig;
 import com.nsysmon.data.AScalarDataPoint;
+import com.nsysmon.data.AScalarMeasurementInterceptor;
 
 import java.util.Collections;
 import java.util.Date;
@@ -17,6 +18,7 @@ class TimedScalarDataWrapper implements Runnable {
     private final int maxEntriesMonitoring;
     private AList<RobustScalarMeasurerWrapper> timedScalarMeasurers = AList.nil();
     private final Map<String, Object> mementos = new TreeMap<>();
+    private AScalarMeasurementInterceptor interceptor;
 
     TimedScalarDataWrapper(int maxEntriesTotal, int maxEntriesMonitoring) {
         this.maxEntriesTotal = maxEntriesTotal;
@@ -55,6 +57,11 @@ class TimedScalarDataWrapper implements Runnable {
     }
 
     void addMeasurement(AScalarDataPoint... dataPoint) {
+
+        if (isInterceptorActive()) {
+            this.interceptor.addMeasurement(dataPoint);
+        }
+
         for (AScalarDataPoint point : dataPoint) {
             String name = point.getName();
             if (!dataBuffer.containsKey(name)){
@@ -69,7 +76,15 @@ class TimedScalarDataWrapper implements Runnable {
         }
     }
 
+    private boolean isInterceptorActive() {
+        return interceptor != null;
+    }
+
     public AList<RobustScalarMeasurerWrapper> getTimedScalarMeasurers() {
         return timedScalarMeasurers;
+    }
+
+    void addTimedScalarMeasurementInterceptor(AScalarMeasurementInterceptor interceptor) {
+        this.interceptor = interceptor;
     }
 }

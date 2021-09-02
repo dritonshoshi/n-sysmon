@@ -11,6 +11,7 @@ import com.nsysmon.config.presentation.APresentationPageDefinition;
 import com.nsysmon.data.ACorrelationId;
 import com.nsysmon.data.AHierarchicalDataRoot;
 import com.nsysmon.data.AScalarDataPoint;
+import com.nsysmon.data.AScalarMeasurementInterceptor;
 import com.nsysmon.datasink.ADataSink;
 import com.nsysmon.measure.ACollectingMeasurement;
 import com.nsysmon.measure.AMeasureCallback;
@@ -270,6 +271,11 @@ public class NSysMonImpl implements AShutdownable, NSysMonApi {
 
     @Override public void addTimedScalarMeasurement(AScalarDataPoint... dataPoint) {
         timedScalarMeasureRunnable.addMeasurement(dataPoint);
+    }
+
+    @Override
+    public void addTimedScalarMeasurementInterceptor(AScalarMeasurementInterceptor interceptor) {
+        timedScalarMeasureRunnable.addTimedScalarMeasurementInterceptor(interceptor);
     }
 
     @Override public List<AEnvironmentData> getEnvironmentMeasurements() {

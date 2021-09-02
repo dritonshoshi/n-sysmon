@@ -6,6 +6,7 @@ import com.nsysmon.config.NSysMonConfig;
 import com.nsysmon.data.ACorrelationId;
 import com.nsysmon.data.AHierarchicalDataRoot;
 import com.nsysmon.data.AScalarDataPoint;
+import com.nsysmon.data.AScalarMeasurementInterceptor;
 import com.nsysmon.impl.RobustScalarMeasurerWrapper;
 import com.nsysmon.measure.ACollectingMeasurement;
 import com.nsysmon.measure.AMeasureCallback;
@@ -66,4 +67,5 @@ public interface NSysMonApi {
     Map<String,ARingBuffer<AScalarDataPoint>> getTimedScalarMeasurementsForMonitoring();
 
     void addTimedScalarMeasurement(AScalarDataPoint... dataPoint);
+    void addTimedScalarMeasurementInterceptor(AScalarMeasurementInterceptor interceptor);
 }
