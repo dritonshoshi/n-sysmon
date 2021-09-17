@@ -38,7 +38,7 @@ class TimedScalarDataWrapper implements Runnable {
             timedScalarMeasurer.contributeMeasurements(data, timestamp, mementos);
         }
 
-        data.values().forEach(this::addMeasurement);
+        addMeasurement(data.values().toArray(new AScalarDataPoint[0]));
     }
 
     public Map<String, ARingBuffer<AScalarDataPoint>> getMeasurements() {
