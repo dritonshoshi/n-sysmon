@@ -22,6 +22,6 @@ public class ASysPropEnvironmentMeasurer implements AEnvironmentMeasurer {
     }
 
     private boolean isAllowedInCleartext(String envName) {
-        return !envName.toLowerCase().startsWith("secure");
+        return !envName.toLowerCase().contains("secure");
     }
 }
