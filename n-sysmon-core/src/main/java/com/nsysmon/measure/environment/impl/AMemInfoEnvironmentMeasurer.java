@@ -1,5 +1,6 @@
 package com.nsysmon.measure.environment.impl;
 
+import com.nsysmon.NSysMon;
 import com.nsysmon.measure.environment.AEnvironmentMeasurer;
 
 import java.io.*;
@@ -23,6 +24,10 @@ public class AMemInfoEnvironmentMeasurer implements AEnvironmentMeasurer {
 
     public Map<String, String> read() throws IOException {
         final Map<String, String> result = new HashMap<>();
+        if (NSysMon.isWindows()){
+            return  result;
+        }
+
         final BufferedReader br = new BufferedReader(new FileReader(new File("/proc/meminfo")));
         try {
             String line;
