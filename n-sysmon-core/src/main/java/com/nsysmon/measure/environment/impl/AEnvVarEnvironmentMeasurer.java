@@ -21,7 +21,11 @@ public class AEnvVarEnvironmentMeasurer implements AEnvironmentMeasurer {
     }
 
     private boolean isAllowedInCleartext(String envName) {
-        return !envName.toUpperCase().contains("SECURE");
+        return !envName.toLowerCase().contains("secure")
+                &&!envName.toLowerCase().contains("password")
+                &&!envName.toLowerCase().contains("truststore")
+                &&!envName.toLowerCase().contains("keystore")
+                ;
     }
 
     @Override
