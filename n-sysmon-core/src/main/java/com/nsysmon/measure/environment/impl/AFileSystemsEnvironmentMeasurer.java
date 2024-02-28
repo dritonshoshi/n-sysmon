@@ -25,6 +25,10 @@ public class AFileSystemsEnvironmentMeasurer implements AEnvironmentMeasurer {
     }
 
     private static void contributeDf(EnvironmentCollector data) throws Exception {
+        if (NSysMon.isWindows()){
+            return;
+        }
+
         for(String line: new CliCommand("df", "-P").getOutput()) {
             if(! line.startsWith("/dev/")) {
                 continue;
