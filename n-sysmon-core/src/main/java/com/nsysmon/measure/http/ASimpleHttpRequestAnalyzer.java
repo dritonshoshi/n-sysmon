@@ -2,8 +2,8 @@ package com.nsysmon.measure.http;
 
 import com.ajjpj.afoundation.collection.immutable.AOption;
 
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Map;
 

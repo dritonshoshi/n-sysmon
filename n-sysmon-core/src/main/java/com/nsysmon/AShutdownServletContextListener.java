@@ -4,8 +4,8 @@ import com.ajjpj.afoundation.function.AStatement0;
 import com.nsysmon.util.AShutdownable;
 import com.ajjpj.afoundation.util.AUnchecker;
 
-import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletContextListener;
+import jakarta.servlet.ServletContextEvent;
+import jakarta.servlet.ServletContextListener;
 
 
 /**

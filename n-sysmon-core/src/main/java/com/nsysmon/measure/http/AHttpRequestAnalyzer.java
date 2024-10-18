@@ -1,6 +1,6 @@
 package com.nsysmon.measure.http;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * @author arno
