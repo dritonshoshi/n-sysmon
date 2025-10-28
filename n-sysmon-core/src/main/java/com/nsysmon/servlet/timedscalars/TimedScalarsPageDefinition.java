@@ -161,11 +161,9 @@ public class TimedScalarsPageDefinition implements APresentationPageDefinition, 
     }
 
     private String findGroupForKey(String key, NSysMonApi givenSysMon) {
-        String tmp;
         for (AScalarMeasurer initialTimedScalarMeasurer : givenSysMon.getConfig().initialTimedScalarMeasurers) {
-            tmp = initialTimedScalarMeasurer.getGroupnameOfMeasurement(key);
-            if (tmp != null){
-                return tmp;
+            if (initialTimedScalarMeasurer.getGroupnameOfMeasurement(key) != null){
+                return initialTimedScalarMeasurer.getGroupnameOfMeasurement(key);
             }
         }
         return "other";
@@ -294,7 +292,6 @@ public class TimedScalarsPageDefinition implements APresentationPageDefinition, 
 
         AJsonSerHelperForNSysmon aJsonSerHelperForNSysmon = new AJsonSerHelperForNSysmon(os);
         serveGraphData(aJsonSerHelperForNSysmon, Collections.singletonList(selectedEntries));
-
     }
 
 }

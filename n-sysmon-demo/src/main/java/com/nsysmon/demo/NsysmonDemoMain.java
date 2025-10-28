@@ -28,6 +28,14 @@ public class NsysmonDemoMain {
         webapp.setWar("n-sysmon-demo/src/main/resources");
         server.setHandler(webapp);
 
+
+//        GzipHandler gzipHandler = new GzipHandler();
+//        gzipHandler.setIncludedMimeTypes("text/html", "text/plain", "text/xml", "text/css",
+//                "application/javascript", "application/json", "image/svg+xml");
+//        gzipHandler.setMinGzipSize(256);
+//        gzipHandler.setHandler(webapp);
+//        server.setHandler(gzipHandler);
+
         generateArtificialGcs();
 
         System.out.println ("access http://localhost:8181/nsysmon for n-sysmon");

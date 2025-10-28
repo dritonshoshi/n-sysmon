@@ -10,11 +10,7 @@ import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.lang.management.OperatingSystemMXBean;
 import java.nio.charset.Charset;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 
@@ -31,15 +27,16 @@ public class ACpuUtilizationMeasurer implements AScalarMeasurer {
     public static final String KEY_MEMENTO = KEY_PREFIX;
     public static final String KEY_AVAILABLE = KEY_PREFIX + "available";
     public static final String KEY_ALL_USED = KEY_PREFIX + "all-used";
-    public static final String KEY_PREFIX_MHZ = KEY_PREFIX + "freq-mhz:";
+    public static final String KEY_PREFIX_MHZ = KEY_PREFIX + "freq-mhz";
     public static final String KEY_SELF_KERNEL = KEY_PREFIX + "self-kernel";
 
-    @Override public void prepareMeasurements(Map<String, Object> mementos) throws IOException {
+    @Override
+    public void prepareMeasurements(Map<String, Object> mementos) throws IOException {
         //this measurement isn't working on windows
-        if (NSysMon.isWindows()){
-           return;
+        if (NSysMon.isWindows()) {
+            return;
         }
-        if (NSysMon.isMacOS()){
+        if (NSysMon.isMacOS()) {
             return;
         }
         mementos.put(KEY_MEMENTO, createSnapshot());
@@ -56,31 +53,31 @@ public class ACpuUtilizationMeasurer implements AScalarMeasurer {
         }
     }
 
-    @Override public void contributeMeasurements(Map<String, AScalarDataPoint> data, long timestamp, Map<String, Object> mementos) throws IOException {
+    @Override
+    public void contributeMeasurements(Map<String, AScalarDataPoint> data, long timestamp, Map<String, Object> mementos) throws IOException {
         //this measurement isn't working on windows
-        if (NSysMon.isWindows()){
+        if (NSysMon.isWindows()) {
             fillForWindows(data, timestamp, mementos);
             return;
         }
-        if (NSysMon.isMacOS()){
+        if (NSysMon.isMacOS()) {
             fillForWindows(data, timestamp, mementos);
             return;
         }
         final Map<String, Snapshot> allCurrent = createSnapshot();
-        @SuppressWarnings("unchecked")
-        final Map<String, Snapshot> allPrev = (Map<String, Snapshot>) mementos.get(KEY_MEMENTO);
+        @SuppressWarnings("unchecked") final Map<String, Snapshot> allPrev = (Map<String, Snapshot>) mementos.get(KEY_MEMENTO);
 
         final int numCpus = allCurrent.size() - 1;
         final Snapshot current = allCurrent.get("cpu");
-        final Snapshot prev = allPrev.get("cpu");
 
-        final long diffTime = current.timestamp - prev.timestamp;
-        if(diffTime <= 0) {
+        final Snapshot prev = (allPrev != null ? allPrev.get("cpu") : null);
+
+        final long diffTime = current.timestamp - (prev != null ? prev.timestamp : 0);
+        if (diffTime <= 0) {
             return;
         }
-
-        final long idleJiffies   = current.idle   - prev.idle;
-        final long stolenJiffies = current.stolen - prev.stolen;
+        final long idleJiffies = current.idle - (prev != null ? prev.idle : 0);
+        final long stolenJiffies = current.stolen - (prev != null ? prev.stolen : 0);
 
         // 'baseline' - 100% for a single CPU, <# cpus>*100% for 'total'
         final long fullJiffies = diffTime * numCpus / 10;
@@ -101,12 +98,12 @@ public class ACpuUtilizationMeasurer implements AScalarMeasurer {
     private void contributeFreq(Map<String, AScalarDataPoint> data, long timestamp) throws IOException {
         final Map<String, AtomicInteger> counter = new HashMap<>();
 
-        for(String line: PROC_CPUINFO_FILE.lines()) {
-            if(! line.contains("MHz")) {
+        for (String line : PROC_CPUINFO_FILE.lines()) {
+            if (!line.contains("MHz")) {
                 continue;
             }
             final String mhz = line.substring(line.indexOf(':') + 1).trim();
-            if(! counter.containsKey(mhz)) {
+            if (!counter.containsKey(mhz)) {
                 counter.put(mhz, new AtomicInteger());
             }
             counter.get(mhz).incrementAndGet();
@@ -122,11 +119,11 @@ public class ACpuUtilizationMeasurer implements AScalarMeasurer {
         return PROC_STAT_FILE.iterate((AFunction1<Iterator<String>, Map<String, Snapshot>, RuntimeException>) iter -> {
             final Map<String, Snapshot> result = new HashMap<>();
 
-            while(iter.hasNext()) {
+            while (iter.hasNext()) {
                 final String line = iter.next();
                 final String[] split = line.split("\\s+");
 
-                if(split[0].startsWith("cpu")) {
+                if (split[0].startsWith("cpu")) {
                     final long idle = Long.valueOf(split[4]);
                     final long stolen = split.length >= 8 ? Long.valueOf(split[8]) : 0;
                     result.put(split[0], new Snapshot(idle, stolen));
@@ -137,7 +134,8 @@ public class ACpuUtilizationMeasurer implements AScalarMeasurer {
         });
     }
 
-    @Override public void shutdown() throws Exception {
+    @Override
+    public void shutdown() throws Exception {
     }
 
     static class Snapshot {
@@ -151,7 +149,8 @@ public class ACpuUtilizationMeasurer implements AScalarMeasurer {
         }
     }
 
-    @Override public AOption<Long> getTimeoutInMilliSeconds() {
+    @Override
+    public AOption<Long> getTimeoutInMilliSeconds() {
         return AOption.none();
     }
 
@@ -160,4 +159,32 @@ public class ACpuUtilizationMeasurer implements AScalarMeasurer {
         return Arrays.asList(KEY_SELF_KERNEL, KEY_ALL_USED);
     }
 
+    @Override
+    public String getGroupnameOfMeasurement(String measurement) {
+        Map<String, AScalarDataPoint> data = new HashMap<>();
+        try {
+            Map<String, Object> mementos = new HashMap<>();
+            contributeMeasurements(data, 0, mementos);
+            if (data.containsKey(measurement)) {
+                return "CPU";
+            }
+        } catch (IOException e) {
+            // not relevant, it is not this group
+        }
+        return null;
+    }
+
+    @Override
+    public String getDescriptionOfMeasurement(String measurement) {
+        switch (measurement) {
+            case KEY_SELF_KERNEL:
+                return "CPU utilization of the NSysMon process kernel mode (0.0 - 1000.0 per CPU)";
+            case KEY_AVAILABLE:
+                return "Overall available CPU capacity (0.0 - 1000.0 per CPU)";
+            case KEY_ALL_USED:
+                return "Overall CPU utilization (0.0 - 1000.0 per CPU)";
+            default:
+                return null;
+        }
+    }
 }
