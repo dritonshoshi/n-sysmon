@@ -9,10 +9,10 @@ import com.nsysmon.server.data.json.ScalarNode;
 import com.nsysmon.server.data.json.TraceRootNode;
 import org.codehaus.jackson.map.ObjectMapper;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 
