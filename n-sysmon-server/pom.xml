@@ -43,7 +43,7 @@
         <dependency>
             <groupId>com.google.inject</groupId>
             <artifactId>guice</artifactId>
-            <version>4.0-beta</version>
+            <version>4.2.2</version>
         </dependency>
 
         <dependency>
@@ -66,15 +66,10 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.11</version>
+            <version>4.13.2</version>
             <scope>test</scope>
         </dependency>
 
-        <dependency>
-            <groupId>com.github.tlrx</groupId>
-            <artifactId>elasticsearch-test</artifactId>
-            <version>0.0.9</version>
-        </dependency>
         <dependency>
             <groupId>org.rrd4j</groupId>
             <artifactId>rrd4j</artifactId>
