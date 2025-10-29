@@ -38,7 +38,7 @@ fieldset legend {
     margin: 0;
 }
 .scalar-value {
-    text-align: right;
+    text-align: left;
 }
 .scalar-value-centered {
     text-align: center;
