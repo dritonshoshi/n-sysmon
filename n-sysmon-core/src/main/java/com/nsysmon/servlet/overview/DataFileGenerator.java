@@ -41,7 +41,7 @@ public class DataFileGenerator implements APresentationPageDefinition {
     }
 
     /* this datasink isn't used for data, just for receiving the shut-down-trigger when shutting down NSysmon */
-    private ADataSink dataSink = new ADataSink() {
+    private final ADataSink dataSink = new ADataSink() {
         @Override
         public void onStartedHierarchicalMeasurement(String identifier) {
             //nothing
@@ -62,8 +62,8 @@ public class DataFileGenerator implements APresentationPageDefinition {
         }
     };
 
-    private List<DataFileGeneratorThread> pageStorer = new ArrayList<>();
-    private ScheduledExecutorService scheduledPool;
+    private final List<DataFileGeneratorThread> pageStorer = new ArrayList<>();
+    private final ScheduledExecutorService scheduledPool;
 
     public DataFileGenerator(String pagesToStoreAsString) {
         scheduledPool = Executors.newSingleThreadScheduledExecutor(new DaemonThreadFactory());

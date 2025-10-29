@@ -1,0 +1,16 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="NsysmonDemoMain (ZGC)" type="Application" factoryName="Application">
+    <option name="MAIN_CLASS_NAME" value="com.nsysmon.demo.NsysmonDemoMain" />
+    <module name="n-sysmon-demo" />
+    <option name="VM_PARAMETERS" value="-XX:+UseZGC " />
+    <extension name="coverage">
+      <pattern>
+        <option name="PATTERN" value="com.nsysmon.demo.*" />
+        <option name="ENABLED" value="true" />
+      </pattern>
+    </extension>
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>

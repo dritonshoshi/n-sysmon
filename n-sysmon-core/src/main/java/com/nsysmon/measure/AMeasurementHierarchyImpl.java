@@ -23,7 +23,7 @@ public class AMeasurementHierarchyImpl implements AMeasurementHierarchy {
     private final NSysMonConfig config;
     private final ADataSink dataSink;
 
-    private Set<ACollectingMeasurement> collectingMeasurements = new HashSet<>();
+    private final Set<ACollectingMeasurement> collectingMeasurements = new HashSet<>();
 
     protected int size = 0; // total number of measurements in this hierarchy
 

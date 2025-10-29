@@ -200,7 +200,7 @@ public abstract class AAbstractNsysmonPerformancePageDef implements APresentatio
             this(null, label, null, isSerial, colDataRaw, children, false);
         }
 
-        public TreeNode(String id, String label, List<List<String>> tooltip, boolean isSerial, long[] colDataRaw, List<TreeNode> children, boolean wasKilled) {
+        public TreeNode(final String id,final  String label,final  List<List<String>> tooltip,final  boolean isSerial, long[] colDataRaw, List<TreeNode> children, boolean wasKilled) {
             this.id = id == null ? null : id.intern();
             this.label = label == null ? null : label.intern();
             this.tooltip = tooltip;

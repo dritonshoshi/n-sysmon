@@ -17,7 +17,7 @@ import java.util.Set;
 
 public class CorrelationFlowDataSink implements ADataSink {
 	private static final NSysMonLogger LOG = NSysMonLogger.get(CorrelationFlowDataSink.class);
-	private ARingBuffer<CorrelationFlowDetails> dataBuffer;
+	private final ARingBuffer<CorrelationFlowDetails> dataBuffer;
 
 	public CorrelationFlowDataSink(int maxNumDetails){
 		dataBuffer = new ARingBuffer<>(CorrelationFlowDetails.class, maxNumDetails);

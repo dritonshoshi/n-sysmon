@@ -23,7 +23,7 @@ import java.util.logging.Logger;
 public class AppServlet extends HttpServlet {
     private static final DataSource dataSource = createDataSource();
 
-    static Connection conn;
+    static final Connection conn;
 
     static {
         try {
