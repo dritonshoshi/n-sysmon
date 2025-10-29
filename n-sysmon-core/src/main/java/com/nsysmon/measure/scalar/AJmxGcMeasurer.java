@@ -50,7 +50,6 @@ public class AJmxGcMeasurer implements AScalarMeasurer, NSysMonAware {
     private final GcNotificationListener listener = new GcNotificationListener();
 
     private final Map<String, Long> prevGcTimeMillis = new ConcurrentHashMap<>();
-    private final Map<String, Long> timeFracInGcPpm = new ConcurrentHashMap<>();
     private final Map<String, Long> durationGcNs = new ConcurrentHashMap<>();
     private final Map<String, Long> memoryInfo = new ConcurrentHashMap<>();
     private final Map<String, Long> gcFrequencyPerMinuteTimes100 = new ConcurrentHashMap<>();
@@ -67,14 +66,12 @@ public class AJmxGcMeasurer implements AScalarMeasurer, NSysMonAware {
 
     @Override
     public void prepareMeasurements(Map<String, Object> mementos) {
+        // nothing to do
     }
 
     //this contributes the gc measurements to the known list of scalars
     @Override
     public void contributeMeasurements(Map<String, AScalarDataPoint> data, long timestamp, Map<String, Object> mementos) {
-        for (String key : timeFracInGcPpm.keySet()) {
-            data.put(SCALAR_PREFIX_FRAC_PERCENT + key, new AScalarDataPoint(timestamp, SCALAR_PREFIX_FRAC_PERCENT + key, timeFracInGcPpm.get(key), 4));
-        }
         for (String key : gcFrequencyPerMinuteTimes100.keySet()) {
             data.put(SCALAR_PREFIX_FREQ_PER_MINUTE + key, new AScalarDataPoint(timestamp, SCALAR_PREFIX_FREQ_PER_MINUTE + key, gcFrequencyPerMinuteTimes100.get(key), 2));
         }
@@ -84,7 +81,6 @@ public class AJmxGcMeasurer implements AScalarMeasurer, NSysMonAware {
         for (String key : memoryInfo.keySet()) {
             data.put(SCALAR_PREFIX_GC_MEMORY + key, new AScalarDataPoint(timestamp, SCALAR_PREFIX_GC_MEMORY + key, memoryInfo.get(key), 0));
         }
-//        data.put("Eden space", new AScalarDataPoint(timestamp, "Eden space (byte)", edenSpace, 0));
     }
 
     @Override
@@ -121,8 +117,6 @@ public class AJmxGcMeasurer implements AScalarMeasurer, NSysMonAware {
             for (MemoryPoolMXBean mxBean : ManagementFactory.getMemoryPoolMXBeans()) {
                 memoryInfo.put(mxBean.getName(), mxBean.getUsage().getUsed());
             }
-            final long timeFracPpm = durationNanos / intervalMillis;
-            timeFracInGcPpm.put(gcType, timeFracPpm); //TODO flowing average or such?
         }
 
         prevGcTimeMillis.put(gcType, now);
@@ -147,7 +141,6 @@ public class AJmxGcMeasurer implements AScalarMeasurer, NSysMonAware {
     // code based on http://www.fasterj.com/articles/gcnotifs.shtml - thanks for the input, it was extremely helpful!!!
     class GcNotificationListener implements NotificationListener {
         private AHierarchicalData toHierarchicalData(GarbageCollectionNotificationInfo info) {
-//            System.out.println(info.getGcInfo());
             final long durationNanos = info.getGcInfo().getDuration() * 1000;
             final long startMillis = System.currentTimeMillis() - durationNanos / MILLION;
             final String gcType = info.getGcAction();
@@ -174,10 +167,6 @@ public class AJmxGcMeasurer implements AScalarMeasurer, NSysMonAware {
 
                 paramMap.put(getUsedDeltaKey(memKey), String.valueOf(after.getUsed() - before.getUsed()));
                 paramMap.put(getCommittedDeltaKey(memKey), String.valueOf(after.getCommitted() - before.getCommitted()));
-
-                // 'initial' and 'max' are independent of individual garbage collections and are better monitored separately
-//                after.getInit();
-//                after.getMax();
             }
 
             final AHierarchicalData byGcTypeNode = new AHierarchicalData(true, startMillis, durationNanos, gcType, Collections.emptyMap(), Collections.emptyList(), false);
