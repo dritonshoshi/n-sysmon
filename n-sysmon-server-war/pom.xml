@@ -18,6 +18,8 @@
             <groupId>org.mongodb</groupId>
             <artifactId>mongodb-driver-bom</artifactId>
             <version>5.5.1</version>
+            <type>pom</type>
+            <scope>import</scope>
         </dependency>
 
         <dependency>
@@ -50,8 +52,8 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.1</version>
                 <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
+                    <source>17</source>
+                    <target>17</target>
                 </configuration>
                 <executions>
                     <execution>
