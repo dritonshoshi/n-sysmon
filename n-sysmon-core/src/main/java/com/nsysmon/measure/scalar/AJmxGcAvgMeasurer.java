@@ -31,7 +31,12 @@ public class AJmxGcAvgMeasurer implements AScalarMeasurer, NSysMonAware {
     public static final String KEY_PREFIX_MAX = "max:";
     public static final String KEY_PREFIX_CNT = "cnt:";
 
-    private static final String SCALAR_PREFIX_PER_INTERVAL = "gc-ival:";
+    public static final String KEY_MEM_TOTAL = "total";
+    public static final String KEY_MEM_USED = "used";
+    public static final String KEY_MEM_FREE = "free";
+
+    private static final String SCALAR_PREFIX_GC_PER_INTERVAL = "gc-ival:";
+    private static final String SCALAR_PREFIX_MEMORY_PER_INTERVAL = "mem-ival:";
 
     private volatile NSysMonApi sysMon;
 
@@ -69,11 +74,19 @@ public class AJmxGcAvgMeasurer implements AScalarMeasurer, NSysMonAware {
             sumDuration = durationsPerInterval.stream().mapToLong(Long::longValue).sum();
             avgDuration = sumDuration / durationsPerInterval.size();
 
-            data.put(SCALAR_PREFIX_PER_INTERVAL + KEY_PREFIX_DURATION + KEY_PREFIX_MIN + key, new AScalarDataPoint(timestamp, SCALAR_PREFIX_PER_INTERVAL + KEY_PREFIX_DURATION + KEY_PREFIX_MIN + key, minDuration, 0));
-            data.put(SCALAR_PREFIX_PER_INTERVAL + KEY_PREFIX_DURATION + KEY_PREFIX_AVG + key, new AScalarDataPoint(timestamp, SCALAR_PREFIX_PER_INTERVAL + KEY_PREFIX_DURATION + KEY_PREFIX_AVG + key, avgDuration, 0));
-            data.put(SCALAR_PREFIX_PER_INTERVAL + KEY_PREFIX_DURATION + KEY_PREFIX_MAX + key, new AScalarDataPoint(timestamp, SCALAR_PREFIX_PER_INTERVAL + KEY_PREFIX_DURATION + KEY_PREFIX_MAX + key, maxDuration, 0));
-            data.put(SCALAR_PREFIX_PER_INTERVAL + KEY_PREFIX_DURATION + KEY_PREFIX_CNT + key, new AScalarDataPoint(timestamp, SCALAR_PREFIX_PER_INTERVAL + KEY_PREFIX_DURATION + KEY_PREFIX_CNT + key, durationsPerInterval.size(), 0));
+            data.put(SCALAR_PREFIX_GC_PER_INTERVAL + KEY_PREFIX_DURATION + KEY_PREFIX_MIN + key, new AScalarDataPoint(timestamp, SCALAR_PREFIX_GC_PER_INTERVAL + KEY_PREFIX_DURATION + KEY_PREFIX_MIN + key, minDuration, 0));
+            data.put(SCALAR_PREFIX_GC_PER_INTERVAL + KEY_PREFIX_DURATION + KEY_PREFIX_AVG + key, new AScalarDataPoint(timestamp, SCALAR_PREFIX_GC_PER_INTERVAL + KEY_PREFIX_DURATION + KEY_PREFIX_AVG + key, avgDuration, 0));
+            data.put(SCALAR_PREFIX_GC_PER_INTERVAL + KEY_PREFIX_DURATION + KEY_PREFIX_MAX + key, new AScalarDataPoint(timestamp, SCALAR_PREFIX_GC_PER_INTERVAL + KEY_PREFIX_DURATION + KEY_PREFIX_MAX + key, maxDuration, 0));
+            data.put(SCALAR_PREFIX_GC_PER_INTERVAL + KEY_PREFIX_DURATION + KEY_PREFIX_CNT + key, new AScalarDataPoint(timestamp, SCALAR_PREFIX_GC_PER_INTERVAL + KEY_PREFIX_DURATION + KEY_PREFIX_CNT + key, durationsPerInterval.size(), 0));
+
         }
+        long totalMemory = Runtime.getRuntime().totalMemory();
+        long freeMemory = Runtime.getRuntime().freeMemory();
+        long usedMemory = totalMemory - freeMemory;
+
+        data.put(SCALAR_PREFIX_MEMORY_PER_INTERVAL+KEY_MEM_TOTAL, new AScalarDataPoint(timestamp, SCALAR_PREFIX_MEMORY_PER_INTERVAL+KEY_MEM_TOTAL, totalMemory, 0));
+        data.put(SCALAR_PREFIX_MEMORY_PER_INTERVAL+KEY_MEM_USED, new AScalarDataPoint(timestamp, SCALAR_PREFIX_MEMORY_PER_INTERVAL+KEY_MEM_USED, usedMemory, 0));
+        data.put(SCALAR_PREFIX_MEMORY_PER_INTERVAL+KEY_MEM_FREE, new AScalarDataPoint(timestamp, SCALAR_PREFIX_MEMORY_PER_INTERVAL+KEY_MEM_FREE, freeMemory, 0));
         gcDurationsNsPerInterval.clear();
     }
 
@@ -149,7 +162,7 @@ public class AJmxGcAvgMeasurer implements AScalarMeasurer, NSysMonAware {
                 return "cnt";
 
             default:
-                if (measurement.startsWith(SCALAR_PREFIX_PER_INTERVAL)){
+                if (measurement.startsWith(SCALAR_PREFIX_GC_PER_INTERVAL)){
                     System.out.println("unknown measurement '" + measurement + "'");
                 }
                 return null;
