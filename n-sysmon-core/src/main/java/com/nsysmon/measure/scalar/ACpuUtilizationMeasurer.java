@@ -11,7 +11,6 @@ import java.lang.management.ManagementFactory;
 import java.lang.management.OperatingSystemMXBean;
 import java.nio.charset.Charset;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
 
 
 /**
@@ -27,7 +26,7 @@ public class ACpuUtilizationMeasurer implements AScalarMeasurer {
     public static final String KEY_MEMENTO = KEY_PREFIX;
     public static final String KEY_AVAILABLE = KEY_PREFIX + "available";
     public static final String KEY_ALL_USED = KEY_PREFIX + "all-used";
-    public static final String KEY_PREFIX_MHZ = KEY_PREFIX + "freq-mhz";
+    public static final String KEY_PREFIX_MHZ = KEY_PREFIX + "freq-mhz:";
     public static final String KEY_SELF_KERNEL = KEY_PREFIX + "self-kernel";
 
     @Override
@@ -42,11 +41,11 @@ public class ACpuUtilizationMeasurer implements AScalarMeasurer {
         mementos.put(KEY_MEMENTO, createSnapshot());
     }
 
-    private void fillForWindows(Map<String, AScalarDataPoint> data, long timestamp, Map<String, Object> mementos) {
+    private void fillForWindows(Map<String, AScalarDataPoint> data, long timestamp) {
         OperatingSystemMXBean operatingSystemMXBean = ManagementFactory.getOperatingSystemMXBean();
         if (operatingSystemMXBean instanceof com.sun.management.OperatingSystemMXBean) {
             com.sun.management.OperatingSystemMXBean bean = (com.sun.management.OperatingSystemMXBean) operatingSystemMXBean;
-            long value = bean.getAvailableProcessors() * 1000;
+            long value = bean.getAvailableProcessors() * 1000L;
             data.put(KEY_AVAILABLE, new AScalarDataPoint(timestamp, KEY_AVAILABLE, Math.max(0, value), 1));
             value = (long) (bean.getSystemCpuLoad() * 1000);
             data.put(KEY_SELF_KERNEL, new AScalarDataPoint(timestamp, KEY_SELF_KERNEL, Math.max(0, value), 1));
@@ -57,11 +56,11 @@ public class ACpuUtilizationMeasurer implements AScalarMeasurer {
     public void contributeMeasurements(Map<String, AScalarDataPoint> data, long timestamp, Map<String, Object> mementos) throws IOException {
         //this measurement isn't working on windows
         if (NSysMon.isWindows()) {
-            fillForWindows(data, timestamp, mementos);
+            fillForWindows(data, timestamp);
             return;
         }
         if (NSysMon.isMacOS()) {
-            fillForWindows(data, timestamp, mementos);
+            fillForWindows(data, timestamp);
             return;
         }
         final Map<String, Snapshot> allCurrent = createSnapshot();
@@ -96,22 +95,28 @@ public class ACpuUtilizationMeasurer implements AScalarMeasurer {
     }
 
     private void contributeFreq(Map<String, AScalarDataPoint> data, long timestamp) throws IOException {
-        final Map<String, AtomicInteger> counter = new HashMap<>();
+        final Map<String, Integer> frequencies = new HashMap<>();
+
+        String cpuId = null;
+        String mhz = null;
 
         for (String line : PROC_CPUINFO_FILE.lines()) {
-            if (!line.contains("MHz")) {
-                continue;
+            if (line.contains("processor")) {
+                cpuId = line.substring(line.indexOf(':') + 1).trim();
             }
-            final String mhz = line.substring(line.indexOf(':') + 1).trim();
-            if (!counter.containsKey(mhz)) {
-                counter.put(mhz, new AtomicInteger());
+            if (line.contains("MHz")) {
+                mhz = line.substring(line.indexOf(':') + 1).trim();
             }
-            counter.get(mhz).incrementAndGet();
+            if (!Objects.isNull(cpuId) && !Objects.isNull(mhz)) {
+                frequencies.put(cpuId, Float.valueOf(mhz).intValue());
+                cpuId = null;
+                mhz = null;
+            }
         }
 
-        for(String mhz: counter.keySet()) {
-            final String key = KEY_PREFIX_MHZ + mhz;
-            data.put(key, new AScalarDataPoint(timestamp, key, counter.get(mhz).intValue(), 0));
+        for (String cpu : frequencies.keySet()) {
+            final String key = KEY_PREFIX_MHZ + cpu;
+            data.put(key, new AScalarDataPoint(timestamp, key, frequencies.get(cpu), 0));
         }
     }
 
@@ -124,8 +129,8 @@ public class ACpuUtilizationMeasurer implements AScalarMeasurer {
                 final String[] split = line.split("\\s+");
 
                 if (split[0].startsWith("cpu")) {
-                    final long idle = Long.valueOf(split[4]);
-                    final long stolen = split.length >= 8 ? Long.valueOf(split[8]) : 0;
+                    final long idle = Long.parseLong(split[4]);
+                    final long stolen = split.length >= 8 ? Long.parseLong(split[8]) : 0;
                     result.put(split[0], new Snapshot(idle, stolen));
                 }
             }
@@ -184,6 +189,9 @@ public class ACpuUtilizationMeasurer implements AScalarMeasurer {
             case KEY_ALL_USED:
                 return "Overall CPU utilization (0.0 - 1000.0 per CPU)";
             default:
+                if (measurement.startsWith(KEY_PREFIX_MHZ)) {
+                    return "CPU frequency in MHz";
+                }
                 return null;
         }
     }

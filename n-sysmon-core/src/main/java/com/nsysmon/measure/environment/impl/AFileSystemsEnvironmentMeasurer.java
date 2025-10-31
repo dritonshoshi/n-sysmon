@@ -8,7 +8,10 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.lang.management.ManagementFactory;
+import java.lang.management.RuntimeMXBean;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -18,24 +21,43 @@ import java.util.Map;
  */
 public class AFileSystemsEnvironmentMeasurer implements AEnvironmentMeasurer {
     public static final String KEY_FILESYSTEMS = "file systems";
+    public static final String JVM_PARAMETERS = "JVM Parameters";
 
-    @Override public void contributeMeasurements(EnvironmentCollector data) throws Exception {
+    @Override
+    public void contributeMeasurements(EnvironmentCollector data) throws Exception {
         contributeMtab(data);
         contributeDf(data);
+        contributeJdkParameters(data);
+    }
+
+    private static void contributeJdkParameters(EnvironmentCollector data) throws Exception {
+
+        RuntimeMXBean runtimeMxBean = ManagementFactory.getRuntimeMXBean();
+        List<String> jvmArgs = runtimeMxBean.getInputArguments();
+
+        for (String arg : jvmArgs) {
+            String[] split = new String[2];
+            if (arg.indexOf(':') != -1) {
+                split = arg.split(":", 2);
+            } else if (arg.indexOf('=') != -1) {
+                split = arg.split("=", 2);
+            }
+            data.add(split[1], JVM_PARAMETERS, split[0]);
+        }
     }
 
     private static void contributeDf(EnvironmentCollector data) throws Exception {
-        if (NSysMon.isWindows()){
+        if (NSysMon.isWindows()) {
             return;
         }
 
-        for(String line: new CliCommand("df", "-P").getOutput()) {
-            if(! line.startsWith("/dev/")) {
+        for (String line : new CliCommand("df", "-P").getOutput()) {
+            if (!line.startsWith("/dev/")) {
                 continue;
             }
 
             final String[] split = line.split("\\s+");
-            if(split.length != 6) {
+            if (split.length != 6) {
                 continue;
             }
 
@@ -57,13 +79,13 @@ public class AFileSystemsEnvironmentMeasurer implements AEnvironmentMeasurer {
     public static Map<String, String> getMountPoints() throws Exception {
         final Map<String, String> result = new HashMap<>();
 
-        for(String line: new CliCommand("df", "-P").getOutput()) {
-            if(! line.startsWith("/dev/")) {
+        for (String line : new CliCommand("df", "-P").getOutput()) {
+            if (!line.startsWith("/dev/")) {
                 continue;
             }
 
             final String[] split = line.split("\\s+");
-            if(split.length != 6) {
+            if (split.length != 6) {
                 continue;
             }
 
@@ -74,7 +96,7 @@ public class AFileSystemsEnvironmentMeasurer implements AEnvironmentMeasurer {
     }
 
     private void contributeMtab(EnvironmentCollector data) throws IOException {
-        if (NSysMon.isWindows()){
+        if (NSysMon.isWindows()) {
             return;
         }
 
@@ -84,12 +106,12 @@ public class AFileSystemsEnvironmentMeasurer implements AEnvironmentMeasurer {
             while ((line = br.readLine()) != null) {
                 line = line.trim();
 
-                if(! line.startsWith("/dev/")) {
+                if (!line.startsWith("/dev/")) {
                     continue;
                 }
 
                 final String[] split = line.split(" ");
-                if(split.length < 4) {
+                if (split.length < 4) {
                     continue; // should not happen, but you never know
                 }
 
@@ -103,8 +125,7 @@ public class AFileSystemsEnvironmentMeasurer implements AEnvironmentMeasurer {
 
                 data.add(mountPoint, ACpuEnvironmentMeasurer.KEY_HW, KEY_FILESYSTEMS, device);
             }
-        }
-        finally {
+        } finally {
             br.close();
         }
     }
