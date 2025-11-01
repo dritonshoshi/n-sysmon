@@ -1,4 +1,6 @@
 angular.module('NSysMonApp').controller('CtrlTimedScalars', function($scope, $timeout, $log, Rest, $location) {
+    var yFormat = d3.format('.2s');
+
     $scope.options =  {
       "chart": {
             "type": "lineWithFocusChart",
@@ -15,7 +17,7 @@ angular.module('NSysMonApp').controller('CtrlTimedScalars', function($scope, $ti
             objectEquality : false,
             "transitionDuration": 1000,
             "xAxis": {
-               tickFormat: function(d) {
+               "tickFormat": function(d) {
                     return d3.time.format('%m.%d %H:%M:%S')(new Date(d))
                 },
                 showMaxMin: false,
@@ -23,7 +25,7 @@ angular.module('NSysMonApp').controller('CtrlTimedScalars', function($scope, $ti
                 rotateLabels: "-10",
             },
             "x2Axis": {
-               tickFormat: function(d) {
+               "tickFormat": function(d) {
                     return d3.time.format('%H:%M:%S')(new Date(d))
                 },
                 showMaxMin: false,
@@ -31,9 +33,12 @@ angular.module('NSysMonApp').controller('CtrlTimedScalars', function($scope, $ti
             "yAxis": {
               "axisLabel": "Value",
               "rotateYLabel": true,
-            },
+              "tickFormat": function(d) {
+                  return d3.format('.2s')(d);
+              }            },
             "y2Axis": {
               "rotateYLabel": true,
+                tickFormat: yFormat
             }
         }
     };
@@ -66,8 +71,8 @@ angular.module('NSysMonApp').controller('CtrlTimedScalars', function($scope, $ti
             $scope.timedScalars = {};
             selectedEntries = "";
 
-            var variableKey;
-            for (var myKey in $scope.loadedGraphData) {
+            let variableKey;
+            for (const myKey in $scope.loadedGraphData) {
                 variableKey = data[myKey].key;
                 $scope.timedScalars[variableKey] = {key: variableKey, selected: false};
             }
@@ -82,12 +87,9 @@ angular.module('NSysMonApp').controller('CtrlTimedScalars', function($scope, $ti
     $scope.$watch('autoRefreshSeconds', triggerAutoRefresh);
 
     function refreshButtons(){
-        for (var myKey in $scope.loadedGraphData) {
-            variableKey = $scope.loadedGraphData[myKey].key;
-            status = $scope.loadedGraphData[myKey].status;
-            // console.log(variableKey);
-            // console.log(status);
-            $scope.timedScalars[variableKey].status = status;
+        for (const myKey in $scope.loadedGraphData) {
+            const variableKey = $scope.loadedGraphData[myKey].key;
+            $scope.timedScalars[variableKey].status = $scope.loadedGraphData[myKey].status;
         }
     }
 
@@ -99,7 +101,7 @@ angular.module('NSysMonApp').controller('CtrlTimedScalars', function($scope, $ti
             return;
         }
 
-        var oldCounter = autoRefreshCounter;
+        const oldCounter = autoRefreshCounter;
         $scope.activePage = $location.path();
         $timeout(function() {
             if(autoRefreshCounter !== oldCounter+1) {
@@ -122,8 +124,8 @@ angular.module('NSysMonApp').controller('CtrlTimedScalars', function($scope, $ti
             return;
         }
 
-        for (var keySelected in $scope.entriesToLoadDataFor) {
-            for (var keyData in $scope.timedScalars) {
+        for (const keySelected in $scope.entriesToLoadDataFor) {
+            for (const keyData in $scope.timedScalars) {
                 if ($scope.timedScalars[keyData].key == $scope.entriesToLoadDataFor[keySelected]){
                     selectedEntriesForServer = selectedEntriesForServer.concat($scope.entriesToLoadDataFor[keySelected]);
                     selectedEntriesForServer = selectedEntriesForServer.concat(",");
@@ -148,9 +150,8 @@ angular.module('NSysMonApp').controller('CtrlTimedScalars', function($scope, $ti
 
     $scope.toggleGraphData = function(key) {
         var found = false;
-        for (var myKey in $scope.entriesToLoadDataFor) {
+        for (const myKey in $scope.entriesToLoadDataFor) {
             if ($scope.entriesToLoadDataFor[myKey] == key){
-                //$scope.entriesToLoadDataFor.remove(Number(myKey));
                 $scope.entriesToLoadDataFor.splice(myKey ,1);
                 found = true;
             }
@@ -162,13 +163,10 @@ angular.module('NSysMonApp').controller('CtrlTimedScalars', function($scope, $ti
         if ($location.search().loadfile) {
             var newGraphData = [];
             for (var myKey in $scope.loadedGraphData) {
-                //$scope.entriesToLoadDataFor.push(key);
-                var keyName = $scope.loadedGraphData[myKey].key;
 
                 var found = false;
-                for (var key in $scope.entriesToLoadDataFor) {
-                    if ($scope.entriesToLoadDataFor[key] == $scope.loadedGraphData[myKey].key){
-                        //$scope.entriesToLoadDataFor.remove(Number(myKey));
+                for (var innerKey in $scope.entriesToLoadDataFor) {
+                    if ($scope.entriesToLoadDataFor[innerKey] == $scope.loadedGraphData[myKey].key){
                         found = true;
                     }
                 }
@@ -178,7 +176,6 @@ angular.module('NSysMonApp').controller('CtrlTimedScalars', function($scope, $ti
                         key: $scope.loadedGraphData[myKey].key,
                         values: $scope.loadedGraphData[myKey].values
                     });
-                    // newGraphData.push($scope.graphData[myKey].key, $scope.graphData[myKey].values);
                 }
                 $scope.graphData = newGraphData;
                 $scope.rc.api.updateWithData(newGraphData);
@@ -196,7 +193,7 @@ angular.module('NSysMonApp').controller('CtrlTimedScalars', function($scope, $ti
 
     // check if data from other sources should be loaded
     function loadExternalData() {
-        var loadFileNameParam = $location.search().loadfile;
+        const loadFileNameParam = $location.search().loadfile;
         if (loadFileNameParam) {
             $scope.entriesToLoadDataFor = [];
             Rest.callOther("loadableServerDataFiles", "loadFromFile" + "/" + loadFileNameParam, initGraphDataFromResponse);

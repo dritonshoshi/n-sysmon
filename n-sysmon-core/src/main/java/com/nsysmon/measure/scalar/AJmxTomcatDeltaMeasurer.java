@@ -5,7 +5,6 @@ import com.nsysmon.NSysMonApi;
 import com.nsysmon.config.ADefaultConfigFactory;
 import com.nsysmon.config.NSysMonAware;
 import com.nsysmon.data.AScalarDataPoint;
-import org.apache.log4j.Logger;
 
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
@@ -29,9 +28,6 @@ public class AJmxTomcatDeltaMeasurer implements AScalarMeasurer, NSysMonAware {
     private static int formerRequestCount = 0;
     private static long formerBytesReceived = 0;
     private static long formerBytesSent = 0;
-
-    @Override public void prepareMeasurements(Map<String, Object> mementos) throws Exception {
-    }
 
     @Override public void contributeMeasurements(Map<String, AScalarDataPoint> data, long timestamp, Map<String, Object> mementos) throws Exception {
         final MBeanServer server = ManagementFactory.getPlatformMBeanServer();

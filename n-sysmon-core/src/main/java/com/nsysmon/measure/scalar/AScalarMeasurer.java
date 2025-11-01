@@ -35,7 +35,10 @@ public interface AScalarMeasurer extends AShutdownable {
         LOW, MEDIUM, HIGH
     }
 
-    void prepareMeasurements(Map<String, Object> mementos) throws Exception;
+    default void prepareMeasurements(Map<String, Object> mementos) throws Exception{
+        //nothing to do by default
+    }
+
     void contributeMeasurements(Map<String, AScalarDataPoint> data, long timestamp, Map<String, Object> mementos) throws Exception;
     AOption<Long> getTimeoutInMilliSeconds();
 

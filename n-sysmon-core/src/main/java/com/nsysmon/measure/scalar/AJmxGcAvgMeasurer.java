@@ -26,10 +26,10 @@ public class AJmxGcAvgMeasurer implements AScalarMeasurer, NSysMonAware {
     public static final String IDENT_GC_TRACE_ROOT = "Garbage Collection";
 
     public static final String KEY_PREFIX_DURATION = "dur:";
-    public static final String KEY_PREFIX_MIN = "min:";
-    public static final String KEY_PREFIX_AVG = "avg:";
-    public static final String KEY_PREFIX_MAX = "max:";
-    public static final String KEY_PREFIX_CNT = "cnt:";
+    public static final String KEY_PREFIX_MIN = "min";
+    public static final String KEY_PREFIX_AVG = "avg";
+    public static final String KEY_PREFIX_MAX = "max";
+    public static final String KEY_PREFIX_CNT = "cnt";
 
     public static final String KEY_MEM_TOTAL = "total";
     public static final String KEY_MEM_USED = "used";
@@ -55,38 +55,36 @@ public class AJmxGcAvgMeasurer implements AScalarMeasurer, NSysMonAware {
     }
 
     @Override
-    public void prepareMeasurements(Map<String, Object> mementos) {
-        // nothing to prepare
-    }
-
-    @Override
     public void contributeMeasurements(Map<String, AScalarDataPoint> data, long timestamp, Map<String, Object> mementos) {
-        for (String key : gcDurationsNsPerInterval.keySet()) {
-            List<Long> durationsPerInterval = gcDurationsNsPerInterval.get(key);
-            long minDuration;
-            long avgDuration;
-            long maxDuration;
-            long sumDuration;
+        for (var entry : gcDurationsNsPerInterval.entrySet()) {
+            List<Long> durationsPerInterval = entry.getValue();
             Optional<Long> min = durationsPerInterval.stream().min(Long::compare);
             Optional<Long> max = durationsPerInterval.stream().max(Long::compare);
-            minDuration = min.isPresent() ? min.get() : 0;
-            maxDuration = max.isPresent() ? max.get() : 0;
-            sumDuration = durationsPerInterval.stream().mapToLong(Long::longValue).sum();
-            avgDuration = sumDuration / durationsPerInterval.size();
+            long minDuration = min.isPresent() ? min.get() : 0;
+            long maxDuration = max.isPresent() ? max.get() : 0;
+            long sumDuration = durationsPerInterval.stream().mapToLong(Long::longValue).sum();
+            long avgDuration = sumDuration / durationsPerInterval.size();
 
-            data.put(SCALAR_PREFIX_GC_PER_INTERVAL + KEY_PREFIX_DURATION + KEY_PREFIX_MIN + key, new AScalarDataPoint(timestamp, SCALAR_PREFIX_GC_PER_INTERVAL + KEY_PREFIX_DURATION + KEY_PREFIX_MIN + key, minDuration, 0));
-            data.put(SCALAR_PREFIX_GC_PER_INTERVAL + KEY_PREFIX_DURATION + KEY_PREFIX_AVG + key, new AScalarDataPoint(timestamp, SCALAR_PREFIX_GC_PER_INTERVAL + KEY_PREFIX_DURATION + KEY_PREFIX_AVG + key, avgDuration, 0));
-            data.put(SCALAR_PREFIX_GC_PER_INTERVAL + KEY_PREFIX_DURATION + KEY_PREFIX_MAX + key, new AScalarDataPoint(timestamp, SCALAR_PREFIX_GC_PER_INTERVAL + KEY_PREFIX_DURATION + KEY_PREFIX_MAX + key, maxDuration, 0));
-            data.put(SCALAR_PREFIX_GC_PER_INTERVAL + KEY_PREFIX_DURATION + KEY_PREFIX_CNT + key, new AScalarDataPoint(timestamp, SCALAR_PREFIX_GC_PER_INTERVAL + KEY_PREFIX_DURATION + KEY_PREFIX_CNT + key, durationsPerInterval.size(), 0));
+            String name = SCALAR_PREFIX_GC_PER_INTERVAL + entry.getKey() + ":" + KEY_PREFIX_DURATION + KEY_PREFIX_MIN;
+            data.put(name, new AScalarDataPoint(timestamp, name, minDuration, 0));
+            name = SCALAR_PREFIX_GC_PER_INTERVAL + entry.getKey() + ":" + KEY_PREFIX_DURATION + KEY_PREFIX_AVG;
+            data.put(name, new AScalarDataPoint(timestamp, name, avgDuration, 0));
+            name = SCALAR_PREFIX_GC_PER_INTERVAL + entry.getKey() + ":" + KEY_PREFIX_DURATION + KEY_PREFIX_MAX;
+            data.put(name, new AScalarDataPoint(timestamp, name, maxDuration, 0));
+            name = SCALAR_PREFIX_GC_PER_INTERVAL + entry.getKey() + ":" + KEY_PREFIX_DURATION + KEY_PREFIX_CNT;
+            data.put(name, new AScalarDataPoint(timestamp, name, durationsPerInterval.size(), 0));
 
         }
         long totalMemory = Runtime.getRuntime().totalMemory();
         long freeMemory = Runtime.getRuntime().freeMemory();
         long usedMemory = totalMemory - freeMemory;
 
-        data.put(SCALAR_PREFIX_MEMORY_PER_INTERVAL+KEY_MEM_TOTAL, new AScalarDataPoint(timestamp, SCALAR_PREFIX_MEMORY_PER_INTERVAL+KEY_MEM_TOTAL, totalMemory, 0));
-        data.put(SCALAR_PREFIX_MEMORY_PER_INTERVAL+KEY_MEM_USED, new AScalarDataPoint(timestamp, SCALAR_PREFIX_MEMORY_PER_INTERVAL+KEY_MEM_USED, usedMemory, 0));
-        data.put(SCALAR_PREFIX_MEMORY_PER_INTERVAL+KEY_MEM_FREE, new AScalarDataPoint(timestamp, SCALAR_PREFIX_MEMORY_PER_INTERVAL+KEY_MEM_FREE, freeMemory, 0));
+        String name = SCALAR_PREFIX_MEMORY_PER_INTERVAL + KEY_MEM_TOTAL;
+        data.put(name, new AScalarDataPoint(timestamp, name, totalMemory, 0));
+        name = SCALAR_PREFIX_MEMORY_PER_INTERVAL + KEY_MEM_USED;
+        data.put(name, new AScalarDataPoint(timestamp, name, usedMemory, 0));
+        name = SCALAR_PREFIX_MEMORY_PER_INTERVAL + KEY_MEM_FREE;
+        data.put(name, new AScalarDataPoint(timestamp, name, freeMemory, 0));
         gcDurationsNsPerInterval.clear();
     }
 
@@ -110,7 +108,7 @@ public class AJmxGcAvgMeasurer implements AScalarMeasurer, NSysMonAware {
         private AHierarchicalData toHierarchicalData(GarbageCollectionNotificationInfo info) {
             final long durationNanos = info.getGcInfo().getDuration() * 1000;
             final long measureTs = System.currentTimeMillis();
-            final String gcType = info.getGcAction();
+            final String gcType = shortenGcType(info.getGcAction());
 
             gcDurationsNsPerInterval.putIfAbsent(gcType, new ArrayList<>());
             gcDurationsNsPerInterval.get(gcType).add(durationNanos);
@@ -131,6 +129,14 @@ public class AJmxGcAvgMeasurer implements AScalarMeasurer, NSysMonAware {
         }
     }
 
+    private String shortenGcType(String gcAction) {
+        return gcAction
+                .replace("start of ", "")
+                .replace("end of ", "")
+                .replace("GC", "")
+                .trim();
+    }
+
     @Override
     public String getGroupnameOfMeasurement(String measurement) {
         Map<String, AScalarDataPoint> data = new HashMap<>();
@@ -143,30 +149,26 @@ public class AJmxGcAvgMeasurer implements AScalarMeasurer, NSysMonAware {
 
     @Override
     public String getDescriptionOfMeasurement(String measurement) {
-        switch (measurement) {
-            case "gc-ival:dur:min:end of minor GC":
-                return "min duration";
-            case "gc-ival:dur:max:end of minor GC":
-                return "max duration";
-            case "gc-ival:dur:avg:end of minor GC":
-                return "avg duration";
-            case "gc-ival:dur:cnt:end of minor GC":
-                return "cnt";
-            case "gc-ival:dur:min:end of major GC":
-                return "min duration";
-            case "gc-ival:dur:max:end of major GC":
-                return "max duration";
-            case "gc-ival:dur:avg:end of major GC":
-                return "avg duration";
-            case "gc-ival:dur:cnt:end of major GC":
-                return "cnt";
-
-            default:
-                if (measurement.startsWith(SCALAR_PREFIX_GC_PER_INTERVAL)){
+        return switch (measurement) {
+            case "mem-ival:free" -> "free memory in reserved memory";
+            case "mem-ival:used" -> "used memory in reserved memory";
+            case "mem-ival:total" -> "memory the vm uses from system";
+            case "gc-ival:minor:dur:min" -> "min duration";
+            case "gc-ival:minor:dur:max" -> "max duration";
+            case "gc-ival:minor:dur:avg" -> "avg duration";
+            case "gc-ival:minor:dur:cnt" -> "no of calls";
+            case "gc-ival:major:dur:min" -> "min duration";
+            case "gc-ival:major:dur:max" -> "max duration";
+            case "gc-ival:major:dur:avg" -> "avg duration";
+            case "gc-ival:major:dur:cnt" -> "no of calls";
+            default -> {
+                if (measurement.startsWith(SCALAR_PREFIX_GC_PER_INTERVAL)
+                        ||measurement.startsWith(SCALAR_PREFIX_MEMORY_PER_INTERVAL)) {
                     System.out.println("unknown measurement '" + measurement + "'");
                 }
-                return null;
-        }
+                yield null;
+            }
+        };
     }
 
 }

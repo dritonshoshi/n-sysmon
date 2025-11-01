@@ -3,7 +3,6 @@ package com.nsysmon.measure.scalar;
 import com.ajjpj.afoundation.collection.immutable.AOption;
 import com.nsysmon.NSysMonApi;
 import com.nsysmon.config.NSysMonAware;
-import com.nsysmon.data.ACorrelationId;
 import com.nsysmon.data.AHierarchicalData;
 import com.nsysmon.data.AHierarchicalDataRoot;
 import com.nsysmon.data.AScalarDataPoint;
@@ -62,13 +61,9 @@ public class AJmxGcMeasurer implements AScalarMeasurer, NSysMonAware {
         }
     }
 
-    @Override public void prepareMeasurements(Map<String, Object> mementos) {
-        // nothing to prepare
-    }
-
     @Override public void contributeMeasurements(Map<String, AScalarDataPoint> data, long timestamp, Map<String, Object> mementos) {
-        for(String key: gcFrequencyPerMinuteTimes100.keySet()) {
-            data.put(SCALAR_PREFIX_FREQ_PER_MINUTE + key, new AScalarDataPoint(timestamp, SCALAR_PREFIX_FREQ_PER_MINUTE + key, gcFrequencyPerMinuteTimes100.get(key), 2));
+        for(var entry: gcFrequencyPerMinuteTimes100.entrySet()) {
+            data.put(SCALAR_PREFIX_FREQ_PER_MINUTE + entry.getKey(), new AScalarDataPoint(timestamp, SCALAR_PREFIX_FREQ_PER_MINUTE + entry.getKey(), entry.getValue(), 2));
         }
     }
 
@@ -148,10 +143,6 @@ public class AJmxGcMeasurer implements AScalarMeasurer, NSysMonAware {
 
                 paramMap.put(getUsedDeltaKey(memKey), String.valueOf(after.getUsed() - before.getUsed()));
                 paramMap.put(getCommittedDeltaKey(memKey), String.valueOf(after.getCommitted() - before.getCommitted()));
-
-                // 'initial' and 'max' are independent of individual garbage collections and are better monitored separately
-//                after.getInit();
-//                after.getMax();
             }
 
             final AHierarchicalData byGcTypeNode = new AHierarchicalData(true, startMillis, durationNanos, gcType, Collections.emptyMap(), Collections.emptyList(), false);
