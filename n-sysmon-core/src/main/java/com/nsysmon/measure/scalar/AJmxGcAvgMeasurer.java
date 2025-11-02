@@ -17,6 +17,7 @@ import java.lang.management.GarbageCollectorMXBean;
 import java.lang.management.ManagementFactory;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import com.sun.management.UnixOperatingSystemMXBean;
 
 
 /**
@@ -35,8 +36,12 @@ public class AJmxGcAvgMeasurer implements AScalarMeasurer, NSysMonAware {
     public static final String KEY_MEM_USED = "used";
     public static final String KEY_MEM_FREE = "free";
 
+    public static final String KEY_FS_OPEN = "open";
+    public static final String KEY_FS_MAX = "max";
+
     private static final String SCALAR_PREFIX_GC_PER_INTERVAL = "gc-ival:";
     private static final String SCALAR_PREFIX_MEMORY_PER_INTERVAL = "mem-ival:";
+    private static final String SCALAR_PREFIX_FILESYSTEM_PER_INTERVAL = "fs-ival:";
 
     private volatile NSysMonApi sysMon;
 
@@ -75,6 +80,12 @@ public class AJmxGcAvgMeasurer implements AScalarMeasurer, NSysMonAware {
             data.put(name, new AScalarDataPoint(timestamp, name, durationsPerInterval.size(), 0));
 
         }
+
+        UnixOperatingSystemMXBean os = (UnixOperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean();
+        long openFileDescriptorCount = os.getOpenFileDescriptorCount();
+        long maxFileDescriptorCount = os.getMaxFileDescriptorCount();
+
+
         long totalMemory = Runtime.getRuntime().totalMemory();
         long freeMemory = Runtime.getRuntime().freeMemory();
         long usedMemory = totalMemory - freeMemory;
@@ -85,6 +96,11 @@ public class AJmxGcAvgMeasurer implements AScalarMeasurer, NSysMonAware {
         data.put(name, new AScalarDataPoint(timestamp, name, usedMemory, 0));
         name = SCALAR_PREFIX_MEMORY_PER_INTERVAL + KEY_MEM_FREE;
         data.put(name, new AScalarDataPoint(timestamp, name, freeMemory, 0));
+        name = SCALAR_PREFIX_FILESYSTEM_PER_INTERVAL + KEY_FS_MAX;
+        data.put(name, new AScalarDataPoint(timestamp, name, maxFileDescriptorCount, 0));
+        name = SCALAR_PREFIX_FILESYSTEM_PER_INTERVAL + KEY_FS_OPEN;
+        data.put(name, new AScalarDataPoint(timestamp, name, openFileDescriptorCount, 0));
+
         gcDurationsNsPerInterval.clear();
     }
 
@@ -142,7 +158,7 @@ public class AJmxGcAvgMeasurer implements AScalarMeasurer, NSysMonAware {
         Map<String, AScalarDataPoint> data = new HashMap<>();
         contributeMeasurements(data, 0, Collections.emptyMap());
         if (data.containsKey(measurement)) {
-            return "avg GC";
+            return "interval";
         }
         return null;
     }
@@ -161,14 +177,17 @@ public class AJmxGcAvgMeasurer implements AScalarMeasurer, NSysMonAware {
             case "gc-ival:major:dur:max" -> "max duration";
             case "gc-ival:major:dur:avg" -> "avg duration";
             case "gc-ival:major:dur:cnt" -> "no of calls";
+            case "fs-ival:max" -> "max allowed open files";
+            case "fs-ival:open" -> "currently open files";
             default -> {
                 if (measurement.startsWith(SCALAR_PREFIX_GC_PER_INTERVAL)
-                        ||measurement.startsWith(SCALAR_PREFIX_MEMORY_PER_INTERVAL)) {
+                        ||measurement.startsWith(SCALAR_PREFIX_MEMORY_PER_INTERVAL)
+                        ||measurement.startsWith(SCALAR_PREFIX_FILESYSTEM_PER_INTERVAL)
+                ) {
                     System.out.println("unknown measurement '" + measurement + "'");
                 }
                 yield null;
             }
         };
     }
-
 }
