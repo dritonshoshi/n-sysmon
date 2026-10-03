@@ -1,0 +1,57 @@
+name: build
+
+# Verify the build and the test suite. No container image is built or pushed:
+# this project ships as plain Maven artifacts (jars + war).
+on:
+  push:
+    branches:
+      - master
+      - updates
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: JDK ${{ matrix.java }}
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        # 17 is the compile target (maven.compiler.source/target in the root pom),
+        # 21 is the current LTS we also want to keep green.
+        java:
+          - '17'
+          - '21'
+
+    steps:
+      - name: Check out sources
+        uses: actions/checkout@v4
+
+      - name: Set up JDK ${{ matrix.java }}
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: ${{ matrix.java }}
+          cache: maven
+
+      # `package` is enough to compile, test and assemble the war. We stop before
+      # `verify` because the root pom binds maven-gpg-plugin's `sign` goal to the
+      # `verify` phase (release signing), which fails without a GPG key.
+      - name: Build and test
+        run: mvn --batch-mode --errors clean package -Dgpg.skip=true
+
+      - name: Upload test reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: surefire-reports-jdk${{ matrix.java }}
+          path: '*/target/surefire-reports/'
+          if-no-files-found: ignore
+
+      - name: Upload war
+        uses: actions/upload-artifact@v4
+        with:
+          name: n-sysmon-server-war-jdk${{ matrix.java }}
+          path: 'n-sysmon-server-war/target/*.war'
+          if-no-files-found: error
