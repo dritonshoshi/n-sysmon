@@ -35,11 +35,13 @@ jobs:
           java-version: ${{ matrix.java }}
           cache: maven
 
-      # `package` is enough to compile, test and assemble the war. We stop before
-      # `verify` because the root pom binds maven-gpg-plugin's `sign` goal to the
-      # `verify` phase (release signing), which fails without a GPG key.
-      - name: Build and test
-        run: mvn --batch-mode --errors clean package -Dgpg.skip=true
+      # `verify` is required, not `package`: the Checkstyle gate and the 80% JaCoCo
+      # coverage gate are both bound to the verify phase, so stopping at `package`
+      # would silently skip them. -Dgpg.skip=true is required because the root pom
+      # binds maven-gpg-plugin's `sign` goal to `verify` for release signing, which
+      # fails here without a GPG key.
+      - name: Build, test and verify quality gates
+        run: mvn --batch-mode --errors clean verify -Dgpg.skip=true
 
       - name: Upload test reports
         if: always()
