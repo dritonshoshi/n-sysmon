@@ -85,6 +85,11 @@
             breaking the HTTP offloading data sink and the trace / longest-calls UI pages.
              This is the javax.* JAXB API and coexists with jakarta.xml.bind-api 4.x (jakarta.* packages). -->
         <version.jaxb-api>2.3.1</version.jaxb-api>
+
+        <!-- The build and the full test suite are verified on JDK 17 (the compile target) and
+             JDK 21; JDK 25 also builds clean. Anything older cannot build this project.
+             Note the upper bound is exclusive, hence 26 to include JDK 25. -->
+        <jdk.version.range>[17,26)</jdk.version.range>
     </properties>
 
     <dependencyManagement>
@@ -218,6 +223,10 @@
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-enforcer-plugin</artifactId>
+            </plugin>
         </plugins>
 
         <pluginManagement>
@@ -327,6 +336,28 @@
                                             </limit>
                                         </limits>
                                     </rule>
+                                </rules>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-enforcer-plugin</artifactId>
+                    <version>3.6.2</version>
+                    <executions>
+                        <execution>
+                            <id>enforce-supported-jdk</id>
+                            <phase>validate</phase>
+                            <goals>
+                                <goal>enforce</goal>
+                            </goals>
+                            <configuration>
+                                <rules>
+                                    <requireJavaVersion>
+                                        <version>${jdk.version.range}</version>
+                                        <message>Please build with JDK 17 to 25. The build and the full test suite are verified on JDK 17 and JDK 21.</message>
+                                    </requireJavaVersion>
                                 </rules>
                             </configuration>
                         </execution>

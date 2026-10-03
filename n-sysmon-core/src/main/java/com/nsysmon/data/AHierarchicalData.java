@@ -76,11 +76,11 @@ public class AHierarchicalData {
     }
 
     public Map<String, String> getParameters() {
-        return parameters == null ? Collections.EMPTY_MAP : Collections.unmodifiableMap(parameters);
+        return parameters == null ? Collections.emptyMap() : Collections.unmodifiableMap(parameters);
     }
 
     public List<AHierarchicalData> getChildren() {
-        return children == null ? Collections.EMPTY_LIST : Collections.unmodifiableList(children);
+        return children == null ? Collections.emptyList() : Collections.unmodifiableList(children);
     }
 
     //TODO TKT add this to rest
