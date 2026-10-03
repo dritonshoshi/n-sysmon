@@ -107,6 +107,21 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <configuration>
+                    <!-- append, so the excludes inherited from n-sysmon-parent are kept -->
+                    <excludes combine.children="append">
+                        <!-- Manual run harnesses, not library logic: NsysmonDemoMain binds port 8181
+                             and starts non-daemon infinite executors, and DeadlockThread.run()
+                             deadlocks two threads permanently on purpose. Neither can be unit
+                             tested without leaking threads or a listening socket. -->
+                        <exclude>com/nsysmon/demo/NsysmonDemoMain*</exclude>
+                        <exclude>com/nsysmon/demo/DeadlockThread*</exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 </project>
