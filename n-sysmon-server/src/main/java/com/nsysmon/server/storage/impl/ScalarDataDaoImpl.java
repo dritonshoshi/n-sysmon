@@ -10,8 +10,8 @@ import com.nsysmon.server.storage.ScalarDataPoint;
 import com.mongodb.*;
 import org.apache.log4j.Logger;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;

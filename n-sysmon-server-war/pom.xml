@@ -30,10 +30,11 @@
 
         <!-- Jetty is required for stand-alone startup using the main method. N-SysMon server can however be deployed -->
         <!--  as a web application, in which case the following dependency is not required. -->
+        <!--  "ee10" is the Servlet 6.0 (Jakarta EE 10) flavour, required by Jersey 3.x. -->
         <dependency>
-            <groupId>org.eclipse.jetty</groupId>
-            <artifactId>jetty-webapp</artifactId>
-            <version>11.0.26</version>
+            <groupId>org.eclipse.jetty.ee10</groupId>
+            <artifactId>jetty-ee10-webapp</artifactId>
+            <version>12.1.13</version>
             <optional>true</optional>
         </dependency>
         <dependency>

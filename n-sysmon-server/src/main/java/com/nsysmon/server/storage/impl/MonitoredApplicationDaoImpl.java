@@ -5,8 +5,8 @@ import com.mongodb.DB;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 import java.util.ArrayList;
 import java.util.List;
 

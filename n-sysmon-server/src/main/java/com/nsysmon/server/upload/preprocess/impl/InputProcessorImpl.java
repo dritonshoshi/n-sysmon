@@ -11,7 +11,7 @@ import com.nsysmon.server.data.json.TraceNode;
 import com.nsysmon.server.data.json.TraceRootNode;
 import org.apache.log4j.Logger;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 /**
  * @author arno

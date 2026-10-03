@@ -7,12 +7,12 @@ import com.nsysmon.server.storage.ScalarMetaDataDao;
 import com.nsysmon.server.util.AOption;
 import com.nsysmon.server.util.json.ListWrapper;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.MediaType;
 import java.util.HashMap;
 import java.util.Map;
 

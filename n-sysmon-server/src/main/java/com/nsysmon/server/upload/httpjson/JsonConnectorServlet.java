@@ -7,7 +7,7 @@ import com.nsysmon.server.data.json.EnvironmentNode;
 import com.nsysmon.server.data.json.RootNode;
 import com.nsysmon.server.data.json.ScalarNode;
 import com.nsysmon.server.data.json.TraceRootNode;
-import org.codehaus.jackson.map.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;

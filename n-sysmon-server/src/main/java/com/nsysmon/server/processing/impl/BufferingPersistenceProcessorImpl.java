@@ -13,8 +13,8 @@ import com.nsysmon.server.storage.ScalarDataDao;
 import com.nsysmon.util.AShutdownable;
 import org.apache.log4j.Logger;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
