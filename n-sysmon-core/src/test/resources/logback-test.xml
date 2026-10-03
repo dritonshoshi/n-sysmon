@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Test-only logging config. The tests assert on log output through the
+  NSysMonLogger abstraction (see CountingLoggerFactory), so the real backend is
+  only here to avoid SLF4J's "no providers found" fallback. Keep it quiet so a
+  passing test run is not buried in output.
+-->
+<configuration>
+
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <root level="ERROR">
+        <appender-ref ref="CONSOLE"/>
+    </root>
+
+</configuration>

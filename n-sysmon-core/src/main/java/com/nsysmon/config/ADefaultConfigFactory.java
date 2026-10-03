@@ -4,7 +4,7 @@ import com.ajjpj.afoundation.collection.immutable.AOption;
 import com.ajjpj.afoundation.function.AFunction0;
 import com.ajjpj.afoundation.util.AUnchecker;
 import com.nsysmon.config.appinfo.AApplicationInfoProvider;
-import com.nsysmon.config.log.NLog4JLoggerFactory;
+import com.nsysmon.config.log.NSlf4JLoggerFactory;
 import com.nsysmon.config.log.NStdOutLoggerFactory;
 import com.nsysmon.config.log.NSysMonLogger;
 import com.nsysmon.config.log.NSysMonLoggerFactory;
@@ -117,7 +117,7 @@ public class ADefaultConfigFactory implements AConfigFactory {
 
     private static NSysMonLoggerFactory defaultLogger() {
         try {
-            return NLog4JLoggerFactory.INSTANCE;
+            return NSlf4JLoggerFactory.INSTANCE;
         }
         catch (Throwable th) {
             return NStdOutLoggerFactory.INSTANCE;

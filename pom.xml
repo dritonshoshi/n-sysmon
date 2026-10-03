@@ -68,10 +68,25 @@
         <version.maven-javadoc-plugin>2.9.1</version.maven-javadoc-plugin>
         <version.maven-gpg-plugin>1.5</version.maven-gpg-plugin>
         <version.maven-release-plugin>2.5</version.maven-release-plugin>
+
+        <!-- 2.0.19 is the SLF4J version logback-classic 1.6.5 is built and tested against. -->
+        <version.slf4j>2.0.19</version.slf4j>
+        <version.logback>1.6.5</version.logback>
     </properties>
 
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+                <version>${version.slf4j}</version>
+            </dependency>
+            <dependency>
+                <groupId>ch.qos.logback</groupId>
+                <artifactId>logback-classic</artifactId>
+                <version>${version.logback}</version>
+            </dependency>
+
             <!-- Jersey 3.x (Jakarta RESTful Web Services 3.1) requires the Jackson 2.x databind. Managing the
                  Jackson 2 stack from the parent keeps jackson-databind, jackson-core, jackson-annotations and the
                  jackson-* modules on aligned versions across all modules instead of letting Jersey 3.1.x pin them. -->

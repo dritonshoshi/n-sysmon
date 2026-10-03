@@ -8,7 +8,8 @@ import com.nsysmon.server.storage.ScalarMetaData;
 import com.nsysmon.server.storage.ScalarMetaDataDao;
 import com.nsysmon.server.storage.ScalarDataPoint;
 import com.mongodb.*;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
@@ -22,7 +23,7 @@ import java.util.List;
  */
 @Singleton
 public class ScalarDataDaoImpl implements ScalarDataDao {
-    private static final Logger log = Logger.getLogger(ScalarDataDaoImpl.class);
+    private static final Logger log = LoggerFactory.getLogger(ScalarDataDaoImpl.class);
 
     public static final String FIELD_NAME_INSTANCE = "instance";
     public static final String FIELD_NAME_TIMESTAMP = "timestamp";

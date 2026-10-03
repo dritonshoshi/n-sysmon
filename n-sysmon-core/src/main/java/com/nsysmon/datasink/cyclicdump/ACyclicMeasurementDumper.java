@@ -14,7 +14,7 @@ import java.util.concurrent.TimeUnit;
 
 
 /**
- * This class cyclically dumps all environment measurements, e.g. to Log4J.<p>
+ * This class cyclically dumps all environment measurements, e.g. to SLF4J.<p>
  *
  * Calling the constructor takes care of registration with NSysMon. <p>
  *

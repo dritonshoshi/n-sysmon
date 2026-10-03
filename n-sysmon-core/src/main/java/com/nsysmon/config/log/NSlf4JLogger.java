@@ -1,17 +1,20 @@
 package com.nsysmon.config.log;
 
 import com.ajjpj.afoundation.function.AFunction0NoThrow;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
+ * SLF4J-backed implementation of {@link NSysMonLogger}.
+ *
  * @author arno
  */
-public class NLog4JLogger extends NSysMonLogger {
+public class NSlf4JLogger extends NSysMonLogger {
     private final Logger log;
 
-    public NLog4JLogger(Class<?> context) {
-        log = Logger.getLogger(context);
+    public NSlf4JLogger(Class<?> context) {
+        log = LoggerFactory.getLogger(context);
     }
 
     @Override public void debug(AFunction0NoThrow<String> msg) {
@@ -37,7 +40,8 @@ public class NLog4JLogger extends NSysMonLogger {
     }
 
     @Override public void error(Exception exc) {
-        log.error(exc);
+        // SLF4J has no error(Throwable) overload, so keep the cause in the message as well
+        log.error("unexpected exception: " + exc, exc);
     }
 
     @Override public void error(String msg, Exception exc) {

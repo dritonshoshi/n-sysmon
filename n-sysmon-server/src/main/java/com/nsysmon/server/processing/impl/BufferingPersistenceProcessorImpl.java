@@ -11,7 +11,8 @@ import com.nsysmon.server.services.ConfigData;
 import com.nsysmon.server.services.ConfigProvider;
 import com.nsysmon.server.storage.ScalarDataDao;
 import com.nsysmon.util.AShutdownable;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
@@ -28,7 +29,7 @@ import java.util.concurrent.Executors;
  */
 @Singleton
 public class BufferingPersistenceProcessorImpl implements BufferingPersistenceProcessor, AShutdownable {
-        private static final Logger log = Logger.getLogger(BufferingPersistenceProcessorImpl.class);
+        private static final Logger log = LoggerFactory.getLogger(BufferingPersistenceProcessorImpl.class);
 
     private volatile boolean isShutDown = false;
 
@@ -98,9 +99,9 @@ public class BufferingPersistenceProcessorImpl implements BufferingPersistencePr
 
         final ConfigData config = configProvider.getConfigData();
 
-        scalarQueue      = new ASoftlyLimitedBlockingQueue<>(config.getScalarQueueSize(),      new Log4JWarnCallback("environment queue overflow - discarding data"));
-        traceQueue       = new ASoftlyLimitedBlockingQueue<>(config.getTraceQueueSize(),       new Log4JWarnCallback("trace queue overflow - discarding data"));
-        environmentQueue = new ASoftlyLimitedBlockingQueue<>(config.getEnvironmentQueueSize(), new Log4JWarnCallback("environment queue overflow - discarding data"));
+        scalarQueue      = new ASoftlyLimitedBlockingQueue<>(config.getScalarQueueSize(),      new OverflowWarnCallback("scalar queue overflow - discarding data"));
+        traceQueue       = new ASoftlyLimitedBlockingQueue<>(config.getTraceQueueSize(),       new OverflowWarnCallback("trace queue overflow - discarding data"));
+        environmentQueue = new ASoftlyLimitedBlockingQueue<>(config.getEnvironmentQueueSize(), new OverflowWarnCallback("environment queue overflow - discarding data"));
 
         scalarEs      = Executors.newFixedThreadPool(config.getNumScalarWorkerThreads());
         traceEs       = Executors.newFixedThreadPool(config.getNumTraceWorkerThreads());
@@ -130,10 +131,10 @@ public class BufferingPersistenceProcessorImpl implements BufferingPersistencePr
         environmentEs.shutdown();
     }
 
-    private static class Log4JWarnCallback implements Runnable {
+    private static class OverflowWarnCallback implements Runnable {
         private final String msg;
 
-        private Log4JWarnCallback(String msg) {
+        private OverflowWarnCallback(String msg) {
             this.msg = msg;
         }
 
