@@ -28,7 +28,7 @@ class RobustDataSinkWrapper { //TO_CONSIDER provide a means for a data sink to s
         void onFinishedHierarchicalMeasurement(AHierarchicalDataRoot data);
     }
 
-    private final Strategy ENABLED = new Strategy() {
+    private final Strategy enabled = new Strategy() {
         @Override public void onStartedHierarchicalMeasurement(String identifier) {
             try {
                 final long start = System.nanoTime();
@@ -38,7 +38,7 @@ class RobustDataSinkWrapper { //TO_CONSIDER provide a means for a data sink to s
             } catch (Exception e) {
                 if (numExceptions.incrementAndGet() > maxNumTimeouts) {
                     log.warn("Disabling data sink " + inner.getClass().getName() + " because an exception occurred " + maxNumTimeouts + " times in row", e);
-                    strategy = DISABLED;
+                    strategy = disabled;
                 }
             }
         }
@@ -52,7 +52,7 @@ class RobustDataSinkWrapper { //TO_CONSIDER provide a means for a data sink to s
             } catch (Exception e) {
                 if (numExceptions.incrementAndGet() > maxNumTimeouts) {
                     log.warn("Disabling data sink " + inner.getClass().getName() + " because an exception occurred " + maxNumTimeouts + " times in row", e);
-                    strategy = DISABLED;
+                    strategy = disabled;
                 }
             }
         }
@@ -61,12 +61,12 @@ class RobustDataSinkWrapper { //TO_CONSIDER provide a means for a data sink to s
             if(durationNanos > timeoutNanos) {
                 log.warn("Data sink " + inner.getClass().getName() + " timed out (took " + durationNanos + "ns)");
                 numTimeouts.incrementAndGet();
-                strategy = TIMED_OUT;
+                strategy = timedOut;
             }
         }
     };
 
-    private final Strategy TIMED_OUT = new Strategy() {
+    private final Strategy timedOut = new Strategy() {
         @Override public void onStartedHierarchicalMeasurement(String identifier) {
             try {
                 final long start = System.nanoTime();
@@ -76,7 +76,7 @@ class RobustDataSinkWrapper { //TO_CONSIDER provide a means for a data sink to s
             } catch (Exception e) {
                 if (numExceptions.incrementAndGet() > maxNumTimeouts) {
                     log.warn("Disabling data sink " + inner.getClass().getName() + " because an exception occurred " + maxNumTimeouts + " times in row", e);
-                    strategy = DISABLED;
+                    strategy = disabled;
                 }
             }
         }
@@ -90,7 +90,7 @@ class RobustDataSinkWrapper { //TO_CONSIDER provide a means for a data sink to s
             } catch (Exception e) {
                 if (numExceptions.incrementAndGet() > maxNumTimeouts) {
                     log.warn("Disabling data sink " + inner.getClass().getName() + " because an exception occurred " + maxNumTimeouts + " times in row", e);
-                    strategy = DISABLED;
+                    strategy = disabled;
                 }
             }
         }
@@ -100,16 +100,16 @@ class RobustDataSinkWrapper { //TO_CONSIDER provide a means for a data sink to s
                 log.warn("Data sink " + inner.getClass().getName() + " timed out (took " + durationNanos + "ns)");
                 if(numTimeouts.incrementAndGet() >= maxNumTimeouts) {
                     log.warn("Data Sink " + inner.getClass().getName() + " timed out " + maxNumTimeouts + " times in row - permanently disabling");
-                    strategy = DISABLED;
+                    strategy = disabled;
                 }
             } else {
                 numTimeouts.set(0);
-                strategy = ENABLED;
+                strategy = enabled;
             }
         }
     };
 
-    private final Strategy DISABLED = new Strategy() {
+    private final Strategy disabled = new Strategy() {
         @Override public void onStartedHierarchicalMeasurement(String identifier) {
         }
 
@@ -117,7 +117,7 @@ class RobustDataSinkWrapper { //TO_CONSIDER provide a means for a data sink to s
         }
     };
 
-    private volatile Strategy strategy = ENABLED;
+    private volatile Strategy strategy = enabled;
 
     RobustDataSinkWrapper(ADataSink inner, long timeoutNanos, int maxNumTimeouts) {
         this.inner = inner;

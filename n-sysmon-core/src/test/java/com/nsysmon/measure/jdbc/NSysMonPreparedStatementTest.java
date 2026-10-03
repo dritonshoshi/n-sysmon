@@ -417,14 +417,12 @@ class NSysMonPreparedStatementTest {
         final NSysMonApi singleton = NSysMon.get();
         if (sqlParameters) {
             singleton.getConfig().startOverrideSqlParameters();
-        }
-        else {
+        } else {
             singleton.getConfig().stopOverrideSqlParameters();
         }
         if (tooltips) {
             singleton.getConfig().startOverrideCollectTooltips();
-        }
-        else {
+        } else {
             singleton.getConfig().stopOverrideCollectTooltips();
         }
     }

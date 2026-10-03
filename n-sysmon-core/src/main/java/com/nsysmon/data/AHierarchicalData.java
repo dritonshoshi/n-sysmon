@@ -1,7 +1,10 @@
 package com.nsysmon.data;
 
 
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -35,7 +38,7 @@ public class AHierarchicalData {
         this.identifier = identifier.intern();
 
         //use empty 0-size map or null for better memory management
-        if (parameters.size() == 0){
+        if (parameters.size() == 0) {
             this.parameters = null;
         } else {
             Map<String, String> tmpParameters = new HashMap<>(0);

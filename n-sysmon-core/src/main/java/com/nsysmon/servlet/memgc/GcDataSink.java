@@ -55,7 +55,7 @@ class GcDataSink implements ADataSink {
         }
     }
 
-    private Set<String> memKinds (Collection<String> paramKeys) {
+    private Set<String> memKinds(Collection<String> paramKeys) {
         final Set<String> result = new HashSet<>();
 
         for(String key: paramKeys) {

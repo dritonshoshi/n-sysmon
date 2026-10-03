@@ -58,7 +58,7 @@ public class AHttpJsonOffloadingDataSink implements ADataSink {
         this.scalarQueue = new ASoftlyLimitedQueue<>(scalarQueueSize, new DiscardedLogger("environment queue overflow - discarding oldest data"));
 
         offloadingThreadPool = Executors.newFixedThreadPool(numOffloadingThreads);
-        for(int i=0; i<numOffloadingThreads; i++) {
+        for(int i = 0; i < numOffloadingThreads; i++) {
             offloadingThreadPool.submit(new OffloadingRunnable());
         }
 
@@ -97,8 +97,7 @@ public class AHttpJsonOffloadingDataSink implements ADataSink {
 
         if(traces.isEmpty() && scalars.isEmpty()) {
             Thread.sleep(NO_DATA_SLEEP_MILLIS);
-        }
-        else {
+        } else {
             try {
             final HttpPost httpPost = new HttpPost(uri);
 
@@ -111,8 +110,7 @@ public class AHttpJsonOffloadingDataSink implements ADataSink {
                 } finally {
                     response.close();
                 }
-            }
-            catch(Exception exc) {
+            } catch(Exception exc) {
                 log.error(exc);
 
                 // add the data to the queue again for later retry
@@ -133,7 +131,7 @@ public class AHttpJsonOffloadingDataSink implements ADataSink {
         offloadingThreadPool.shutdown();
     }
 
-    private static class DiscardedLogger implements Runnable {
+    private static final class DiscardedLogger implements Runnable {
         private final String msg;
 
         private DiscardedLogger(String msg) {
@@ -145,7 +143,7 @@ public class AHttpJsonOffloadingDataSink implements ADataSink {
         }
     }
 
-    private class OffloadingRunnable implements Runnable {
+    private final class OffloadingRunnable implements Runnable {
         @Override public void run() {
             while(! isShutDown) {
                 try {

@@ -24,7 +24,7 @@ class RobustEnvironmentMeasurerWrapper {
         void contributeMeasurements(AEnvironmentMeasurer.EnvironmentCollector data);
     }
 
-    private final Strategy ENABLED = new Strategy() {
+    private final Strategy enabled = new Strategy() {
         @Override public void contributeMeasurements(AEnvironmentMeasurer.EnvironmentCollector data) {
             try {
                 final long start = System.nanoTime();
@@ -32,7 +32,7 @@ class RobustEnvironmentMeasurerWrapper {
                 handleDuration(System.nanoTime() - start);
             } catch (Exception e) {
                 log.warn("Disabling scalar measurer " + inner.getClass().getName() + " because an exception occurred", e);
-                strategy = DISABLED;
+                strategy = disabled;
             }
         }
 
@@ -40,12 +40,12 @@ class RobustEnvironmentMeasurerWrapper {
             if(durationNanos > timeoutNanos) {
                 log.warn("Environment measurer " + inner.getClass().getName() + " timed out (took " + durationNanos + "ns)");
                 numTimeouts.incrementAndGet();
-                strategy = TIMED_OUT;
+                strategy = timedOut;
             }
         }
     };
 
-    private final Strategy TIMED_OUT = new Strategy() {
+    private final Strategy timedOut = new Strategy() {
         @Override public void contributeMeasurements(AEnvironmentMeasurer.EnvironmentCollector data) {
             try {
                 final long start = System.nanoTime();
@@ -53,7 +53,7 @@ class RobustEnvironmentMeasurerWrapper {
                 handleDuration(System.nanoTime() - start);
             } catch (Exception e) {
                 log.warn("Disabling scalar measurer " + inner.getClass().getName() + " because an exception occurred", e);
-                strategy = DISABLED;
+                strategy = disabled;
             }
         }
 
@@ -61,19 +61,18 @@ class RobustEnvironmentMeasurerWrapper {
             if(durationNanos > timeoutNanos) {
                 if(numTimeouts.incrementAndGet() >= maxNumTimeouts) {
                     log.warn("Environment measurer " + inner.getClass().getName() + " timed out " + maxNumTimeouts + " times in row - permanently disabling");
-                    strategy = DISABLED;
-                }
-                else {
-                    strategy = ENABLED;
+                    strategy = disabled;
+                } else {
+                    strategy = enabled;
                 }
             }
         }
     };
 
-    private final Strategy DISABLED = data -> {
+    private final Strategy disabled = data -> {
     };
 
-    private volatile Strategy strategy = ENABLED;
+    private volatile Strategy strategy = enabled;
 
     RobustEnvironmentMeasurerWrapper(AEnvironmentMeasurer inner, long timeoutNanos, int maxNumTimeouts) {
         this.inner = inner;

@@ -9,7 +9,12 @@ import com.nsysmon.data.AHierarchicalData;
 import com.nsysmon.data.AHierarchicalDataRoot;
 import com.nsysmon.datasink.ADataSink;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 
 /**
@@ -45,9 +50,9 @@ public class AMeasurementHierarchyImpl implements AMeasurementHierarchy {
         this.dataSink = dataSink;
     }
 
-    private boolean checkNotFinished () {
+    private boolean checkNotFinished() {
         if(isFinished) {
-            log.error (new IllegalStateException("This measurement is already closed."));
+            log.error(new IllegalStateException("This measurement is already closed."));
         }
         return isFinished;
     }
@@ -70,24 +75,23 @@ public class AMeasurementHierarchyImpl implements AMeasurementHierarchy {
         if(isSerial) {
             checkOverflow();
             final ASimpleSerialMeasurementImpl result = new ASimpleSerialMeasurementImpl(this, config.timer.getCurrentNanos(), identifier);
-            if (!killedDueSize){
+            if (!killedDueSize) {
                 unfinished.push(result);
                 size += 1;
                 childrenStack.push(new ArrayList<>(0));
             }
             return result;
-        }
-        else {
+        } else {
             return new ASimpleParallelMeasurementImpl(this, config.timer.getCurrentNanos(), identifier, childrenStack.peek());
         }
     }
 
     private void checkOverflow() {
-        checkMaxDepth ();
-        checkMaxSize ();
+        checkMaxDepth();
+        checkMaxSize();
     }
 
-    private void checkMaxSize () {
+    private void checkMaxSize() {
         if (size < config.maxNumMeasurementsPerHierarchy || killedDueSize) {
             return;
         }
@@ -100,7 +104,7 @@ public class AMeasurementHierarchyImpl implements AMeasurementHierarchy {
         killedDueSize = true;
     }
 
-    private void checkMaxDepth () {
+    private void checkMaxDepth() {
         if (unfinished.size() < config.maxNestedMeasurements || killedDueSize) {
             return;
         }
@@ -113,7 +117,7 @@ public class AMeasurementHierarchyImpl implements AMeasurementHierarchy {
             return;
         }
 
-        if (checkNotFinished ()) {
+        if (checkNotFinished()) {
             return;
         }
 
@@ -129,8 +133,7 @@ public class AMeasurementHierarchyImpl implements AMeasurementHierarchy {
                     log.warn("-> Implicitly unrolling the stack of open measurements: " + unfinished.peek());
                     finish(unfinished.peek());
                 }
-            }
-            else {
+            } else {
                 if (!killedDueSize) {
                     log.error(new IllegalStateException("Calling 'finish' on a measurement that is not on the measurement stack: " + measurement));
                 }
@@ -150,8 +153,7 @@ public class AMeasurementHierarchyImpl implements AMeasurementHierarchy {
             isFinished = true;
             dataSink.onFinishedHierarchicalMeasurement(new AHierarchicalDataRoot(newData, startedFlows, joinedFlows, killedDueSize));
             //System.out.println("killedDueSize="+killedDueSize);
-        }
-        else {
+        } else {
             childrenStack.peek().add(newData);
         }
     }
@@ -161,7 +163,7 @@ public class AMeasurementHierarchyImpl implements AMeasurementHierarchy {
             return;
         }
 
-        if (checkNotFinished ()) {
+        if (checkNotFinished()) {
             return;
         }
 
@@ -170,24 +172,23 @@ public class AMeasurementHierarchyImpl implements AMeasurementHierarchy {
     }
 
     @Override
-    public ACollectingMeasurement startCollectingMeasurement (final String identifier, boolean isSerial) {
+    public ACollectingMeasurement startCollectingMeasurement(final String identifier, boolean isSerial) {
         if(NSysMonConfig.isGloballyDisabled() || checkNotFinished()) {
-            return ACollectingMeasurement.createDisabled ();
+            return ACollectingMeasurement.createDisabled();
         }
 
         if(unfinished.isEmpty()) {
             // A collection measurement can never be top-level. To be on the safe side, we just ignore this, losing measurement data rather than risking non-robust code.
             // Declarative transactions can cause this if the start and especially the end of a transaction are not surrounded by an NSysMon measurement
-            log.debug ((AFunction0NoThrow<String>) () -> "Trying to start a collectiong mesaurement outside of a measurement hierarchy: " + identifier);
-            return ACollectingMeasurement.createDisabled ();
-        }
-        else {
+            log.debug((AFunction0NoThrow<String>) () -> "Trying to start a collectiong mesaurement outside of a measurement hierarchy: " + identifier);
+            return ACollectingMeasurement.createDisabled();
+        } else {
             size += 1;
             checkOverflow();
-            if (killedDueSize){
-                return ACollectingMeasurement.createDisabled ();
+            if (killedDueSize) {
+                return ACollectingMeasurement.createDisabled();
             }
-            final ACollectingMeasurement result = ACollectingMeasurement.createRegular (config, this, isSerial, identifier, childrenStack.peek());
+            final ACollectingMeasurement result = ACollectingMeasurement.createRegular(config, this, isSerial, identifier, childrenStack.peek());
             collectingMeasurements.add(result);
             return result;
         }
@@ -198,7 +199,7 @@ public class AMeasurementHierarchyImpl implements AMeasurementHierarchy {
             return;
         }
 
-        if (checkNotFinished ()) {
+        if (checkNotFinished()) {
             return;
         }
 

@@ -28,11 +28,11 @@ public class NSysMonDataSource implements DataSource {
     }
 
     @Override public Connection getConnection() throws SQLException {
-        return new NSysMonConnection(inner.getConnection(), sysMon, poolIdentifier, new MeasuringConnectionCounter ());
+        return new NSysMonConnection(inner.getConnection(), sysMon, poolIdentifier, new MeasuringConnectionCounter());
     }
 
     @Override public Connection getConnection(String username, String password) throws SQLException {
-        return new NSysMonConnection(inner.getConnection(username, password), sysMon, poolIdentifier, new MeasuringConnectionCounter ());
+        return new NSysMonConnection(inner.getConnection(username, password), sysMon, poolIdentifier, new MeasuringConnectionCounter());
     }
 
     @Override public PrintWriter getLogWriter() throws SQLException {
@@ -69,33 +69,32 @@ public class NSysMonDataSource implements DataSource {
      * If connections are created using the NSysMon driver, these connections may be pooled so that 'close()' is pretty much never called, and using the 'activation' /
      *  'passivation' mechanism seems a little fragile for this.
      */
-    private class MeasuringConnectionCounter implements AIConnectionCounter {
+    private final class MeasuringConnectionCounter implements AIConnectionCounter {
         private final AIConnectionCounter inner = AConnectionCounter.INSTANCE; //TODO make this configurable?
         private final ASimpleMeasurement m;
 
-        private MeasuringConnectionCounter () {
-            m = sysMon.start (NSysMonStatement.IDENT_PREFIX_JDBC + "connection from pool");
-            m.addParameter ("pool", poolIdentifier);
+        private MeasuringConnectionCounter() {
+            m = sysMon.start(NSysMonStatement.IDENT_PREFIX_JDBC + "connection from pool");
+            m.addParameter("pool", poolIdentifier);
         }
-        @Override public void onOpenConnection (String qualifier) {
-            inner.onOpenConnection (qualifier);
+        @Override public void onOpenConnection(String qualifier) {
+            inner.onOpenConnection(qualifier);
         }
-        @Override public void onCloseConnection (String qualifier) {
+        @Override public void onCloseConnection(String qualifier) {
             try {
-                m.finish ();
-            }
-            catch (final Exception exc) {
+                m.finish();
+            } catch (final Exception exc) {
                 NSysMonLogger.get(NSysMonDataSource.class).debug((AFunction0NoThrow<String>) () -> "exception when finishing a JDBC connection measurement: " + exc);
                 // Silently ignore - this means that the fetching and closing of the connection did not happen at the same level in the call hierarchy. While such
                 //  a symmetry is common and often desirable, it is by no means the only valid mode of using JDBC - so NSysMon needs to deal with it in a robust fashion.
             }
-            inner.onCloseConnection (qualifier);
+            inner.onCloseConnection(qualifier);
         }
-        @Override public void onActivateConnection (String qualifier) {
-            inner.onActivateConnection (qualifier);
+        @Override public void onActivateConnection(String qualifier) {
+            inner.onActivateConnection(qualifier);
         }
-        @Override public void onPassivateConnection (String qualifier) {
-            inner.onPassivateConnection (qualifier);
+        @Override public void onPassivateConnection(String qualifier) {
+            inner.onPassivateConnection(qualifier);
         }
     }
 }

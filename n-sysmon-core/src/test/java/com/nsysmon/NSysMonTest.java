@@ -23,7 +23,8 @@ import java.net.UnknownHostException;
 import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 
 /**
@@ -335,7 +336,7 @@ public class NSysMonTest {
 
         // top-level collecting measurement is permitted, but results are discarded
         sysMon.startCollectingMeasurement("a").finish();
-        assertEquals (0, dataSink.data.size());
+        assertEquals(0, dataSink.data.size());
     }
 
     @Test
@@ -345,11 +346,11 @@ public class NSysMonTest {
 
         final ACollectingMeasurement a = sysMon.startCollectingMeasurement("a");
         final ACollectingMeasurement b = sysMon.startCollectingMeasurement("b");
-        assertTrue (dataSink.data.isEmpty ());
+        assertTrue(dataSink.data.isEmpty());
         a.finish();
-        assertTrue (dataSink.data.isEmpty ());
+        assertTrue(dataSink.data.isEmpty());
         b.finish();
-        assertTrue (dataSink.data.isEmpty ());
+        assertTrue(dataSink.data.isEmpty());
     }
 
     @Test
@@ -393,13 +394,13 @@ public class NSysMonTest {
         final CountingDataSink dataSink = new CountingDataSink();
         final NSysMonApi sysMon = createSysMon(dataSink);
 
-        for(int i=0; i<10_000; i++) {
+        for(int i = 0; i < 10_000; i++) {
             sysMon.start("a");
         }
 
         assertEquals(1, dataSink.started);
         assertEquals(0, dataSink.finished);
-        assertEquals(0, CountingLoggerFactory.logger.numError);
+        assertEquals(0, CountingLoggerFactory.LOGGER.numError);
     }
 
     @Test
@@ -449,11 +450,11 @@ public class NSysMonTest {
     public void testLoadCleanup() throws InterruptedException {
         final long start = System.currentTimeMillis();
         final int NUM_THREADS = 10;
-        final CountDownLatch latch = new CountDownLatch(2* NUM_THREADS);
-        for(int t = 0; t<NUM_THREADS; t++) {
+        final CountDownLatch latch = new CountDownLatch(2 * NUM_THREADS);
+        for(int t = 0; t < NUM_THREADS; t++) {
             new Thread() {
                 @Override public void run() {
-                    for(int i=0; i<100_000; i++) {
+                    for(int i = 0; i < 100_000; i++) {
                         createHierarchy(5, 5);
                     }
                     System.out.println("s: " + (System.currentTimeMillis() - start) + "ms");
@@ -463,10 +464,10 @@ public class NSysMonTest {
 
             new Thread() {
                 @Override public void run() {
-                    for(int i=0; i<100_000_000; i++) {
+                    for(int i = 0; i < 100_000_000; i++) {
                         NSysMon.get().startCollectingMeasurement("xyz");
                     }
-                    System.out.println("c: "+ (System.currentTimeMillis() - start) + "ms");
+                    System.out.println("c: " + (System.currentTimeMillis() - start) + "ms");
                     latch.countDown();
                 }
             }.start();
@@ -475,10 +476,10 @@ public class NSysMonTest {
     }
 
     private void createHierarchy(int width, int depth) {
-        for(int i=0; i<width; i++) {
+        for(int i = 0; i < width; i++) {
             NSysMon.get().start("a-" + i + "-" + depth);
             if(depth > 0) {
-                createHierarchy(width, depth-1);
+                createHierarchy(width, depth - 1);
             }
         }
     }

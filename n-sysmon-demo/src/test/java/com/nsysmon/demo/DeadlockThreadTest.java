@@ -21,7 +21,7 @@ class DeadlockThreadTest {
     @Test void holdsTwoDistinctLocksForTheTwoDeadlockingThreads() {
         final DeadlockThread thread = new DeadlockThread();
 
-        assertNotSame(thread.LOCK_A, thread.LOCK_B);
-        assertNotSame(thread.LOCK_A, new DeadlockThread().LOCK_A);
+        assertNotSame(thread.lockA, thread.lockB);
+        assertNotSame(thread.lockA, new DeadlockThread().lockA);
     }
 }

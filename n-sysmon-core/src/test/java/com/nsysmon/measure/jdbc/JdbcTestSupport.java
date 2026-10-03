@@ -59,7 +59,7 @@ final class JdbcTestSupport {
 
         public static NSysMonApi sysMon;
 
-        public TestSysMonSource() {
+        TestSysMonSource() {
         }
 
         @Override public NSysMonApi getSysMon() {

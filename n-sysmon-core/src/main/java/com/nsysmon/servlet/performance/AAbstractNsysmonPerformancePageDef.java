@@ -125,14 +125,14 @@ public abstract class AAbstractNsysmonPerformancePageDef implements APresentatio
 
             for(List<String> row: node.tooltip) {
 
-                if (row.size() == 2){
+                if (row.size() == 2) {
                     json.startObject();
                     json.writeKey("id");
                     json.writeStringLiteral(row.get(0));
                     json.writeKey("value");
                     json.writeStringLiteral(row.get(1));
                     json.endObject();
-                }else{
+                } else {
                     json.startArray();
                     for(String cell: row) {
                         json.writeStringLiteral(cell);
@@ -153,7 +153,7 @@ public abstract class AAbstractNsysmonPerformancePageDef implements APresentatio
 
         json.writeKey("data");
         json.startArray();
-        for(int i=0; i<node.colDataRaw.length; i++) {
+        for(int i = 0; i < node.colDataRaw.length; i++) {
             json.writeNumberLiteral(node.colDataRaw[i], getColDefs().get(i).numFracDigits);
         }
         json.endArray();
@@ -170,7 +170,7 @@ public abstract class AAbstractNsysmonPerformancePageDef implements APresentatio
         json.endObject();
     }
 
-    protected enum ColWidth {Short, Medium, Long}
+    protected enum ColWidth { Short, Medium, Long }
     protected static class ColDef {
         public final String name;
         public final boolean isPercentage;
@@ -200,7 +200,7 @@ public abstract class AAbstractNsysmonPerformancePageDef implements APresentatio
             this(null, label, null, isSerial, colDataRaw, children, false);
         }
 
-        public TreeNode(final String id,final  String label,final  List<List<String>> tooltip,final  boolean isSerial, long[] colDataRaw, List<TreeNode> children, boolean wasKilled) {
+        public TreeNode(final String id, final  String label, final  List<List<String>> tooltip, final  boolean isSerial, long[] colDataRaw, List<TreeNode> children, boolean wasKilled) {
             this.id = id == null ? null : id.intern();
             this.label = label == null ? null : label.intern();
             this.tooltip = tooltip;

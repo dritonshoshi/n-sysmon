@@ -76,12 +76,12 @@ public class NSysMonConfigBuilder {
         return this;
     }
 
-    public NSysMonConfigBuilder setMaxNestedMeasurements (int maxNestedMeasurements) {
+    public NSysMonConfigBuilder setMaxNestedMeasurements(int maxNestedMeasurements) {
         this.maxNestedMeasurements = maxNestedMeasurements;
         return this;
     }
 
-    public NSysMonConfigBuilder setMaxNumMeasurementsPerHierarchy (int maxNum) {
+    public NSysMonConfigBuilder setMaxNumMeasurementsPerHierarchy(int maxNum) {
         this.maxNumMeasurementsPerHierarchy = maxNum;
         return this;
     }

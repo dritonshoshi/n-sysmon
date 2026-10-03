@@ -45,7 +45,7 @@ class AStdOutDataSinkTest {
         assertEquals("", buffer.toString(StandardCharsets.UTF_8));
     }
 
-    @Test void INSTANCEisTheSharedDataSinkUsedByConfiguration() {
+    @Test void instanceIsTheSharedDataSinkUsedByConfiguration() {
         assertTrue(AStdOutDataSink.INSTANCE instanceof ALoggingDataSink);
 
         final String captured = captureStdOut(ALoggingDataSinkTest.traceOf(ALoggingDataSinkTest.node(true, 7, 8, "shared")));

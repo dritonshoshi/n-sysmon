@@ -10,17 +10,17 @@ import jakarta.servlet.ServletContextListener;
  * @author arno
  */
 public class InitServletContextListener implements ServletContextListener {
-    private static volatile Injector INJECTOR;
+    private static volatile Injector injector;
 
     public static Injector getInjector() {
-        return INJECTOR;
+        return injector;
     }
 
     @Override public void contextInitialized(ServletContextEvent sce) {
-        INJECTOR = Guice.createInjector(new NSysMonModule());
+        injector = Guice.createInjector(new NSysMonModule());
     }
 
     @Override public void contextDestroyed(ServletContextEvent sce) {
-        INJECTOR = null; //TODO trigger shutdown
+        injector = null; //TODO trigger shutdown
     }
 }

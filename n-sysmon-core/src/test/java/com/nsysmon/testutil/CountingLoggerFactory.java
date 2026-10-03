@@ -7,9 +7,9 @@ import com.nsysmon.config.log.NSysMonLoggerFactory;
  * @author arno
  */
 public class CountingLoggerFactory implements NSysMonLoggerFactory {
-    public static final CountingLogger logger = new CountingLogger();
+    public static final CountingLogger LOGGER = new CountingLogger();
 
     @Override public NSysMonLogger getLogger(Class<?> context) {
-        return logger;
+        return LOGGER;
     }
 }

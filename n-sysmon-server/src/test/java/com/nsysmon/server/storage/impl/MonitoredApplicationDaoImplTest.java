@@ -71,12 +71,10 @@ class MonitoredApplicationDaoImplTest {
         when(collection.find()).thenReturn(cursor);
         if(documents.length == 0) {
             when(cursor.hasNext()).thenReturn(false);
-        }
-        else if(documents.length == 1) {
+        } else if(documents.length == 1) {
             when(cursor.hasNext()).thenReturn(true, false);
             when(cursor.next()).thenReturn(documents[0]);
-        }
-        else {
+        } else {
             when(cursor.hasNext()).thenReturn(true, true, false);
             when(cursor.next()).thenReturn(documents[0], documents[1]);
         }

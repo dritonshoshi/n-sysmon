@@ -28,7 +28,7 @@ public class ATracePageDefinition extends AAbstractNsysmonPerformancePageDef imp
     private final ATraceFilter filter;
     private final ATraceCollectingDataSink collector;
 
-    private static final List<ColDef> colDefs = Arrays.asList(
+    private static final List<ColDef> COL_DEFS = Arrays.asList(
             new ColDef("%", true, 1, ColWidth.Medium, false),
             new ColDef("total &mu;s", false, 0, ColWidth.Long, false),
             new ColDef("self &mu;s", false, 0, ColWidth.Long, false),
@@ -75,7 +75,7 @@ public class ATracePageDefinition extends AAbstractNsysmonPerformancePageDef imp
     }
 
     @Override protected List<ColDef> getColDefs() {
-        return colDefs;
+        return COL_DEFS;
     }
 
     @Override protected List<TreeNode> getData() {
@@ -96,17 +96,21 @@ public class ATracePageDefinition extends AAbstractNsysmonPerformancePageDef imp
 
         final long childNow = level > 0 ? now : node.getStartTimeMillis();
 
-        int i=0;
+        int i = 0;
         for(AHierarchicalData child: node.getChildren()) {
             if(child.isSerial()) {
                 selfNanos -= child.getDurationNanos();
             }
-            children.add(asTreeNode(child, String.valueOf(i), childNow, node.getDurationNanos(), level+1, wasKilled));
+            children.add(asTreeNode(child, String.valueOf(i), childNow, node.getDurationNanos(), level + 1, wasKilled));
             i++;
         }
 
-        if(selfNanos < 0) selfNanos = 0;
-        if(selfNanos > node.getDurationNanos()) selfNanos = node.getDurationNanos();
+        if(selfNanos < 0) {
+            selfNanos = 0;
+        }
+        if(selfNanos > node.getDurationNanos()) {
+            selfNanos = node.getDurationNanos();
+        }
 
         if(selfNanos != 0 && children.size() > 0) {
             children.add(0, new TreeNode("<self>", true, new long[]{selfNanos * 1000 / node.getDurationNanos(), selfNanos / 1000, selfNanos / 1000, node.getStartTimeMillis() - childNow}, Collections.emptyList()));
@@ -189,9 +193,7 @@ public class ATracePageDefinition extends AAbstractNsysmonPerformancePageDef imp
                 double nr1 = Double.parseDouble(s1);
                 double nr2 = Double.parseDouble(s2);
                 return (int) (nr1 - nr2);
-            }
-
-            catch (NumberFormatException e) {
+            } catch (NumberFormatException e) {
                 return 0;
             }
 

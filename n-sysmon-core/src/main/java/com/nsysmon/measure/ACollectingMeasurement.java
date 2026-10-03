@@ -18,7 +18,7 @@ import java.util.TreeMap;
  *
  * @author arno
  */
-public class ACollectingMeasurement implements AWithParameters {
+public final class ACollectingMeasurement implements AWithParameters {
     private static final NSysMonLogger log = NSysMonLogger.get(ACollectingMeasurement.class);
 
     private final NSysMonConfig config;
@@ -42,7 +42,7 @@ public class ACollectingMeasurement implements AWithParameters {
 
     private final boolean isDisabled;
 
-    private ACollectingMeasurement (NSysMonConfig config, AMeasurementHierarchy hierarchy, boolean isSerial, String identifier, List<AHierarchicalData> childrenOfParent, boolean isDisabled) {
+    private ACollectingMeasurement(NSysMonConfig config, AMeasurementHierarchy hierarchy, boolean isSerial, String identifier, List<AHierarchicalData> childrenOfParent, boolean isDisabled) {
         this.config = config;
         this.hierarchy = hierarchy;
         this.isSerial = isSerial;
@@ -52,11 +52,11 @@ public class ACollectingMeasurement implements AWithParameters {
     }
 
     static ACollectingMeasurement createRegular(NSysMonConfig config, AMeasurementHierarchy hierarchy, boolean isSerial, String identifier, List<AHierarchicalData> childrenOfParent) {
-        return new ACollectingMeasurement (config, hierarchy, isSerial, identifier, childrenOfParent, false);
+        return new ACollectingMeasurement(config, hierarchy, isSerial, identifier, childrenOfParent, false);
     }
 
     static ACollectingMeasurement createDisabled() {
-        return new ACollectingMeasurement (null, null, true, null, null, true);
+        return new ACollectingMeasurement(null, null, true, null, null, true);
     }
 
     List<AHierarchicalData> getChildrenOfParent() {
@@ -93,7 +93,7 @@ public class ACollectingMeasurement implements AWithParameters {
         return totalDurationNanos;
     }
 
-    public <R, E extends Exception> R detail(String detailIdentifier, AMeasureCallback<R,E> callback) throws E {
+    public <R, E extends Exception> R detail(String detailIdentifier, AMeasureCallback<R, E> callback) throws E {
         startDetail(detailIdentifier);
         try {
             return callback.call(this);
@@ -108,7 +108,7 @@ public class ACollectingMeasurement implements AWithParameters {
         }
 
         if(this.detailIdentifier != null) {
-            log.error (new IllegalStateException("a detail measurement is already running - ignoring call to 'startDetail'"));
+            log.error(new IllegalStateException("a detail measurement is already running - ignoring call to 'startDetail'"));
             return;
         }
 
@@ -122,7 +122,7 @@ public class ACollectingMeasurement implements AWithParameters {
         }
 
         if(this.detailIdentifier == null) {
-            log.error (new IllegalStateException("no current detail measurement - ignoring call to 'finishDetail'"));
+            log.error(new IllegalStateException("no current detail measurement - ignoring call to 'finishDetail'"));
             return;
         }
 
@@ -141,8 +141,7 @@ public class ACollectingMeasurement implements AWithParameters {
         final Detail prev = details.get(detailIdentifier);
         if(prev == null) {
             details.put(detailIdentifier, new Detail(durationNanos));
-        }
-        else {
+        } else {
             prev.addMeasurement(durationNanos);
         }
     }

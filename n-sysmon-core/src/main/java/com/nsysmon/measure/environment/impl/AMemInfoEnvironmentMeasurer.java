@@ -3,7 +3,10 @@ package com.nsysmon.measure.environment.impl;
 import com.nsysmon.NSysMon;
 import com.nsysmon.measure.environment.AEnvironmentMeasurer;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -24,7 +27,7 @@ public class AMemInfoEnvironmentMeasurer implements AEnvironmentMeasurer {
 
     public Map<String, String> read() throws IOException {
         final Map<String, String> result = new HashMap<>();
-        if (NSysMon.isWindows()){
+        if (NSysMon.isWindows()) {
             return  result;
         }
 
@@ -38,12 +41,11 @@ public class AMemInfoEnvironmentMeasurer implements AEnvironmentMeasurer {
                 }
 
                 final String key = line.substring(0, idxColon).trim();
-                final String value = line.substring(idxColon+1).trim();
+                final String value = line.substring(idxColon + 1).trim();
 
                 result.put(key, value);
             }
-        }
-        finally {
+        } finally {
             br.close();
         }
         return result;

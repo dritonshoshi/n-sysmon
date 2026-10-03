@@ -18,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  */
 public class AScalarMeasurerTest {
 
-    private static class MinimalMeasurer implements AScalarMeasurer {
+    private static final class MinimalMeasurer implements AScalarMeasurer {
         @Override public void contributeMeasurements(Map<String, AScalarDataPoint> data, long timestamp, Map<String, Object> mementos) {
         }
         @Override public AOption<Long> getTimeoutInMilliSeconds() {

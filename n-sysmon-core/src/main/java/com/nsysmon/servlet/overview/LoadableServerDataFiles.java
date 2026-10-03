@@ -109,7 +109,7 @@ public class LoadableServerDataFiles implements APresentationPageDefinition {
         json.startArray();
         try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(Paths.get(NSysMon.get().getConfig().pathDatafiles))) {
             for (Path path : directoryStream) {
-                if ((!path.getFileName().toString().startsWith(DataFileGeneratorSupporter.DATAFILE_PREFIX))||(!path.getFileName().toString().endsWith(".gz"))) {
+                if ((!path.getFileName().toString().startsWith(DataFileGeneratorSupporter.DATAFILE_PREFIX)) || (!path.getFileName().toString().endsWith(".gz"))) {
                     continue;
                 }
                 String host = dataTools.getHostFromFilename(path.getFileName().toString());

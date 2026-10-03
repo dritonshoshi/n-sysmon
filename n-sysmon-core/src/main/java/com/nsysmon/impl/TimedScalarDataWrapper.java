@@ -27,7 +27,7 @@ class TimedScalarDataWrapper implements Runnable {
 
     @Override
     public void run() {
-        if (NSysMonConfig.isGloballyDisabled()){
+        if (NSysMonConfig.isGloballyDisabled()) {
             //do nothing it nsysmon is disabled
             return;
         }
@@ -64,12 +64,12 @@ class TimedScalarDataWrapper implements Runnable {
 
         for (AScalarDataPoint point : dataPoint) {
             String name = point.getName();
-            if (!dataBuffer.containsKey(name)){
+            if (!dataBuffer.containsKey(name)) {
                 dataBuffer.put(name, new ARingBuffer<>(AScalarDataPoint.class, maxEntriesTotal));
             }
             dataBuffer.get(name).put(point);
 
-            if (!dataBufferMonitoring.containsKey(name)){
+            if (!dataBufferMonitoring.containsKey(name)) {
                 dataBufferMonitoring.put(name, new ARingBuffer<>(AScalarDataPoint.class, maxEntriesMonitoring));
             }
             dataBufferMonitoring.get(name).put(point);

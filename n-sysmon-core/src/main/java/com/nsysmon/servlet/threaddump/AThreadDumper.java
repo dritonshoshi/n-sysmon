@@ -4,21 +4,28 @@ import java.lang.management.ManagementFactory;
 import java.lang.management.ThreadInfo;
 import java.lang.management.ThreadMXBean;
 import java.text.Collator;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.TreeSet;
 
 
 /**
  * @author arno
  */
-class AThreadDumper {
-    static final Comparator<ThreadInfo> threadNameComparator = (o1, o2) -> Collator.getInstance().compare(o1.getThreadName(), o2.getThreadName());
+final class AThreadDumper {
+    static final Comparator<ThreadInfo> THREAD_NAME_COMPARATOR = (o1, o2) -> Collator.getInstance().compare(o1.getThreadName(), o2.getThreadName());
 
-    private static final ThreadMXBean mxBean = ManagementFactory.getThreadMXBean();
+    private static final ThreadMXBean MX_BEAN = ManagementFactory.getThreadMXBean();
+
+    private AThreadDumper() {
+    }
 
     public static Collection<ThreadInfo> getThreadInfo() {
-        final Collection<ThreadInfo> result = new TreeSet<>(threadNameComparator);
+        final Collection<ThreadInfo> result = new TreeSet<>(THREAD_NAME_COMPARATOR);
 
-        result.addAll(Arrays.asList(mxBean.dumpAllThreads(mxBean.isObjectMonitorUsageSupported(), mxBean.isSynchronizerUsageSupported())));
+        result.addAll(Arrays.asList(MX_BEAN.dumpAllThreads(MX_BEAN.isObjectMonitorUsageSupported(), MX_BEAN.isSynchronizerUsageSupported())));
 
         return result;
     }
@@ -31,12 +38,12 @@ class AThreadDumper {
     public static Collection<Long> getDeadlockedThreads() {
         final Collection<Long> result = new HashSet<>();
 
-        if(mxBean != null) { // may happen, depending on JVM version
-            for(long threadId: nullToEmpty(mxBean.findDeadlockedThreads())) {
+        if(MX_BEAN != null) { // may happen, depending on JVM version
+            for(long threadId: nullToEmpty(MX_BEAN.findDeadlockedThreads())) {
                 result.add(threadId);
             }
 
-            for(long threadId: nullToEmpty(mxBean.findMonitorDeadlockedThreads())) {
+            for(long threadId: nullToEmpty(MX_BEAN.findMonitorDeadlockedThreads())) {
                 result.add(threadId);
             }
         }

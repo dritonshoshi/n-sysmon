@@ -25,7 +25,7 @@ import java.util.Locale;
 public class AJsonSerHelperForNSysmon {
     static final Charset UTF_8 = Charset.forName("UTF-8");
 
-    private static final int[] TEN_POW = new int[] {1, 10, 100, 1000, 10*1000, 100*1000, 1000*1000, 10*1000*1000, 100*1000*1000, 1000*1000*1000};
+    private static final int[] TEN_POW = new int[] {1, 10, 100, 1000, 10 * 1000, 100 * 1000, 1000 * 1000, 10 * 1000 * 1000, 100 * 1000 * 1000, 1000 * 1000 * 1000};
     private static final String[] PATTERNS = new String[] {"0", "0.0", "0.00", "0.000", "0.0000", "0.00000", "0.000000", "0.0000000", "0.00000000", "0.000000000"};
     private static final DecimalFormatSymbols DECIMAL_FORMAT_SYMBOLS = new DecimalFormatSymbols(Locale.US);
 
@@ -58,7 +58,7 @@ public class AJsonSerHelperForNSysmon {
         if(state() == JsonSerState.inObject) {
             out.write(",");
         }
-        _writeStringLiteral(key);
+        writeStringLiteralEscaped(key);
         out.write(":");
         state.push(JsonSerState.afterKey);
     }
@@ -78,33 +78,29 @@ public class AJsonSerHelperForNSysmon {
 
     public void writeStringLiteral(String s) throws IOException {
         if (s == null) {
-            writeNullLiteral ();
+            writeNullLiteral();
             return;
         }
 
         checkAcceptsValueAndPrefixComma();
-        _writeStringLiteral(s);
+        writeStringLiteralEscaped(s);
         afterValueWritten();
     }
 
-    private void _writeStringLiteral(String s) throws IOException {
+    private void writeStringLiteralEscaped(String s) throws IOException {
         out.write('"');
-        for(int i=0; i<s.length(); i++) {
+        for(int i = 0; i < s.length(); i++) {
             final char ch = s.charAt(i);
 
             if(ch == '"') {
                 out.write("\\\"");
-            }
-            else if (ch == '\\') {
-                out.write ("\\\\");
-            }
-            else if(ch < 16) {
+            } else if (ch == '\\') {
+                out.write("\\\\");
+            } else if(ch < 16) {
                 out.write("\\u000" + Integer.toHexString(ch));
-            }
-            else if(ch < 32) {
+            } else if(ch < 32) {
                 out.write("\\u00" + Integer.toHexString(ch));
-            }
-            else {
+            } else {
                 out.write(ch);
             }
         }
@@ -116,16 +112,15 @@ public class AJsonSerHelperForNSysmon {
         checkAcceptsValueAndPrefixComma();
 
         if (value < 0) {
-            out.write ('-');
+            out.write('-');
             value = -value;
         }
 
         if(numFracDigits == 0) {
             out.write(String.valueOf(value));
-        }
-        else {
+        } else {
             final long intPart = value / TEN_POW[numFracDigits];
-            final String fracPart = String.valueOf(1_000_000_000 + value%TEN_POW[numFracDigits]).substring (10 - numFracDigits, 10);
+            final String fracPart = String.valueOf(1_000_000_000 + value % TEN_POW[numFracDigits]).substring(10 - numFracDigits, 10);
 
             out.write(String.valueOf(intPart));
             out.write(".");
@@ -169,8 +164,12 @@ public class AJsonSerHelperForNSysmon {
             state.pop();
         }
         switch(state()) {
-            case startOfArray:  replaceState(JsonSerState.inArray); break;
-            case startOfObject: replaceState(JsonSerState.inObject); break;
+            case startOfArray:
+                replaceState(JsonSerState.inArray);
+                break;
+            case startOfObject:
+                replaceState(JsonSerState.inObject);
+                break;
             case initial:
                 replaceState(JsonSerState.finished);
                 out.flush();

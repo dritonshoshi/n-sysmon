@@ -97,7 +97,7 @@ class EventBusImplTest {
         };
     }
 
-    private static class RecordingListener implements NewDataListener {
+    private static final class RecordingListener implements NewDataListener {
         ScalarNode scalarData;
         TraceRootNode traceData;
         EnvironmentNode environmentData;

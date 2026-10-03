@@ -16,7 +16,6 @@ import static com.nsysmon.impl.NSysMonImplTest.APP_INFO;
 import static com.nsysmon.impl.NSysMonImplTest.contributing;
 import static com.nsysmon.impl.NSysMonImplTest.environmentMeasurer;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -34,7 +33,6 @@ class NSysMonConfigurerTest {
 
     @Test
     void everyConfigurerMethodIsStatic() {
-        assertNotNull(new NSysMonConfigurer());
         assertTrue(Arrays.stream(NSysMonConfigurer.class.getDeclaredMethods())
                 .allMatch(m -> Modifier.isStatic(m.getModifiers())));
     }

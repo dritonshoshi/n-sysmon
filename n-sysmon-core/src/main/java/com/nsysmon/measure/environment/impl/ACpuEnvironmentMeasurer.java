@@ -16,7 +16,7 @@ public class ACpuEnvironmentMeasurer implements AEnvironmentMeasurer {
     public static final String KEY_CPUS = "cpus";
 
     @Override public void contributeMeasurements(EnvironmentCollector data) throws Exception {
-        if (NSysMon.isWindows()){
+        if (NSysMon.isWindows()) {
             return;
         }
 
@@ -32,7 +32,7 @@ public class ACpuEnvironmentMeasurer implements AEnvironmentMeasurer {
                 }
 
                 final String key = line.substring(0, idxColon).trim();
-                final String value = line.substring(idxColon+1).trim();
+                final String value = line.substring(idxColon + 1).trim();
 
                 if(value.isEmpty()) {
                     continue;
@@ -53,8 +53,7 @@ public class ACpuEnvironmentMeasurer implements AEnvironmentMeasurer {
             }
 
             data.add(String.valueOf(numCpus), KEY_HW, KEY_CPUS);
-        }
-        finally {
+        } finally {
             br.close();
         }
     }

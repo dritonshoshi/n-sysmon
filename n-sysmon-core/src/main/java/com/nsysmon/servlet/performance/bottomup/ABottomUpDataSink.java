@@ -65,8 +65,7 @@ public class ABottomUpDataSink implements ADataSink {
 
         if(leafFilter.isLeaf(newData)) {
             doStoreJdbc(newData, callStack, rootMap);
-        }
-        else {
+        } else {
             for(AHierarchicalData child: newData.getChildren()) {
                 recCollect(child, callStack);
             }
@@ -85,8 +84,7 @@ public class ABottomUpDataSink implements ADataSink {
         AMinMaxAvgData result = map.get(key);
         if(result == null) {
             result = new AMinMaxAvgData(isSerial, durationNanos);
-        }
-        else {
+        } else {
             result = result.withDataPoint(isSerial, durationNanos);
         }
         map.put(key, result);

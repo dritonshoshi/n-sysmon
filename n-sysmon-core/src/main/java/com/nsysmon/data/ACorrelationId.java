@@ -34,14 +34,24 @@ public class ACorrelationId {
     }
 
     @Override public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
 
         ACorrelationId that = (ACorrelationId) o;
 
-        if (id != null ? !id.equals(that.id) : that.id != null) return false;
-        if (idParent != null ? !idParent.equals(that.idParent) : that.idParent != null) return false;
-        if (qualifier != null ? !qualifier.equals(that.qualifier) : that.qualifier != null) return false;
+        if (id != null ? !id.equals(that.id) : that.id != null) {
+            return false;
+        }
+        if (idParent != null ? !idParent.equals(that.idParent) : that.idParent != null) {
+            return false;
+        }
+        if (qualifier != null ? !qualifier.equals(that.qualifier) : that.qualifier != null) {
+            return false;
+        }
 
         return true;
     }

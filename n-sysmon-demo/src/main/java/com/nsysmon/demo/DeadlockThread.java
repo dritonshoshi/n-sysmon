@@ -9,14 +9,15 @@ import java.lang.reflect.Proxy;
  * @author arno
  */
 public class DeadlockThread extends Thread {
-    final Object LOCK_A = new Object();
-    final Object LOCK_B = new Object();
+    // package-private so the test can assert the two threads really use distinct locks
+    final Object lockA = new Object();
+    final Object lockB = new Object();
 
     @Override public void run() {
-        synchronized(LOCK_A) {
+        synchronized(lockA) {
             final Runnable r = () -> {
-                synchronized(LOCK_B) {
-                    synchronized(LOCK_A) {
+                synchronized(lockB) {
+                    synchronized(lockA) {
                         System.out.println("..."); // should never happen
                     }
                 }
@@ -31,7 +32,7 @@ public class DeadlockThread extends Thread {
             } catch (InterruptedException e) {
             }
 
-            synchronized(LOCK_B) {
+            synchronized(lockB) {
                 System.out.println("..."); // should never happen
             }
         }

@@ -11,7 +11,7 @@ import java.util.Properties;
  * @author arno
  */
 class ConfigValueResolver {
-    private static final ConfigTypeHandler[] typeHandlers = new ConfigTypeHandler[] {
+    private static final ConfigTypeHandler[] TYPE_HANDLERS = new ConfigTypeHandler[] {
             new HandlerForPrimitives(), new HandlerForList(), new HandlerForEnumsAndConstants(),
             new HandlerForBeans() // catch-all --> must be last
     };
@@ -35,7 +35,7 @@ class ConfigValueResolver {
     public Object get(String valueRaw) {
         final String value = valueRaw.trim();
 
-        for(ConfigTypeHandler h: typeHandlers) {
+        for(ConfigTypeHandler h: TYPE_HANDLERS) {
             if(h.canHandle(type, paramTypes, value)) {
                 try {
                     return h.handle(this, key, value, type, paramTypes);
@@ -94,8 +94,8 @@ class ConfigValueResolver {
         final StringBuilder paramT = new StringBuilder();
         if(paramTypes.length > 0) {
             paramT.append(" <");
-            for(int i=0; i<paramTypes.length; i++) {
-                if(i>0) {
+            for(int i = 0; i < paramTypes.length; i++) {
+                if(i > 0) {
                     paramT.append(", ");
                 }
                 paramT.append(paramTypes[i].getName());
@@ -105,8 +105,7 @@ class ConfigValueResolver {
 
         if(cause != null) {
             throw new IllegalArgumentException("config error @ " + key + " for type " + type.getName() + paramT + ": " + msg, cause);
-        }
-        else {
+        } else {
             throw new IllegalArgumentException("config error @ " + key + " for type " + type.getName() + paramT + ": " + msg);
         }
     }

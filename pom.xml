@@ -90,6 +90,10 @@
              JDK 21; JDK 25 also builds clean. Anything older cannot build this project.
              Note the upper bound is exclusive, hence 26 to include JDK 25. -->
         <jdk.version.range>[17,26)</jdk.version.range>
+
+        <!-- Single source of truth for the Checkstyle ruleset; ${maven.multiModuleProjectDirectory}
+             resolves to the reactor root, so every module picks up the same file. -->
+        <checkstyle.config.location>${maven.multiModuleProjectDirectory}/config/checkstyle/checkstyle.xml</checkstyle.config.location>
     </properties>
 
     <dependencyManagement>
@@ -227,6 +231,10 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-enforcer-plugin</artifactId>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+            </plugin>
         </plugins>
 
         <pluginManagement>
@@ -360,6 +368,39 @@
                                     </requireJavaVersion>
                                 </rules>
                             </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-checkstyle-plugin</artifactId>
+                    <version>3.6.0</version>
+                    <configuration>
+                        <configLocation>${checkstyle.config.location}</configLocation>
+                        <includeTestSourceDirectory>true</includeTestSourceDirectory>
+                        <consoleOutput>true</consoleOutput>
+                        <failOnViolation>true</failOnViolation>
+                        <violationSeverity>warning</violationSeverity>
+                        <logViolationsToConsole>true</logViolationsToConsole>
+                        <sourceDirectories>
+                            <sourceDirectory>${project.build.sourceDirectory}</sourceDirectory>
+                            <sourceDirectory>${project.build.testSourceDirectory}</sourceDirectory>
+                        </sourceDirectories>
+                    </configuration>
+                    <dependencies>
+                        <dependency>
+                            <groupId>com.puppycrawl.tools</groupId>
+                            <artifactId>checkstyle</artifactId>
+                            <version>11.1.0</version>
+                        </dependency>
+                    </dependencies>
+                    <executions>
+                        <execution>
+                            <id>checkstyle-check</id>
+                            <phase>verify</phase>
+                            <goals>
+                                <goal>check</goal>
+                            </goals>
                         </execution>
                     </executions>
                 </plugin>

@@ -27,17 +27,17 @@ public class RobustScalarMeasurerWrapper {
     private final AtomicInteger numExceptions = new AtomicInteger(0);
 
     public ScalarMeasurerStatus getStatus(String key) {
-        if (!inner.isResponsibleForMeasurement(key)){
+        if (!inner.isResponsibleForMeasurement(key)) {
             return new ScalarMeasurerStatus(ScalarMeasurerStatus.Status.UNKNOWN);
         }
-        if (strategy == DISABLED){
+        if (strategy == DISABLED) {
             return new ScalarMeasurerStatus(ScalarMeasurerStatus.Status.STOPPED);
         }
         return new ScalarMeasurerStatus(ScalarMeasurerStatus.Status.RUNNING);
     }
 
     public boolean restartIfResponsible(String key) {
-        if (!inner.isResponsibleForMeasurement(key)){
+        if (!inner.isResponsibleForMeasurement(key)) {
             return false;
         }
         restart();
@@ -46,7 +46,7 @@ public class RobustScalarMeasurerWrapper {
 
     private void restart() {
         log.warn("Restarting scalar measurer " + inner.getClass().getName() + " due user request.");
-        strategy = ENABLED;
+        strategy = enabled;
     }
 
     private interface Strategy {
@@ -54,7 +54,7 @@ public class RobustScalarMeasurerWrapper {
         void contributeMeasurements(Map<String, AScalarDataPoint> data, long timestamp, Map<String, Object> mementos);
     }
 
-    private final Strategy ENABLED = new Strategy() {
+    private final Strategy enabled = new Strategy() {
         @Override public void prepareMeasurements(Map<String, Object> mementos) {
             try {
                 final long start = System.nanoTime();
@@ -75,7 +75,7 @@ public class RobustScalarMeasurerWrapper {
             if(durationNanos > timeout) {
                 log.warn("Scalar measurer " + inner.getClass().getName() + " timed out (took " + durationNanos + "ns)");
                 numTimeouts.incrementAndGet();
-                strategy = TIMED_OUT;
+                strategy = timedOut;
             }
         }
 
@@ -94,7 +94,7 @@ public class RobustScalarMeasurerWrapper {
         }
     };
 
-    private final Strategy TIMED_OUT = new Strategy() {
+    private final Strategy timedOut = new Strategy() {
         @Override public void prepareMeasurements(Map<String, Object> mementos) {
             try {
                 final long start = System.nanoTime();
@@ -120,7 +120,7 @@ public class RobustScalarMeasurerWrapper {
                 }
             } else {
                 numTimeouts.set(0);
-                strategy = ENABLED;
+                strategy = enabled;
             }
         }
 
@@ -147,7 +147,7 @@ public class RobustScalarMeasurerWrapper {
         }
     };
 
-    private volatile Strategy strategy = ENABLED;
+    private volatile Strategy strategy = enabled;
 
     RobustScalarMeasurerWrapper(AScalarMeasurer inner, long timeoutNanos, int maxNumTimeouts) {
         this.inner = inner;

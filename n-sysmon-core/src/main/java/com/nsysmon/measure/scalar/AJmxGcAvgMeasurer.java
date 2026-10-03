@@ -15,7 +15,12 @@ import javax.management.NotificationListener;
 import javax.management.openmbean.CompositeData;
 import java.lang.management.GarbageCollectorMXBean;
 import java.lang.management.ManagementFactory;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import com.sun.management.UnixOperatingSystemMXBean;
 
@@ -181,8 +186,8 @@ public class AJmxGcAvgMeasurer implements AScalarMeasurer, NSysMonAware {
             case "fs-ival:open" -> "currently open files";
             default -> {
                 if (measurement.startsWith(SCALAR_PREFIX_GC_PER_INTERVAL)
-                        ||measurement.startsWith(SCALAR_PREFIX_MEMORY_PER_INTERVAL)
-                        ||measurement.startsWith(SCALAR_PREFIX_FILESYSTEM_PER_INTERVAL)
+                        || measurement.startsWith(SCALAR_PREFIX_MEMORY_PER_INTERVAL)
+                        || measurement.startsWith(SCALAR_PREFIX_FILESYSTEM_PER_INTERVAL)
                 ) {
                     System.out.println("unknown measurement '" + measurement + "'");
                 }

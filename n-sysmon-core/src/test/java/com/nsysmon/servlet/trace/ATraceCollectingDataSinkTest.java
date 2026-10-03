@@ -102,7 +102,7 @@ class ATraceCollectingDataSinkTest {
     }
 
     @Test void keepsTheOldestTraceInTheBuffer() {
-        for(int i=0; i<3; i++) {
+        for(int i = 0; i < 3; i++) {
             sink.onFinishedHierarchicalMeasurement(trace("t" + i));
         }
 
@@ -110,7 +110,7 @@ class ATraceCollectingDataSinkTest {
     }
 
     @Test void overwritesTheOldestTraceWhenTheBufferIsFull() {
-        for(int i=0; i<4; i++) {
+        for(int i = 0; i < 4; i++) {
             sink.onFinishedHierarchicalMeasurement(trace("t" + i));
         }
 

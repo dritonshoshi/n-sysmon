@@ -13,7 +13,7 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 /**
  * @author arno
@@ -31,7 +31,7 @@ public class JdbcTest {
         stmt.execute("create table A (oid number primary key)");
         stmt.execute("insert into A (oid) values (1)");
         final ResultSet rs = conn.createStatement().executeQuery("select * from A");
-        while(rs.next()){
+        while(rs.next()) {
             //Just ignore the result, goal is only to generat the sql
         }
         rs.close();
@@ -49,28 +49,28 @@ public class JdbcTest {
         final CollectingDataSink dataSink = new CollectingDataSink();
         NSysMonConfigurer.addDataSink(NSysMon.get(), dataSink);
 
-        final DataSource dataSource = new NSysMonDataSource(JdbcConnectionPool.create ("jdbc:h2:mem:demo", "sa", ""), null, NSysMon.get());
+        final DataSource dataSource = new NSysMonDataSource(JdbcConnectionPool.create("jdbc:h2:mem:demo", "sa", ""), null, NSysMon.get());
 
-        try (Connection conn = dataSource.getConnection ()) {
+        try (Connection conn = dataSource.getConnection()) {
             final Statement stmt = conn.createStatement();
             stmt.execute("create table A (oid number primary key)");
             stmt.execute("insert into A (oid) values (1)");
             final ResultSet rs = conn.createStatement().executeQuery("select * from A");
-            while(rs.next()){
+            while(rs.next()) {
                 //Just ignore the result, goal is only to generat the sql
             }
         }
 
         assertEquals(1, dataSink.data.size());
-        final AHierarchicalData root = dataSink.data.get (0).getRootNode ();
-        assertEquals("jdbc:connection from pool", root.getIdentifier ());
+        final AHierarchicalData root = dataSink.data.get(0).getRootNode();
+        assertEquals("jdbc:connection from pool", root.getIdentifier());
 
-        assertEquals (3, root.getChildren ().size ());
+        assertEquals(3, root.getChildren().size());
 
-        assertEquals ("jdbc: create table A (oid number primary key)", root.getChildren ().get (0).getIdentifier ());
-        assertEquals ("jdbc: insert into A (oid) values (1)",          root.getChildren ().get (1).getIdentifier ());
+        assertEquals("jdbc: create table A (oid number primary key)", root.getChildren().get(0).getIdentifier());
+        assertEquals("jdbc: insert into A (oid) values (1)",          root.getChildren().get(1).getIdentifier());
 
-        assertEquals ("jdbc: select * from A",                         root.getChildren ().get (2).getIdentifier ());
+        assertEquals("jdbc: select * from A",                         root.getChildren().get(2).getIdentifier());
     }
 
     //TODO implicit close of rs and stmt --> how do connection pools deal with this? They do not call Connection.close()...

@@ -6,7 +6,13 @@ import com.nsysmon.servlet.performance.AAbstractNsysmonPerformancePageDef;
 import com.nsysmon.servlet.performance.AMinMaxAvgData;
 
 import java.text.Collator;
-import java.util.*;
+import java.util.AbstractMap;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -15,7 +21,7 @@ import java.util.*;
 public class ADrillDownPageDefinition extends AAbstractNsysmonPerformancePageDef {
     private static final int MILLION = 1_000_000;
 
-    private static final List<ColDef> colDefs = Arrays.asList(
+    private static final List<ColDef> COL_DEFS = Arrays.asList(
             new ColDef("%", true, 1, ColWidth.Medium, false),
             new ColDef("#", false, 2, ColWidth.Long, false),
             new ColDef("total ms", false, 0, ColWidth.Long, false),
@@ -75,7 +81,7 @@ public class ADrillDownPageDefinition extends AAbstractNsysmonPerformancePageDef
     }
 
     @Override protected List<ColDef> getColDefs() {
-        return colDefs;
+        return COL_DEFS;
     }
 
     @Override protected List<TreeNode> getData() {

@@ -3,9 +3,12 @@ package com.nsysmon.server.storage.impl;
 import com.mongodb.BasicDBObject;
 import org.junit.jupiter.api.Test;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Modifier;
+
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class MongoDbHelperTest {
@@ -13,8 +16,11 @@ class MongoDbHelperTest {
         assertEquals("-_-", MongoDbHelper.SEPARATOR);
     }
 
-    @Test void canBeInstantiatedEvenThoughItOnlyOffersStaticMethods() {
-        assertNotNull(new MongoDbHelper());
+    @Test void isNotPubliclyInstantiableSinceItOnlyOffersStaticMethods() {
+        final Constructor<?>[] ctors = MongoDbHelper.class.getDeclaredConstructors();
+        assertEquals(1, ctors.length);
+        assertTrue(Modifier.isPrivate(ctors[0].getModifiers()));
+        assertTrue(Modifier.isFinal(MongoDbHelper.class.getModifiers()));
     }
 
     @Test void asIntExpectedReturnsTheIntValueOfANumber() {

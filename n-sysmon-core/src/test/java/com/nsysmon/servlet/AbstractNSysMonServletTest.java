@@ -179,7 +179,7 @@ class AbstractNSysMonServletTest {
     }
 
     /** A servlet that relies on the defaults of the abstract base class. */
-    private static class MinimalServlet extends AbstractNSysMonServlet {
+    private static final class MinimalServlet extends AbstractNSysMonServlet {
         @Override protected String getDefaultHtmlName() {
             return "nsysmon.html";
         }
@@ -190,7 +190,7 @@ class AbstractNSysMonServletTest {
     }
 
     /** Captures the segments the abstract class passes on and yields canned results. */
-    private static class TestServlet extends AbstractNSysMonServlet {
+    private static final class TestServlet extends AbstractNSysMonServlet {
         private List<String> lastRestSegments = List.of();
         private List<String> lastDynamicSegments = List.of();
         private boolean restResult = true;

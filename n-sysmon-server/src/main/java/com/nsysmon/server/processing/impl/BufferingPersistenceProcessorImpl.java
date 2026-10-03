@@ -107,15 +107,15 @@ public class BufferingPersistenceProcessorImpl implements BufferingPersistencePr
         traceEs       = Executors.newFixedThreadPool(config.getNumTraceWorkerThreads());
         environmentEs = Executors.newFixedThreadPool(config.getNumEnvironmentWorkerThreads());
 
-        for(int i=0; i<config.getNumScalarWorkerThreads(); i++) {
+        for(int i = 0; i < config.getNumScalarWorkerThreads(); i++) {
             scalarEs.submit(scalarWorker);
         }
 
-        for(int i=0; i<config.getNumTraceWorkerThreads(); i++) {
+        for(int i = 0; i < config.getNumTraceWorkerThreads(); i++) {
             traceEs.submit(traceWorker);
         }
 
-        for(int i=0; i<config.getNumEnvironmentWorkerThreads(); i++) {
+        for(int i = 0; i < config.getNumEnvironmentWorkerThreads(); i++) {
             environmentEs.submit(environmentWorker);
         }
 
@@ -131,7 +131,7 @@ public class BufferingPersistenceProcessorImpl implements BufferingPersistencePr
         environmentEs.shutdown();
     }
 
-    private static class OverflowWarnCallback implements Runnable {
+    private static final class OverflowWarnCallback implements Runnable {
         private final String msg;
 
         private OverflowWarnCallback(String msg) {

@@ -13,7 +13,12 @@ import java.util.concurrent.Future;
 /**
  * @author arno
  */
-public class AsyncServerSocketChannelPlay {
+public final class AsyncServerSocketChannelPlay {
+
+    private AsyncServerSocketChannelPlay() {
+        // manual entry point
+    }
+
     public static final int PORT = 12321;
     public static void main(String[] args) throws IOException, ExecutionException, InterruptedException {
         final SocketAddress addr = new InetSocketAddress(PORT);

@@ -40,7 +40,7 @@ class AAbstractNsysmonPerformancePageDefTest {
     }
 
     /** Minimal concrete page, so that the REST layer of the abstract base class can be driven in isolation. */
-    private static class TestPage extends AAbstractNsysmonPerformancePageDef {
+    private static final class TestPage extends AAbstractNsysmonPerformancePageDef {
         private boolean started = false;
         private int numStarts = 0;
         private int numStops = 0;

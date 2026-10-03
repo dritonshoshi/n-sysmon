@@ -65,8 +65,7 @@ public class AHttpRequestMeasuringFilter implements Filter {
                 AUnchecker.executeUnchecked((AStatement0<Exception>) () -> filterChain.doFilter(servletRequest, servletResponse));
 
             });
-        }
-        else {
+        } else {
             filterChain.doFilter(servletRequest, servletResponse);
         }
     }

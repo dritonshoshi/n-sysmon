@@ -9,7 +9,7 @@ import com.nsysmon.measure.jdbc.NSysMonStatement;
 public class AJdbcPageDefinition extends ABottomUpPageDefinition {
     @Override protected ABottomUpLeafFilter createLeafFilter() {
         return data -> data.getIdentifier().startsWith(NSysMonStatement.IDENT_PREFIX_JDBC) &&
-                !data.getIdentifier ().startsWith (NSysMonStatement.IDENT_PREFIX_JDBC + "connection");
+                !data.getIdentifier().startsWith(NSysMonStatement.IDENT_PREFIX_JDBC + "connection");
     }
 
 

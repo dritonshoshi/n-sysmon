@@ -21,17 +21,17 @@ public class SystemLoadOneMinuteMeasurer implements AScalarMeasurer {
     @Override
     public void contributeMeasurements(Map<String, AScalarDataPoint> result, long timestamp, Map<String, Object> mementos) throws IOException {
         //this measurement isn't working on windows
-        if (NSysMon.isWindows()){
+        if (NSysMon.isWindows()) {
             return;
         }
-        if (NSysMon.isMacOS()){
+        if (NSysMon.isMacOS()) {
             return;
         }
 
         final BufferedReader in = new BufferedReader(new FileReader(procFile));
         final String[] raw = in.readLine().split(" ");
 
-        final int load1 = (int)(Double.parseDouble(raw[0])*100);
+        final int load1 = (int)(Double.parseDouble(raw[0]) * 100);
 
         result.put(IDENT_LOAD_1_MIN, new AScalarDataPoint(timestamp, IDENT_LOAD_1_MIN, load1, 2));
     }

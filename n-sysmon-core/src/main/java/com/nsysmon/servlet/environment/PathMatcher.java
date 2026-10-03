@@ -20,7 +20,7 @@ class PathMatcher {
             final String path = pathRaw.trim();
 
             final String[] segments = path.split("\\.");
-            for(int i=0; i<segments.length; i++) {
+            for(int i = 0; i < segments.length; i++) {
                 if("?".equals(segments[i])) {
                     segments[i] = WILDCARD_SINGLE_SEGMENT;
                 }

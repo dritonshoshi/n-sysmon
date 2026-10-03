@@ -140,7 +140,7 @@ class JsonConnectorServletTest {
         when(request.getInputStream()).thenReturn(new ByteArrayServletInputStream(json));
     }
 
-    private static class ByteArrayServletInputStream extends ServletInputStream {
+    private static final class ByteArrayServletInputStream extends ServletInputStream {
         private final InputStream delegate;
 
         private ByteArrayServletInputStream(String content) {

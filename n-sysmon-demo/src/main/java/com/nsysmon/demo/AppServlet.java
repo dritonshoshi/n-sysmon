@@ -12,7 +12,12 @@ import jakarta.servlet.http.HttpServletResponse;
 import javax.sql.DataSource;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
 import java.util.Random;
 import java.util.UUID;
 import java.util.logging.Logger;
@@ -21,17 +26,17 @@ import java.util.logging.Logger;
  * @author arno
  */
 public class AppServlet extends HttpServlet {
-    private static final DataSource dataSource = createDataSource();
+    private static final DataSource DATA_SOURCE = createDataSource();
 
-    static final Connection conn;
+    static final Connection CONN;
 
     static {
         try {
             // store__ the connection to keep the in-memory database
-            conn = getConnection();
-            conn.createStatement().execute("create table A (oid number primary key)");
+            CONN = getConnection();
+            CONN.createStatement().execute("create table A (oid number primary key)");
 
-            conn.commit();
+            CONN.commit();
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -47,7 +52,7 @@ public class AppServlet extends HttpServlet {
         out.println("<h1>N-SysMon demo content</h1>");
         if (onlySmallTree) {
             out.println("generating small content");
-        }else{
+        } else {
             out.println("generating huge content");
         }
         out.println("</body></html>");
@@ -59,10 +64,21 @@ public class AppServlet extends HttpServlet {
             return sleep();
         });
         NSysMon.get().measure("b", m -> {
-            doQuery(); doQuery(); doQuery(); return sleep();
+            doQuery();
+            doQuery();
+            doQuery();
+            return sleep();
         });
         NSysMon.get().measure("q", m -> {
-            doQuery(); doQuery(); doQuery(); doQuery(); doQuery(); doQuery(); doQuery(); doQuery(); return sleep();
+            doQuery();
+            doQuery();
+            doQuery();
+            doQuery();
+            doQuery();
+            doQuery();
+            doQuery();
+            doQuery();
+            return sleep();
         });
         NSysMon.get().measure("b", m -> {
             return sleep();
@@ -80,13 +96,16 @@ public class AppServlet extends HttpServlet {
             return sleep();
         });
         NSysMon.get().measure("a", m -> {
-            doQuery(); return sleep();
+            doQuery();
+            return sleep();
         });
         NSysMon.get().measure("b", m -> {
             NSysMon.get().measure("x", m1 -> {
-                doQuery(); return sleep();
+                doQuery();
+            return sleep();
             });
-            doQuery(); return sleep();
+            doQuery();
+            return sleep();
         });
         parMeasurement.finish();
         NSysMon.get().measure("c", m -> {
@@ -163,10 +182,10 @@ public class AppServlet extends HttpServlet {
     }
 
     private void hugeTree(final int width, final int depth) {
-        for(int i=0; i<width; i++) {
+        for(int i = 0; i < width; i++) {
             if(depth > 0) {
                 NSysMon.get().measure("Q-" + depth + "-" + i, m -> {
-                    hugeTree(width, depth-1);
+                    hugeTree(width, depth - 1);
                 });
             }
         }
@@ -183,22 +202,21 @@ public class AppServlet extends HttpServlet {
 
     private void doQuery() {
         try {
-            final Connection conn = getConnection();
+            final Connection CONN = getConnection();
             try {
-                final PreparedStatement ps = conn.prepareStatement("select * from A where oid < ? and 1=1 and 1=1 and 1=1 and 1=1 and 1=1 and 1=1 and 1=1 and 1=1 and 1=1 and 1=1 and 1=1 and 1=1 and 1=1 and 1=1 and 1=1 and 1=1 and 1=1 and 1=1 and 1=1 and 1=1 and 1=1 and 1=1 and 1=1 and 1=1 and 1=1 and 1=1 and 1=1");
+                final PreparedStatement ps = CONN.prepareStatement("select * from A where oid < ? and 1=1 and 1=1 and 1=1 and 1=1 and 1=1 and 1=1 and 1=1 and 1=1 and 1=1 and 1=1 and 1=1 and 1=1 and 1=1 and 1=1 and 1=1 and 1=1 and 1=1 and 1=1 and 1=1 and 1=1 and 1=1 and 1=1 and 1=1 and 1=1 and 1=1 and 1=1 and 1=1");
                 try {
                     ps.setLong(1, 25);
                     final ResultSet rs = ps.executeQuery();
                     while (rs.next()) {
                         //Just ignore the result, goal is only to generat the sql
                     }
-                }
-                finally {
+                } finally {
                     ps.close();
                 }
             } finally {
-                conn.commit();
-                conn.close();
+                CONN.commit();
+                CONN.close();
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -207,9 +225,9 @@ public class AppServlet extends HttpServlet {
 
     private void doQueryWithMultipleParameters() {
         try {
-            final Connection conn = getConnection();
+            final Connection CONN = getConnection();
             try {
-                final PreparedStatement ps = conn.prepareStatement("select * from A where oid < ? and oid < ? and oid < ? and 1=? and 2=? and 3=? and 4=? and 5=? and 6=?");
+                final PreparedStatement ps = CONN.prepareStatement("select * from A where oid < ? and oid < ? and oid < ? and 1=? and 2=? and 3=? and 4=? and 5=? and 6=?");
                 try {
                     ps.setLong(1, 25);
                     ps.setLong(2, 25);
@@ -224,13 +242,12 @@ public class AppServlet extends HttpServlet {
                     while (rs.next()) {
                         //Just ignore the result, goal is only to generat the sql
                     }
-                }
-                finally {
+                } finally {
                     ps.close();
                 }
             } finally {
-                conn.commit();
-                conn.close();
+                CONN.commit();
+                CONN.close();
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -238,7 +255,7 @@ public class AppServlet extends HttpServlet {
     }
 
     private static Connection getConnection() throws SQLException {
-        return dataSource.getConnection();
+        return DATA_SOURCE.getConnection();
 //        final Connection result = DriverManager.getConnection("nsysmon:qualifier=123:jdbc:h2:memgc:demo", "sa", "");
 //        result.setAutoCommit(false);
 //        return result;

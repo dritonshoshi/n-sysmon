@@ -53,7 +53,7 @@ public class AJmxMemMeasurer implements AScalarMeasurer {
 
     @Override
     public String getGroupnameOfMeasurement(String measurement) {
-        if (measurement == null){
+        if (measurement == null) {
             return null;
         }
         if (measurement.startsWith(PREFIX_MEM)) {

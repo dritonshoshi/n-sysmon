@@ -109,14 +109,14 @@ public class NSysMonConfig {
     }
 
     public boolean collectTooltips() {
-        if (overrideCollectTooltips != null){
+        if (overrideCollectTooltips != null) {
             return overrideCollectTooltips;
         }
         return collectTooltips;
     }
 
     public boolean collectSqlParameters() {
-        if (overrideCollectSqlParameters != null){
+        if (overrideCollectSqlParameters != null) {
             return overrideCollectSqlParameters;
         }
         return collectSqlParameters;

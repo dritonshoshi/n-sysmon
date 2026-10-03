@@ -85,7 +85,6 @@ class NSysMonOsDetectionTest {
 
     @Test
     void everyFacadeMethodIsStatic() {
-        assertNotNull(new NSysMon());
         assertTrue(Arrays.stream(NSysMon.class.getDeclaredMethods())
                 .allMatch(m -> Modifier.isStatic(m.getModifiers())));
     }

@@ -24,7 +24,7 @@ public class LongestCallsPageDefinition extends AAbstractNsysmonPerformancePageD
     private final boolean filterData;
     private final String findRegEx;
 
-    private static final List<ColDef> colDefs = Arrays.asList(
+    private static final List<ColDef> COL_DEFS = Arrays.asList(
             new ColDef("%", true, 1, ColWidth.Medium, false),
             new ColDef("total µs", false, 0, ColWidth.Long, false),
             new ColDef("self µs", false, 0, ColWidth.Long, false),
@@ -95,7 +95,7 @@ public class LongestCallsPageDefinition extends AAbstractNsysmonPerformancePageD
 
     @Override
     protected List<ColDef> getColDefs() {
-        return colDefs;
+        return COL_DEFS;
     }
 
     @Override
@@ -126,8 +126,12 @@ public class LongestCallsPageDefinition extends AAbstractNsysmonPerformancePageD
             i++;
         }
 
-        if (selfNanos < 0) selfNanos = 0;
-        if (selfNanos > node.getDurationNanos()) selfNanos = node.getDurationNanos();
+        if (selfNanos < 0) {
+            selfNanos = 0;
+        }
+        if (selfNanos > node.getDurationNanos()) {
+            selfNanos = node.getDurationNanos();
+        }
 
         if (selfNanos != 0 && children.size() > 0) {
             children.add(0, new TreeNode("<self>", true, new long[]{selfNanos * 1000 / node.getDurationNanos(), selfNanos / 1000, selfNanos / 1000, node.getStartTimeMillis() - childNow}, Collections.emptyList()));

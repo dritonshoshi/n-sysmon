@@ -21,14 +21,14 @@ public class CpuTotalAndUserMeasurer implements AScalarMeasurer {
 
     @Override public void contributeMeasurements(Map<String, AScalarDataPoint> data, long timestamp, Map<String, Object> mementos) throws IOException {
         //this measurement isn't working on windows
-        if (NSysMon.isWindows()){
+        if (NSysMon.isWindows()) {
             return;
         }
 
         final short numFracDigits = 2;
         com.sun.management.OperatingSystemMXBean osBean = ManagementFactory.getPlatformMXBean(OperatingSystemMXBean.class);
         final int processCpu = Double.valueOf((Math.round(osBean.getProcessCpuLoad() * 100 * Math.pow(10, numFracDigits)) / Math.pow(10, numFracDigits)) * 100).intValue();
-        final int totalCpu = Double.valueOf((Math.round(osBean.getSystemCpuLoad()* 100 * Math.pow(10, numFracDigits)) / Math.pow(10, numFracDigits)) * 100).intValue();
+        final int totalCpu = Double.valueOf((Math.round(osBean.getSystemCpuLoad() * 100 * Math.pow(10, numFracDigits)) / Math.pow(10, numFracDigits)) * 100).intValue();
 
         data.put(CPU_USER, new AScalarDataPoint(timestamp, CPU_USER, processCpu, numFracDigits));
         data.put(CPU_TOTAL, new AScalarDataPoint(timestamp, CPU_TOTAL, totalCpu, numFracDigits));

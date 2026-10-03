@@ -7,7 +7,11 @@ import com.nsysmon.server.storage.ScalarDataDao;
 import com.nsysmon.server.storage.ScalarMetaData;
 import com.nsysmon.server.storage.ScalarMetaDataDao;
 import com.nsysmon.server.storage.ScalarDataPoint;
-import com.mongodb.*;
+import com.mongodb.BasicDBObject;
+import com.mongodb.DB;
+import com.mongodb.DBCollection;
+import com.mongodb.DBObject;
+import com.mongodb.MongoException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -120,8 +124,7 @@ public class ScalarDataDaoImpl implements ScalarDataDao {
                     idx.append("instance", 1);
                     coll.ensureIndex(idx, INDEX_NAME_SCALAR_INSTANCE_AND_TIME);
                     //TODO check if an update is necessary, and if so, log at info level
-                }
-                else {
+                } else {
                     //TODO coll.getIndexInfo() and warn
                 }
             }

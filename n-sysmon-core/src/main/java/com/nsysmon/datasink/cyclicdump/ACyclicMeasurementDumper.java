@@ -39,8 +39,7 @@ public abstract class ACyclicMeasurementDumper implements ADataSink, NSysMonAwar
                 for(String key: m.keySet()) {
                     dump("Scalar Measurement: " + key + " = " + m.get(key).getFormattedValue());
                 }
-            }
-            catch(Exception exc) {
+            } catch(Exception exc) {
                 log.error(exc);
                 dump(exc.toString());
             }

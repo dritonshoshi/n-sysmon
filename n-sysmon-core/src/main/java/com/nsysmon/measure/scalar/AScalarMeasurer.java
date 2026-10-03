@@ -31,26 +31,26 @@ public interface AScalarMeasurer extends AShutdownable {
     String KEY_CONFIGURATION_HIGH = "high";
 
 
-    enum EvaluatedValue{
+    enum EvaluatedValue {
         LOW, MEDIUM, HIGH
     }
 
-    default void prepareMeasurements(Map<String, Object> mementos) throws Exception{
+    default void prepareMeasurements(Map<String, Object> mementos) throws Exception {
         //nothing to do by default
     }
 
     void contributeMeasurements(Map<String, AScalarDataPoint> data, long timestamp, Map<String, Object> mementos) throws Exception;
     AOption<Long> getTimeoutInMilliSeconds();
 
-    default String getGroupnameOfMeasurement(String measurement){
+    default String getGroupnameOfMeasurement(String measurement) {
         return null;
     }
 
-    default String getDescriptionOfMeasurement(String measurement){
+    default String getDescriptionOfMeasurement(String measurement) {
         return null;
     }
 
-    default List<String> getConfigurationParameters(){
+    default List<String> getConfigurationParameters() {
         return Collections.emptyList();
     }
 

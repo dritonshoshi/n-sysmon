@@ -3,7 +3,11 @@ package com.nsysmon.measure.jdbc;
 import com.nsysmon.NSysMonApi;
 import com.nsysmon.measure.ACollectingMeasurement;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.SQLWarning;
+import java.sql.Statement;
 
 /**
  * @author arno

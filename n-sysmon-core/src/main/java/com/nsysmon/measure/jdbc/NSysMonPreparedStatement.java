@@ -8,7 +8,22 @@ import java.io.InputStream;
 import java.io.Reader;
 import java.math.BigDecimal;
 import java.net.URL;
-import java.sql.*;
+import java.sql.Array;
+import java.sql.Blob;
+import java.sql.Clob;
+import java.sql.Connection;
+import java.sql.Date;
+import java.sql.NClob;
+import java.sql.ParameterMetaData;
+import java.sql.PreparedStatement;
+import java.sql.Ref;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.RowId;
+import java.sql.SQLException;
+import java.sql.SQLXML;
+import java.sql.Time;
+import java.sql.Timestamp;
 import java.util.Calendar;
 
 /**
@@ -17,11 +32,11 @@ import java.util.Calendar;
 public class NSysMonPreparedStatement extends NSysMonStatement implements PreparedStatement {
     private static final int NUM_INT_TO_STRING = 20;
     private static final int NUM_BATCHES = 50;
-    private static final String[] intToString = new String[NUM_BATCHES*NUM_INT_TO_STRING];
+    private static final String[] INT_TO_STRING = new String[NUM_BATCHES * NUM_INT_TO_STRING];
     static {
-        for(int i=0; i<NUM_BATCHES; i++) {
-            for(int j=0; j<NUM_INT_TO_STRING; j++) {
-                intToString[i*NUM_INT_TO_STRING + j] = (i==0) ? String.valueOf(j) : "#" + i + ":" + j;
+        for(int i = 0; i < NUM_BATCHES; i++) {
+            for(int j = 0; j < NUM_INT_TO_STRING; j++) {
+                INT_TO_STRING[i * NUM_INT_TO_STRING + j] = (i == 0) ? String.valueOf(j) : "#" + i + ":" + j;
             }
         }
     }
@@ -42,8 +57,7 @@ public class NSysMonPreparedStatement extends NSysMonStatement implements Prepar
     @Override public void close() throws SQLException {
         try {
             inner.close();
-        }
-        finally {
+        } finally {
             m.finish();
         }
     }
@@ -84,7 +98,7 @@ public class NSysMonPreparedStatement extends NSysMonStatement implements Prepar
     private String keyForIndex(int index) {
         // this lookup is more about memory consumption than about performance
         if(index < NUM_INT_TO_STRING && batchCount < NUM_BATCHES) {
-            return intToString[batchCount * NUM_INT_TO_STRING + index];
+            return INT_TO_STRING[batchCount * NUM_INT_TO_STRING + index];
         }
 
         return (batchCount == 0) ? String.valueOf(index) : "#" + batchCount + ":" + index;

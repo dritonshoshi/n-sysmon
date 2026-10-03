@@ -65,13 +65,13 @@ public class TimedScalarsPageDefinition implements APresentationPageDefinition, 
         if ("getData".equals(service)) {
             serveData(json, params, sysMon);
             return true;
-        }else if ("getGraphData".equals(service)) {
+        } else if ("getGraphData".equals(service)) {
             serveGraphData(json, params);
             return true;
-        }else if ("getLatestGraphData".equals(service)) {
+        } else if ("getLatestGraphData".equals(service)) {
             serveLatestGraphData(json, params);
             return true;
-        }else if ("restartTimedScalar".equals(service)) {
+        } else if ("restartTimedScalar".equals(service)) {
             restartTimedScalar(json, params, sysMon);
             return true;
         }
@@ -80,7 +80,7 @@ public class TimedScalarsPageDefinition implements APresentationPageDefinition, 
     }
 
     private void serveGraphData(final AJsonSerHelperForNSysmon json, List<String> params) throws IOException {
-        if (params == null || params.size() < 1){
+        if (params == null || params.size() < 1) {
             return;
         }
         String selectedEntries = params.get(0);
@@ -108,7 +108,7 @@ public class TimedScalarsPageDefinition implements APresentationPageDefinition, 
     }
 
     private void serveLatestGraphData(final AJsonSerHelperForNSysmon json, List<String> params) throws IOException {
-        if (params == null || params.size() < 1){
+        if (params == null || params.size() < 1) {
             return;
         }
         String selectedEntries = params.get(0);
@@ -162,7 +162,7 @@ public class TimedScalarsPageDefinition implements APresentationPageDefinition, 
 
     private String findGroupForKey(String key, NSysMonApi givenSysMon) {
         for (AScalarMeasurer initialTimedScalarMeasurer : givenSysMon.getConfig().initialTimedScalarMeasurers) {
-            if (initialTimedScalarMeasurer.getGroupnameOfMeasurement(key) != null){
+            if (initialTimedScalarMeasurer.getGroupnameOfMeasurement(key) != null) {
                 return initialTimedScalarMeasurer.getGroupnameOfMeasurement(key);
             }
         }
@@ -183,7 +183,7 @@ public class TimedScalarsPageDefinition implements APresentationPageDefinition, 
         String tmp;
         for (AScalarMeasurer initialTimedScalarMeasurer : givenSysMon.getConfig().initialTimedScalarMeasurers) {
             tmp = initialTimedScalarMeasurer.getDescriptionOfMeasurement(key);
-            if (tmp != null){
+            if (tmp != null) {
                 return tmp;
             }
         }
@@ -238,7 +238,7 @@ public class TimedScalarsPageDefinition implements APresentationPageDefinition, 
         }
     }
 
-    private TreeSet<AScalarDataPoint> filterByTimestamp(final ARingBuffer<AScalarDataPoint> buffer, Duration newerThan){
+    private TreeSet<AScalarDataPoint> filterByTimestamp(final ARingBuffer<AScalarDataPoint> buffer, Duration newerThan) {
         Set<AScalarDataPoint> tmpRc = new TreeSet<>(new AScalarDataPointTimestampComparator());
         TreeSet<AScalarDataPoint> rc = new TreeSet<>(new AScalarDataPointTimestampComparator());
 
@@ -249,7 +249,7 @@ public class TimedScalarsPageDefinition implements APresentationPageDefinition, 
             long latestMillis = localDateTime
                     .minus(newerThan)
                     .toEpochSecond(ZoneOffset.systemDefault().getRules().getOffset(localDateTime))
-                    *1000;
+                    * 1000;
 
             if (latestMillis >= timeStamp) {
                 //entry too old

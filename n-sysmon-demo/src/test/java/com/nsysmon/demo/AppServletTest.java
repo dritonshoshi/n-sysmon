@@ -53,16 +53,16 @@ class AppServletTest {
     }
 
     private static DataSource dataSourceOfTheServlet() throws Exception {
-        final Field field = AppServlet.class.getDeclaredField("dataSource");
+        final Field field = AppServlet.class.getDeclaredField("DATA_SOURCE");
         field.setAccessible(true);
         return (DataSource) field.get(null);
     }
 
     private static void executeOnTheDemoTable(String sql) throws Exception {
-        try (Statement statement = AppServlet.conn.createStatement()) {
+        try (Statement statement = AppServlet.CONN.createStatement()) {
             statement.execute(sql);
         }
-        AppServlet.conn.commit();
+        AppServlet.CONN.commit();
     }
 
     @Test void serviceWritesTheSmallContentPageForUrlsContainingSmall() throws Exception {
@@ -112,7 +112,7 @@ class AppServletTest {
     }
 
     @Test void staticInitializerKeepsTheDemoTableAvailable() throws Exception {
-        final Connection conn = AppServlet.conn;
+        final Connection conn = AppServlet.CONN;
 
         assertNotNull(conn);
         assertFalse(conn.isClosed());
@@ -123,7 +123,7 @@ class AppServletTest {
     }
 
     @Test void staticInitializerCommitsTheCreatedTable() throws Exception {
-        try (Statement statement = AppServlet.conn.createStatement(); ResultSet rs = statement.executeQuery("select * from A where oid = 4711")) {
+        try (Statement statement = AppServlet.CONN.createStatement(); ResultSet rs = statement.executeQuery("select * from A where oid = 4711")) {
             assertFalse(rs.next());
         }
     }

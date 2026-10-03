@@ -30,14 +30,21 @@ public class InstanceIdentifier {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
 
         InstanceIdentifier that = (InstanceIdentifier) o;
 
-        if (applicationId != null ? !applicationId.equals(that.applicationId) : that.applicationId != null)
+        if (applicationId != null ? !applicationId.equals(that.applicationId) : that.applicationId != null) {
             return false;
-        if (instanceId != null ? !instanceId.equals(that.instanceId) : that.instanceId != null) return false;
+        }
+        if (instanceId != null ? !instanceId.equals(that.instanceId) : that.instanceId != null) {
+            return false;
+        }
 
         return true;
     }

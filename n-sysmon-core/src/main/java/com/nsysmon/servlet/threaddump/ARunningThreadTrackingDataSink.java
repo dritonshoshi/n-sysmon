@@ -21,7 +21,7 @@ import java.util.concurrent.ConcurrentHashMap;
 class ARunningThreadTrackingDataSink implements ADataSink {
     private static final NSysMonLogger log = NSysMonLogger.get(ARunningThreadTrackingDataSink.class);
 
-    private static final int MAX_NUM_THREADS = 100*1000;
+    private static final int MAX_NUM_THREADS = 100 * 1000;
     private final Map<String, Long> startTimestamps = new ConcurrentHashMap<>();
 
     private void ensureAgainstMemoryLeaks() {

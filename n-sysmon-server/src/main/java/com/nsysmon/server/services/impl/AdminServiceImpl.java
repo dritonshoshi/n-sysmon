@@ -22,7 +22,7 @@ import java.util.Map;
 @Singleton
 @Path("/admin")
 public class AdminServiceImpl implements AdminService {
-    public static final long SCALAR_META_REFRESH_INTERVAL_MILLIS = 10*1000;
+    public static final long SCALAR_META_REFRESH_INTERVAL_MILLIS = 10 * 1000;
 
     public static final String INDEX_NAME_SCALAR_INSTANCE_AND_TIME = "instance-and-time";
 

@@ -13,7 +13,12 @@ import java.util.concurrent.Executors;
 /**
  * @author arno
  */
-public class NsysmonDemoMain {
+public final class NsysmonDemoMain {
+
+    private NsysmonDemoMain() {
+        // entry point holder
+    }
+
     public static void main(String[] args) throws Exception {
         new DeadlockThread().start();
 
@@ -38,10 +43,10 @@ public class NsysmonDemoMain {
 
         generateArtificialGcs();
 
-        System.out.println ("access http://localhost:8181/nsysmon for n-sysmon");
-        System.out.println ("access any url starting with http://localhost:8181/content/ to simulate 'regular' system access");
-        System.out.println ("access any url starting with http://localhost:8181/content/small/ to simulate 'small' system access");
-        System.out.println ();
+        System.out.println("access http://localhost:8181/nsysmon for n-sysmon");
+        System.out.println("access any url starting with http://localhost:8181/content/ to simulate 'regular' system access");
+        System.out.println("access any url starting with http://localhost:8181/content/small/ to simulate 'small' system access");
+        System.out.println();
 
         server.start();
         server.join();
@@ -64,7 +69,7 @@ public class NsysmonDemoMain {
 
             while (true) {
                 l.clear();
-                for(int i=0; i<10000 + new Random().nextInt(10000); i++) {
+                for(int i = 0; i < 10000 + new Random().nextInt(10000); i++) {
                     l.add(new GregorianCalendar());
                 }
 
