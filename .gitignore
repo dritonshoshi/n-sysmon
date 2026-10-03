@@ -4,3 +4,4 @@ target/
 tomcat.*
 mongo
 *.db
+.codegraph
