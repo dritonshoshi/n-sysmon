@@ -53,10 +53,8 @@ public class AProcNetDevMeasurerContributeTest {
      * A memento for all currently known interfaces, with the loopback counters reduced by exactly the given deltas,
      * as they would have been one hour ago.
      */
-    private Map<String, Object> mementoOneHourAgo(long bytes, long packets) throws Exception {
-        assumeTrue(currentSnapshot().bytesReceived.containsKey(LOOPBACK));
-
-        final AProcNetDevMeasurer.Snapshot current = currentSnapshot();
+    private Map<String, Object> mementoOneHourAgo(long bytes, long packets, AProcNetDevMeasurer.Snapshot current)
+            throws Exception {
         final AProcNetDevMeasurer.Snapshot previous = new AProcNetDevMeasurer.Snapshot();
         current.packetsReceived.forEach((iface, receivedPackets) -> previous.add(iface,
                 current.bytesReceived.get(iface) - bytes,
@@ -67,6 +65,12 @@ public class AProcNetDevMeasurerContributeTest {
         setTimestamp(previous, current.timestamp - ONE_HOUR);
 
         return Map.of(KEY_MEMENTO, previous);
+    }
+
+    private Map<String, Object> mementoOneHourAgo(long bytes, long packets) throws Exception {
+        final AProcNetDevMeasurer.Snapshot current = currentSnapshot();
+        assumeTrue(current.bytesReceived.containsKey(LOOPBACK));
+        return mementoOneHourAgo(bytes, packets, current);
     }
 
     @Test
@@ -83,12 +87,32 @@ public class AProcNetDevMeasurerContributeTest {
 
     @Test
     public void theLoopbackByteCountersAreNormalizedToTheElapsedTime() throws Exception {
-        measurer.contributeMeasurements(data, 1000L, mementoOneHourAgo(36_000_000L, 3_600_000L));
+        final long syntheticBytes = 36_000_000L;
+        final long syntheticPackets = 3_600_000L;
 
-        assertApproximates(100_000L, data.get(KEY_MEMENTO + LOOPBACK + ":received-bytes").getValueRaw());
-        assertApproximates(100_000L, data.get(KEY_MEMENTO + LOOPBACK + ":sent-bytes").getValueRaw());
-        assertApproximates(10_000L, data.get(KEY_MEMENTO + LOOPBACK + ":received-pkt").getValueRaw());
-        assertApproximates(10_000L, data.get(KEY_MEMENTO + LOOPBACK + ":sent-pkt").getValueRaw());
+        final AProcNetDevMeasurer.Snapshot before = currentSnapshot();
+        assumeTrue(before.bytesReceived.containsKey(LOOPBACK));
+        measurer.contributeMeasurements(data, 1000L, mementoOneHourAgo(syntheticBytes, syntheticPackets, before));
+        // contributeMeasurements re-reads /proc/net/dev, so real loopback traffic between the
+        // snapshot above and that read lands in the delta. Bracket the call and scale the
+        // expectation by the observed drift; loopback is the busiest interface on the box.
+        final AProcNetDevMeasurer.Snapshot after = currentSnapshot();
+
+        final double byteDrift = drift(before.bytesReceived.get(LOOPBACK), after.bytesReceived.get(LOOPBACK));
+        final double packetDrift = drift(before.packetsReceived.get(LOOPBACK), after.packetsReceived.get(LOOPBACK));
+
+        assertApproximates(100_000L, data.get(KEY_MEMENTO + LOOPBACK + ":received-bytes").getValueRaw(),
+                syntheticBytes, byteDrift);
+        assertApproximates(100_000L, data.get(KEY_MEMENTO + LOOPBACK + ":sent-bytes").getValueRaw(),
+                syntheticBytes, byteDrift);
+        assertApproximates(10_000L, data.get(KEY_MEMENTO + LOOPBACK + ":received-pkt").getValueRaw(),
+                syntheticPackets, packetDrift);
+        assertApproximates(10_000L, data.get(KEY_MEMENTO + LOOPBACK + ":sent-pkt").getValueRaw(),
+                syntheticPackets, packetDrift);
+    }
+
+    private static double drift(Long before, Long after) {
+        return before == null || after == null ? 0 : after - before;
     }
 
     @Test
@@ -115,6 +139,16 @@ public class AProcNetDevMeasurerContributeTest {
 
     private static void assertApproximates(long expected, long actual) {
         assertTrue(Math.abs(expected - actual) <= TOLERANCE, "expected " + expected + " but was " + actual);
+    }
+
+    /**
+     * The measurer divides the raw delta by the elapsed time, so a raw delta larger by
+     * {@code drift} scales the result proportionally rather than adding to it.
+     */
+    private static void assertApproximates(long expected, long actual, long synthetic, double drift) {
+        final double scaled = expected * (synthetic + drift) / synthetic;
+        assertTrue(Math.abs(scaled - actual) <= TOLERANCE,
+                "expected " + scaled + " but was " + actual + " (drift " + drift + ")");
     }
 
     @Test
