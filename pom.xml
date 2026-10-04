@@ -79,7 +79,7 @@
              is bound to the verify phase, so CI must run `mvn verify` for it to apply. -->
         <coverage.line.minimum>0.80</coverage.line.minimum>
 
-        <version.junit>5.14.4</version.junit>
+        <version.junit>6.1.3</version.junit>
         <version.mockito>5.24.0</version.mockito>
 
         <!-- a-foundation's AUUID.toString() uses javax.xml.bind.DatatypeConverter, which was removed from
