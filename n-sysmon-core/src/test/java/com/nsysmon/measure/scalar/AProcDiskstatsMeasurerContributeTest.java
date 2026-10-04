@@ -50,11 +50,11 @@ public class AProcDiskstatsMeasurerContributeTest {
     }
 
     /**
-     * All devices of the current snapshot, with all counters reduced by exactly the given amount, as it would have
-     * been ten seconds ago.
+     * All devices of the given snapshot, with all counters reduced by exactly the given amount, as it would have been
+     * ten seconds ago.
      */
-    private Map<String, Object> mementoTenSecondsAgo(long sectorDelta) throws Exception {
-        final AProcDiskstatsMeasurer.Snapshot current = currentSnapshot();
+    private Map<String, Object> mementoTenSecondsAgo(AProcDiskstatsMeasurer.Snapshot current, long sectorDelta)
+            throws Exception {
         final AProcDiskstatsMeasurer.Snapshot previous = new AProcDiskstatsMeasurer.Snapshot();
         current.sectorsRead.forEach((dev, value) -> {
             previous.sectorsRead.put(dev, value - sectorDelta);
@@ -63,6 +63,10 @@ public class AProcDiskstatsMeasurerContributeTest {
         });
         setTimestamp(previous, current.timestamp - TEN_SECONDS);
         return Map.of(KEY_MEMENTO, previous);
+    }
+
+    private Map<String, Object> mementoTenSecondsAgo(long sectorDelta) throws Exception {
+        return mementoTenSecondsAgo(currentSnapshot(), sectorDelta);
     }
 
     @Test
@@ -75,12 +79,23 @@ public class AProcDiskstatsMeasurerContributeTest {
 
     @Test
     public void readAndWrittenSectorsAreNormalizedToTheElapsedTime() throws Exception {
-        measurer.contributeMeasurements(data, 1000L, mementoTenSecondsAgo(1000));
+        final AProcDiskstatsMeasurer.Snapshot before = currentSnapshot();
+        measurer.contributeMeasurements(data, 1000L, mementoTenSecondsAgo(before, 1000));
+        // contributeMeasurements re-reads /proc/diskstats, so real I/O occurring between the
+        // snapshot above and that read lands in the delta. Bracket the call and account for
+        // that drift instead of assuming the machine is idle, which made this flaky.
+        final AProcDiskstatsMeasurer.Snapshot after = currentSnapshot();
 
         final List<String> readKeys = data.keySet().stream().filter(k -> k.endsWith(":read-sectors")).toList();
         assertFalse(readKeys.isEmpty(), data.toString());
         for (String key : readKeys) {
-            assertTrue(Math.abs(data.get(key).getValueRaw() - 1000) <= TOLERANCE, key + " was " + data.get(key).getValueRaw());
+            // measurement keys are "disk:<dev>:read-sectors", the snapshot maps are keyed by bare "<dev>"
+            final String dev = key.substring("disk:".length(), key.length() - ":read-sectors".length());
+            final Long sectorsBefore = before.sectorsRead.get(dev);
+            final Long sectorsAfter = after.sectorsRead.get(dev);
+            final double drift = sectorsBefore == null || sectorsAfter == null ? 0 : sectorsAfter - sectorsBefore;
+            assertTrue(Math.abs(data.get(key).getValueRaw() - (1000 + drift)) <= TOLERANCE,
+                    key + " was " + data.get(key).getValueRaw() + ", expected " + (1000 + drift));
         }
     }
 
