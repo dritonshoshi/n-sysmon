@@ -63,7 +63,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <version.maven-compiler-plugin>3.5.1</version.maven-compiler-plugin>
+        <version.maven-compiler-plugin>3.16.0</version.maven-compiler-plugin>
         <version.maven-surefire-plugin>3.6.0</version.maven-surefire-plugin>
         <version.maven-source-plugin>2.2.1</version.maven-source-plugin>
         <version.maven-javadoc-plugin>2.9.1</version.maven-javadoc-plugin>
@@ -255,8 +255,9 @@
                     <artifactId>maven-compiler-plugin</artifactId>
                     <version>${version.maven-compiler-plugin}</version>
                     <configuration>
-                        <source>17</source>
-                        <target>17</target>
+                        <!-- release rather than source/target: it also pins the platform API,
+                             so the build cannot accidentally bind to a newer JDK's methods -->
+                        <release>17</release>
                     </configuration>
                 </plugin>
                 <plugin>
