@@ -127,9 +127,11 @@ public class AFileSystemsEnvironmentMeasurerTest {
 
         measurer.contributeMeasurements(collector);
 
-        final long numMtabLinesForDevice = Files.readAllLines(MTAB).stream()
-                .map(String::trim).filter(l -> l.startsWith(device + " ")).count();
-        assertEquals(numMtabLinesForDevice, valuesOf(List.of(HW, FS, device)).size());
+        // Deliberately not asserting an exact entry count: the measurer collects from both
+        // "df -P" and /etc/mtab, while /etc/mtab is a symlink to /proc/self/mounts, a live
+        // view that can change between the measurer's read and this one. Comparing the two
+        // counts made this test fail intermittently on an unchanged build.
+        assertFalse(valuesOf(List.of(HW, FS, device)).isEmpty(), names().toString());
         assertTrue(valuesOf(List.of(HW, FS, device)).contains(mountPoint));
     }
 
