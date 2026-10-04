@@ -52,21 +52,21 @@
             <artifactId>n-sysmon-core</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <!-- Jetty 12 "ee10" is the Servlet 6.0 (Jakarta EE 10) flavour, matching jakarta.servlet-api 6.0.0 below. -->
+        <!-- Jetty 12 "ee11" is the Servlet 6.1 (Jakarta EE 11) flavour, matching jakarta.servlet-api 6.0.0 below. -->
         <dependency>
-            <groupId>org.eclipse.jetty.ee10</groupId>
-            <artifactId>jetty-ee10-webapp</artifactId>
+            <groupId>org.eclipse.jetty.ee11</groupId>
+            <artifactId>jetty-ee11-webapp</artifactId>
             <version>12.1.13</version>
         </dependency>
         <dependency>
-            <groupId>org.eclipse.jetty.ee10</groupId>
-            <artifactId>jetty-ee10-servlets</artifactId>
+            <groupId>org.eclipse.jetty.ee11</groupId>
+            <artifactId>jetty-ee11-servlets</artifactId>
             <version>12.1.13</version>
         </dependency>
         <dependency>
             <groupId>jakarta.servlet</groupId>
             <artifactId>jakarta.servlet-api</artifactId>
-            <version>6.0.0</version>
+            <version>6.1.0</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
