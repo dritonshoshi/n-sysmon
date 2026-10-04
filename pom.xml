@@ -73,7 +73,7 @@
         <version.slf4j>2.0.20</version.slf4j>
         <version.logback>1.6.5</version.logback>
 
-        <version.jacoco>0.8.14</version.jacoco>
+        <version.jacoco>0.8.15</version.jacoco>
         <!-- Target line coverage. Kept in one place so CI and local runs agree; the check
              is bound to the verify phase, so CI must run `mvn verify` for it to apply. -->
         <coverage.line.minimum>0.80</coverage.line.minimum>
