@@ -52,7 +52,7 @@
             <artifactId>n-sysmon-core</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <!-- Jetty 12 "ee11" is the Servlet 6.1 (Jakarta EE 11) flavour, matching jakarta.servlet-api 6.0.0 below. -->
+        <!-- Jetty 12 "ee11" is the Servlet 6.1 (Jakarta EE 11) flavour, matching jakarta.servlet-api 6.1.0 below. -->
         <dependency>
             <groupId>org.eclipse.jetty.ee11</groupId>
             <artifactId>jetty-ee11-webapp</artifactId>
@@ -63,11 +63,14 @@
             <artifactId>jetty-ee11-servlets</artifactId>
             <version>12.1.13</version>
         </dependency>
+        <!-- Compile scope, not provided: this module embeds Jetty and is launched via its own
+             main(), so there is no servlet container to supply the Servlet API at runtime.
+             A provided scope would keep the jar off the runtime classpath and make
+             NsysmonDemoMain fail with NoClassDefFoundError: jakarta/servlet/ServletContext. -->
         <dependency>
             <groupId>jakarta.servlet</groupId>
             <artifactId>jakarta.servlet-api</artifactId>
             <version>6.1.0</version>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
