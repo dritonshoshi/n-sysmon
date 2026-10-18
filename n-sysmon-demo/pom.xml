@@ -15,7 +15,9 @@
 
     <name>${project.artifactId}-${project.version}</name>
 
-    <description>n-sysmon is a fork of a-sysmon -> a-sysmon is a toolset for monitoring and exploring performance aspects of Java enterprise applications</description>
+    <description>Runs the shared n-sysmon demo webapp (n-sysmon-demo-webapp) on embedded Jetty 12
+        (ee11, Servlet 6.1) on port 8181. The webapp content is not duplicated: this module only starts
+        a container around it.</description>
 
     <licenses>
         <license>
@@ -47,9 +49,14 @@
     </properties>
 
     <dependencies>
+        <!-- The demo webapp itself: the demo servlet, the deployment descriptor, nsysmon.properties,
+             logback.xml and the artificial load. It is shared with n-sysmon-demo-liberty, which
+             packages the very same content into a war for Open Liberty. The demo's runtime
+             dependencies (n-sysmon-core, H2, the httpclient of the offloading sink, an SLF4J
+             binding) come with it. -->
         <dependency>
             <groupId>com.github.dritonshoshi</groupId>
-            <artifactId>n-sysmon-core</artifactId>
+            <artifactId>n-sysmon-demo-webapp</artifactId>
             <version>${project.version}</version>
         </dependency>
         <!-- Jetty 12 "ee11" is the Servlet 6.1 (Jakarta EE 11) flavour, matching jakarta.servlet-api 6.1.0 below. -->
@@ -79,29 +86,20 @@
         </dependency>
         <!-- Compile scope, not provided: this module embeds Jetty and is launched via its own
              main(), so there is no servlet container to supply the Servlet API at runtime.
-             A provided scope would keep the jar off the runtime classpath and make
-             NsysmonDemoMain fail with NoClassDefFoundError: jakarta/servlet/ServletContext. -->
+             A provided scope would keep the jar off the runtime classpath of the webapp that
+             Jetty loads, and the demo would fail with
+             NoClassDefFoundError: jakarta/servlet/ServletContext. -->
         <dependency>
             <groupId>jakarta.servlet</groupId>
             <artifactId>jakarta.servlet-api</artifactId>
             <version>6.1.0</version>
         </dependency>
-        <dependency>
-            <groupId>org.apache.httpcomponents</groupId>
-            <artifactId>httpclient</artifactId>
-            <version>4.5.14</version>
-        </dependency>
-        <!-- SLF4J binding for this runnable demo; configured via src/main/resources/logback.xml. -->
+        <!-- SLF4J binding for the Jetty server itself; the webapp brings its own copy for its own
+             classloader, configured by the logback.xml in n-sysmon-demo-webapp. -->
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
             <scope>runtime</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>com.h2database</groupId>
-            <artifactId>h2</artifactId>
-            <version>2.5.252</version>
         </dependency>
     </dependencies>
 
@@ -113,12 +111,11 @@
                 <configuration>
                     <!-- append, so the excludes inherited from n-sysmon-parent are kept -->
                     <excludes combine.children="append">
-                        <!-- Manual run harnesses, not library logic: NsysmonDemoMain binds port 8181
-                             and starts non-daemon infinite executors, and DeadlockThread.run()
-                             deadlocks two threads permanently on purpose. Neither can be unit
-                             tested without leaking threads or a listening socket. -->
+                        <!-- The run harness itself, not library logic: NsysmonDemoMain binds port 8181
+                             and then blocks in server.join() forever. It is a couple of lines around
+                             the classes that are tested (WebappResourceBase, DemoCompressionHandler).
+                             The artificial load is part of the webapp module and is tested there. -->
                         <exclude>com/nsysmon/demo/NsysmonDemoMain*</exclude>
-                        <exclude>com/nsysmon/demo/DeadlockThread*</exclude>
                     </excludes>
                 </configuration>
             </plugin>

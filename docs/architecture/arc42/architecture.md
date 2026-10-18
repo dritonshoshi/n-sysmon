@@ -199,14 +199,18 @@ flowchart TB
 | `n-sysmon-core` | jar | The agent: measurement engine, measurers, data sinks, in-application UI, configuration | a-foundation, jaxb-api, slf4j-api, `jakarta.servlet-api` (provided), httpclient (optional) |
 | `n-sysmon-server` | jar | Ingestion, clock correction, buffering, MongoDB persistence, admin REST API | `n-sysmon-core`, jackson-databind, mongo-java-driver 2.11.3, Guice 7, Jersey 3.1 |
 | `n-sysmon-server-war` | war | Deployable packaging of the server; `WEB-INF/web.xml` wires the listener and both servlets | `n-sysmon-server`, logback-classic (runtime), jetty-ee10-webapp (optional) |
-| `n-sysmon-demo` | jar | Runnable synthetic-load showcase: embedded Jetty, H2, artificial GC and CPU load, a deliberate deadlock | `n-sysmon-core`, Jetty 12, H2, logback-classic |
+| `n-sysmon-demo-webapp` | jar | The demo application itself, container independent: demo servlet, `web.xml`, `nsysmon.properties`, an H2 in-memory database, and the artificial load (GC churn, allocation churn, a deliberate deadlock) started by a `ServletContextListener` | `n-sysmon-core`, H2, httpclient, logback-classic (runtime), `jakarta.servlet-api` (provided) |
+| `n-sysmon-demo` | jar | **Runner** for that webapp on embedded Jetty 12 (ee11) on port 8181; serves the webapp straight out of the `n-sysmon-demo-webapp` source tree | `n-sysmon-demo-webapp`, Jetty 12, the Jetty compression modules, logback-classic (runtime) |
+| `n-sysmon-demo-liberty` | war | **Runner** for the same webapp on Open Liberty, port 9292; deployment descriptor unpacked from `n-sysmon-demo-webapp`, the rest arrives through `WEB-INF/lib` | `n-sysmon-demo-webapp`, liberty-maven-plugin |
 
 Dependency direction is a strict chain: `core ← server ← server-war`, and
-`core ← demo`. The demo and the server are siblings — the demo does not depend on the
-server.
+`core ← demo-webapp ← {demo, demo-liberty}`. The demo and the server are siblings —
+the demo does not depend on the server, and the two demo runners do not depend on each
+other. Neither runner contains demo code of its own: the same webapp is deployed twice,
+on two containers.
 
-> `n-sysmon-ui/` and `n-sysmon-demo-liberty/` exist on disk but contain only build
-> output; neither is a Maven module.
+> `n-sysmon-ui/` exists on disk but contains only build output and is not a Maven
+> module; the frontend is built separately.
 
 ### 5.2 Level 2: The measurement engine (`n-sysmon-core`)
 
@@ -468,12 +472,14 @@ flowchart TB
 | n-sysmon-server-war | The aggregation server | Any Servlet 6.0 container; ships a `logback.xml` |
 | MongoDB | Persistence | Reached through the legacy 2.11.3 driver, host/port/db currently hard-coded |
 | n-sysmon-demo | Developer showcase, not a deployment | Embedded Jetty 12 on port 8181, H2 in-memory |
+| n-sysmon-demo-liberty | Developer showcase on a real application server | Open Liberty 26.0.0.10 on port 9292, `servlet-6.1` only, H2 in-memory |
 
 **Environments / wiring differences**
 
 | | Development | Notes |
 |---|---|---|
-| Demo app | `mvn` then `com.nsysmon.demo.NsysmonDemoMain` | Must run from the repo root: the webapp root is the relative path `n-sysmon-demo/src/main/resources` |
+| Demo app (Jetty) | `mvn` then `com.nsysmon.demo.NsysmonDemoMain` | Must run from the repo root: the webapp root is the relative path `n-sysmon-demo-webapp/src/main/resources` |
+| Demo app (Liberty) | `mvn -pl n-sysmon-demo-liberty -am install -DskipTests` then `mvn -pl n-sysmon-demo-liberty liberty:dev` | Downloads the Liberty runtime on first use (~360 MB); serves the same webapp on port 9292 |
 | Server | Any Servlet 6.0 container, drop in the war | Needs a reachable MongoDB at start-up: `MongoDbProvider` is an eager Guice singleton, so a missing database **fails application start-up** |
 | Logging | `logback.xml` in the demo and the war | The war ships root level `DEBUG` |
 
@@ -562,11 +568,15 @@ Both end up at SLF4J/Logback in the deployable artifacts. Libraries declare
   `junit-vintage-engine` still runs the older JUnit 4 tests.
 - H2 in-memory databases give the JDBC measurers and wrappers genuine behaviour;
   MongoDB is mocked with Mockito (the suite passes with no network namespace).
-- 1450 tests; JaCoCo enforces **80% line coverage per module**. Measured:
-  core 95.8%, server 99.3%, demo 97.5%.
-- Two demo classes are excluded from coverage because they cannot be unit tested:
-  `NsysmonDemoMain` (binds a port, starts non-daemon infinite executors) and
-  `DeadlockThread.run()` (deadlocks two threads permanently, on purpose).
+- 1464 tests (core 1230, server 178, demo-webapp 49, demo 7); one core test is
+  skipped (`NSysMonTest`). JaCoCo enforces **80% line coverage per module**. Measured:
+  core 95.8%, server 99.4%, demo-webapp 93.2%, demo 100%.
+- Two classes in the demo are deliberately not fully covered. `NsysmonDemoMain` is
+  excluded from coverage entirely: it binds port 8181 and then blocks in
+  `server.join()` forever. `DeadlockThread.run()` is covered only up to the point where
+  it deadlocks two threads permanently, which is all a test can reach — the artificial
+  load around it (`ArtificialLoadServletContextListener`, the GC and allocation churn)
+  is covered like any other code.
 
 ### 8.5 Configuration management
 

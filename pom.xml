@@ -21,7 +21,9 @@
 
     <modules>
         <module>n-sysmon-core</module>
+        <module>n-sysmon-demo-webapp</module>
         <module>n-sysmon-demo</module>
+        <module>n-sysmon-demo-liberty</module>
         <module>n-sysmon-server</module>
         <module>n-sysmon-server-war</module>
     </modules>

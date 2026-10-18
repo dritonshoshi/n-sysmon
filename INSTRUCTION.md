@@ -591,12 +591,23 @@ in production.
 - [ ] UI URL not reachable from an untrusted network
 - [ ] Know that `-Dcom.nsysmon.globallydisabled=true` turns everything off
 
-**Verify it works** by running the bundled demo, which exercises every view. The project
-ships four IntelliJ run configurations under `.run/` (default, G1GC, ZGC, and a
-fixed-heap variant) — the simplest option is **Run → `NsysmonDemoMain (default)`**.
+**Verify it works** by running the bundled demo, which exercises every view. The demo
+application lives in `n-sysmon-demo-webapp`; there are two runners for it, and they deploy
+the same webapp content — nothing is duplicated:
 
-From the command line, build the demo and run it from the repository root (it resolves
-its webapp root by relative path, and it needs **port 8181 to be free**):
+| Runner | Container | Port | How to start |
+|---|---|---|---|
+| `n-sysmon-demo` | embedded Jetty 12 (ee11) | 8181 | IntelliJ run configuration `NsysmonDemoMain (default)`, or the command line below |
+| `n-sysmon-demo-liberty` | Open Liberty 26.0.0.10 | 9292 | [`n-sysmon-demo-liberty/README.md`](n-sysmon-demo-liberty/README.md) owns these instructions: `mvn -pl n-sysmon-demo-liberty -am install -DskipTests`, then `liberty:run`, which provisions the server, deploys the war and runs it; port via `-Dliberty.http.port=9393` |
+
+The project ships four IntelliJ run configurations under `.run/` (default, G1GC, ZGC, and
+a fixed-heap variant) for the Jetty runner — the simplest option is
+**Run → `NsysmonDemoMain (default)`**. For the Liberty runner, `mvn -pl
+n-sysmon-demo-liberty liberty:dev` starts the same server with Liberty's dev mode attached.
+
+From the command line, build the Jetty runner and run it from the repository root (it
+resolves its webapp root by relative path, and it needs **port 8181 to be free**; build
+the whole reactor, because the runner serves the `n-sysmon-demo-webapp` module):
 
 ```
 mvn -q -pl n-sysmon-demo -am install -DskipTests -Dgpg.skip=true -Dmaven.javadoc.skip=true
@@ -604,10 +615,13 @@ mvn -q -pl n-sysmon-demo dependency:build-classpath -Dmdep.outputFile=/tmp/demo-
 java -cp "n-sysmon-demo/target/classes:$(cat /tmp/demo-cp.txt)" com.nsysmon.demo.NsysmonDemoMain
 ```
 
-Then open <http://localhost:8181/nsysmon> and hit
+Then open <http://localhost:8181/nsysmon> (Liberty:
+<http://localhost:9292/nsysmon/>) and hit
 <http://localhost:8181/content/> a few times to generate load — the demo fabricates GC
 pressure, a deliberate deadlock, an H2 database with slow queries, a deep measurement
-tree and correlation flows, so every view has something in it.
+tree and correlation flows, so every view has something in it. That artificial load is
+started by `ArtificialLoadServletContextListener` from the webapp's own `web.xml`, so it
+does not depend on the runner.
 
 ---
 
@@ -617,6 +631,6 @@ tree and correlation flows, so every view has something in it.
 |---|---|
 | Every configuration key, with comments | `n-sysmon-core/src/main/resources/nsysmon-default.properties` |
 | Architecture, design rationale, known gaps | [`docs/architecture/arc42/architecture.md`](docs/architecture/arc42/architecture.md) |
-| A working example of all of the above | `n-sysmon-demo/src/main/java/com/nsysmon/demo/AppServlet.java` |
+| A working example of all of the above | `n-sysmon-demo-webapp/src/main/java/com/nsysmon/demo/AppServlet.java` |
 | Public API surface | `n-sysmon-core/src/main/java/com/nsysmon/NSysMonApi.java` |
 | Open issues and planned work | `todo.txt` |
