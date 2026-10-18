@@ -3,6 +3,8 @@ package com.nsysmon.servlet.threaddump;
 import com.nsysmon.config.log.NSysMonLogger;
 import com.nsysmon.data.AHierarchicalDataRoot;
 import com.nsysmon.datasink.ADataSink;
+import com.nsysmon.datasink.ADataSinkMemoryInfo;
+import com.nsysmon.datasink.MemoryUsageKind;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -18,7 +20,7 @@ import java.util.concurrent.ConcurrentHashMap;
  *
  * @author arno
  */
-class ARunningThreadTrackingDataSink implements ADataSink {
+class ARunningThreadTrackingDataSink implements ADataSink, ADataSinkMemoryInfo {
     private static final NSysMonLogger log = NSysMonLogger.get(ARunningThreadTrackingDataSink.class);
 
     private static final int MAX_NUM_THREADS = 100 * 1000;
@@ -46,6 +48,18 @@ class ARunningThreadTrackingDataSink implements ADataSink {
     public Map<String, Long> getStartTimestamps() {
         // return a stable snapshot
         return new HashMap<>(startTimestamps);
+    }
+
+    @Override public Iterable<?> getStoredMeasurementData() {
+        return startTimestamps.entrySet();
+    }
+
+    @Override public String getMemoryUsageName() {
+        return "running thread tracking";
+    }
+
+    @Override public MemoryUsageKind getMemoryUsageKind() {
+        return MemoryUsageKind.OTHER;
     }
 
     @Override public void shutdown() throws Exception {

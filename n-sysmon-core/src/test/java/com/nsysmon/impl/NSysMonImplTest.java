@@ -528,6 +528,17 @@ class NSysMonImplTest {
     }
 
     @Test
+    void allRegisteredDataSinksAreAvailableForDirectAccess() {
+        final ADataSink dynamicallyAdded = mock(ADataSink.class);
+        NSysMonConfigurer.addDataSink(sysMon, dynamicallyAdded);
+
+        final List<ADataSink> sinks = sysMon.getDataSinksForDirectAccess();
+
+        assertTrue(sinks.contains(dataSink));
+        assertTrue(sinks.contains(dynamicallyAdded));
+    }
+
+    @Test
     void sysMonAwareScalarMeasurersGetTheApiInjected() throws Exception {
         final AwareScalarMeasurer measurer = new AwareScalarMeasurer();
         final NSysMonImpl target = new NSysMonImpl(configBuilder.build());

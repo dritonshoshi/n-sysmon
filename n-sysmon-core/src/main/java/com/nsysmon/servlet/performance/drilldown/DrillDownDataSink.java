@@ -3,6 +3,8 @@ package com.nsysmon.servlet.performance.drilldown;
 import com.nsysmon.data.AHierarchicalData;
 import com.nsysmon.data.AHierarchicalDataRoot;
 import com.nsysmon.datasink.ADataSink;
+import com.nsysmon.datasink.ADataSinkMemoryInfo;
+import com.nsysmon.datasink.MemoryUsageKind;
 import com.nsysmon.servlet.performance.AMinMaxAvgData;
 
 import java.util.Collections;
@@ -13,7 +15,7 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * @author arno
  */
-class DrillDownDataSink implements ADataSink {
+class DrillDownDataSink implements ADataSink, ADataSinkMemoryInfo {
     private volatile boolean isActive = false;
 
     private final ConcurrentHashMap<String, AMinMaxAvgData> rootMap = new ConcurrentHashMap<>();
@@ -32,6 +34,18 @@ class DrillDownDataSink implements ADataSink {
 
     public Map<String, AMinMaxAvgData> getData() {
         return Collections.unmodifiableMap(rootMap);
+    }
+
+    @Override public Iterable<?> getStoredMeasurementData() {
+        return rootMap.entrySet();
+    }
+
+    @Override public String getMemoryUsageName() {
+        return "drilldown";
+    }
+
+    @Override public MemoryUsageKind getMemoryUsageKind() {
+        return MemoryUsageKind.AGGREGATED;
     }
 
     @Override public void onStartedHierarchicalMeasurement(String identifier) {

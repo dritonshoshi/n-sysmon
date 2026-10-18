@@ -1,0 +1,64 @@
+<div class="options-header">
+    <div class="button-box">
+        <div class="btn-group">
+            <a class="btn btn-default" ng-click="refresh()" data-toggle="tooltip"
+               title="Recompute the memory estimate">Refresh</a>
+        </div>
+    </div>
+</div>
+<div class="affix-placeholder"></div>
+
+<div ng-if="report">
+    <p>
+        Estimated NSysMon measurement storage:
+        <strong>{{formatBytes(report.estimatedTotalBytes)}}</strong>
+        &nbsp;|&nbsp;
+        JVM heap used: {{formatBytes(report.jvmUsedHeapBytes)}} of {{formatBytes(report.jvmMaxHeapBytes)}}
+    </p>
+    <p class="text-muted">
+        This is a heap estimate derived from the data retained by the registered data sinks and the timed scalar
+        buffers. Shared measurement objects may be counted in more than one row, so the per-sink numbers and the total
+        are upper bounds rather than exact values.
+    </p>
+
+    <h3>Data sinks</h3>
+    <table class="table table-condensed table-striped">
+        <thead>
+        <tr>
+            <th>Component</th>
+            <th>Kind</th>
+            <th>Entries</th>
+            <th>Estimated size</th>
+            <th>Class</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr ng-repeat="entry in report.dataSinks | orderBy:'-estimatedBytes'">
+            <td>{{entry.name}}</td>
+            <td>{{entry.kindLabel}}</td>
+            <td>{{entry.numEntries >= 0 ? (entry.numEntries | number) : '-'}}</td>
+            <td>{{entry.reporting ? formatBytes(entry.estimatedBytes) : 'not reported'}}</td>
+            <td><small>{{entry.className}}</small></td>
+        </tr>
+        </tbody>
+    </table>
+
+    <h3>Timed scalars</h3>
+    <table class="table table-condensed table-striped" ng-if="report.timedScalars.length">
+        <thead>
+        <tr>
+            <th>Measurement</th>
+            <th>Entries</th>
+            <th>Estimated size</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr ng-repeat="entry in report.timedScalars | orderBy:'-estimatedBytes'">
+            <td>{{entry.name}}</td>
+            <td>{{entry.numEntries >= 0 ? (entry.numEntries | number) : '-'}}</td>
+            <td>{{formatBytes(entry.estimatedBytes)}}</td>
+        </tr>
+        </tbody>
+    </table>
+    <p class="text-muted" ng-if="!report.timedScalars.length">No timed scalar measurements have been collected yet.</p>
+</div>

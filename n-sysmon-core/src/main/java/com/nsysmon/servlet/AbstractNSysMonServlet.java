@@ -132,7 +132,7 @@ public abstract class AbstractNSysMonServlet extends HttpServlet {
             return;
         }
 
-        resp.addHeader("Cache-Control", "max-age=36000");
+        resp.addHeader("Cache-Control", cacheControlFor(resName));
 
         final OutputStream out = resp.getOutputStream();
 
@@ -141,6 +141,18 @@ public abstract class AbstractNSysMonServlet extends HttpServlet {
         while((numRead = in.read(buf)) > 0) {
             out.write(buf, 0, numRead);
         }
+    }
+
+    /**
+     * HTML is revalidated on every request: it is the entry point that pulls in version-dependent scripts, so caching
+     *  it would keep browsers on a stale page after an application update. The other N-SysMon resources may be cached
+     *  for a long time.
+     */
+    private static String cacheControlFor(String resName) {
+        if(resName.endsWith(".html")) {
+            return "no-cache";
+        }
+        return "max-age=36000";
     }
 
     protected String getContentType(String resName) {

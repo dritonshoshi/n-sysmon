@@ -125,6 +125,10 @@ class RobustDataSinkWrapper { //TO_CONSIDER provide a means for a data sink to s
         this.maxNumTimeouts = maxNumTimeouts;
     }
 
+    ADataSink getInner() {
+        return inner;
+    }
+
     public void onStartedHierarchicalMeasurement(String identifier) {
         strategy.onStartedHierarchicalMeasurement(identifier);
     }

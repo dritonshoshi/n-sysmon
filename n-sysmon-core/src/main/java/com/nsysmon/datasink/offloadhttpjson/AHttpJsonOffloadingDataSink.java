@@ -7,6 +7,8 @@ import com.nsysmon.config.log.NSysMonLogger;
 import com.nsysmon.data.AHierarchicalDataRoot;
 import com.nsysmon.data.AScalarDataPoint;
 import com.nsysmon.datasink.ADataSink;
+import com.nsysmon.datasink.ADataSinkMemoryInfo;
+import com.nsysmon.datasink.MemoryUsageKind;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -25,7 +27,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * @author arno
  */
-public class AHttpJsonOffloadingDataSink implements ADataSink {
+public class AHttpJsonOffloadingDataSink implements ADataSink, ADataSinkMemoryInfo {
     public static final int NO_DATA_SLEEP_MILLIS = 10;
 
     private static final NSysMonLogger log = NSysMonLogger.get(AHttpJsonOffloadingDataSink.class);
@@ -73,6 +75,18 @@ public class AHttpJsonOffloadingDataSink implements ADataSink {
 
 
     @Override public void onStartedHierarchicalMeasurement(String identifier) { }
+
+    @Override public Iterable<?> getStoredMeasurementData() {
+        return List.of(traceQueue, scalarQueue);
+    }
+
+    @Override public String getMemoryUsageName() {
+        return "offload queues";
+    }
+
+    @Override public MemoryUsageKind getMemoryUsageKind() {
+        return MemoryUsageKind.QUEUE;
+    }
 
     @Override public void onFinishedHierarchicalMeasurement(AHierarchicalDataRoot data) {
 
