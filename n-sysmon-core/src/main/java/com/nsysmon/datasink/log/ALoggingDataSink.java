@@ -23,7 +23,7 @@ public abstract class ALoggingDataSink implements ADataSink {
     }
 
     private String indent(int level) {
-        return "                                                                                                                                                                                                                                                                                    ".substring(0, 2*level);
+        return "                                                                                                                                                                                                                                                                                    ".substring(0, 2 * level);
     }
 
     private void logDataRec(AHierarchicalData data, int level) {

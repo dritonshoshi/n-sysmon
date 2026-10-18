@@ -16,7 +16,12 @@ import com.nsysmon.measure.scalar.AScalarMeasurer;
  *
  * @author arno
  */
-public class NSysMonConfigurer {
+public final class NSysMonConfigurer {
+
+    private NSysMonConfigurer() {
+        // static utility class
+    }
+
     public static void addScalarMeasurer(NSysMonApi sysMon, AScalarMeasurer m) {
         ((NSysMonImpl) sysMon).addScalarMeasurer(m);
     }

@@ -42,7 +42,7 @@ public class AJmxGcMeasurer implements AScalarMeasurer, NSysMonAware {
     private static final String SCALAR_PREFIX_FREQ_PER_MINUTE = "gc-per-minute:";
 
     private static final int MILLIS_PER_MINUTE = 60 * 1000;
-    private static final int MILLION = 1000*1000;
+    private static final int MILLION = 1000 * 1000;
 
     private volatile NSysMonApi sysMon;
 

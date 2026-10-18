@@ -10,7 +10,7 @@ public abstract class AOption<T> {
 
     @SuppressWarnings("unchecked")
     public static <T> AOption<T> none() {
-        return ANone.INSTANCE;
+        return (AOption<T>) ANone.INSTANCE;
     }
 
     public static <T> AOption<T> fromNullable(T value) {
@@ -33,34 +33,5 @@ public abstract class AOption<T> {
             return defaultValue;
         }
         return get();
-    }
-}
-
-class ASome<T> extends AOption<T> {
-    private final T value;
-
-    ASome(T value) {
-        this.value = value;
-    }
-
-    @Override public T get() {
-        return value;
-    }
-
-    @Override public boolean isDefined() {
-        return true;
-    }
-}
-
-class ANone extends AOption {
-    public static final ANone INSTANCE = new ANone();
-    private ANone(){}
-
-    @Override public Object get() {
-        throw new IllegalStateException ("ANone has no value");
-    }
-
-    @Override public boolean isDefined() {
-        return false;
     }
 }

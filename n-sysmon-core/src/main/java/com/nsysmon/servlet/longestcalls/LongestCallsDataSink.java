@@ -54,8 +54,9 @@ public class LongestCallsDataSink implements ADataSink {
 
     private boolean checkIfTraceShouldBeStored(AHierarchicalData trace) {
         for (String s : entriesToIgnore) {
-            if (trace.getIdentifier().contains(s))
+            if (trace.getIdentifier().contains(s)) {
                 return false;
+            }
         }
         return true;
     }

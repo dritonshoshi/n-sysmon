@@ -1,0 +1,46 @@
+# GitLab CI for n-sysmon.
+#
+# No container image is built or pushed: this project ships as plain Maven
+# artifacts (jars + war), so the pipeline only verifies the build and the tests.
+#
+# The build matrix runs the test suite on both JDKs the project supports:
+# JDK 17 (the compile target, see maven.compiler.source/target in the root pom)
+# and JDK 21 (the current LTS).
+
+stages:
+  - build
+
+variables:
+  MAVEN_CLI_OPTS: "--batch-mode --errors --show-version -Dmaven.repo.local=$CI_PROJECT_DIR/.m2/repository"
+
+# Shared build definition. `verify` is required, not `package`: the Checkstyle gate
+# and the 80% JaCoCo coverage gate are both bound to the verify phase, so stopping at
+# `package` would silently skip them. -Dgpg.skip=true is required because the root
+# pom binds maven-gpg-plugin's `sign` goal to `verify` for release signing, which
+# fails in CI without a GPG key.
+.build: &build
+  stage: build
+  script:
+    - mvn $MAVEN_CLI_OPTS clean verify -Dgpg.skip=true
+  artifacts:
+    when: on_failure
+    paths:
+      - "*/target/surefire-reports/"
+      - "*/target/*.war"
+    expire_in: 1 week
+
+build-jdk17:
+  <<: *build
+  image: maven:3.9-eclipse-temurin-17
+  cache:
+    key: "maven-jdk17"
+    paths:
+      - .m2/repository
+
+build-jdk21:
+  <<: *build
+  image: maven:3.9-eclipse-temurin-21
+  cache:
+    key: "maven-jdk21"
+    paths:
+      - .m2/repository

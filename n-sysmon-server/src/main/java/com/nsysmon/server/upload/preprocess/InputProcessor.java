@@ -12,6 +12,6 @@ public interface InputProcessor {
     void updateSystemClockDiff(InstanceIdentifier instance, long senderTimestamp);
 
     void addEnvironmentEntry(InstanceIdentifier instance, EnvironmentNode environmentNode);
-    void addScalarEntry     (InstanceIdentifier instance, ScalarNode scalarNode);
-    void addTraceEntry      (InstanceIdentifier instance, TraceRootNode traceRootNode);
+    void addScalarEntry(InstanceIdentifier instance, ScalarNode scalarNode);
+    void addTraceEntry(InstanceIdentifier instance, TraceRootNode traceRootNode);
 }

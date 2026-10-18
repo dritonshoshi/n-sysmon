@@ -4,7 +4,7 @@ import com.ajjpj.afoundation.collection.immutable.AOption;
 import com.ajjpj.afoundation.function.AFunction0;
 import com.ajjpj.afoundation.util.AUnchecker;
 import com.nsysmon.config.appinfo.AApplicationInfoProvider;
-import com.nsysmon.config.log.NLog4JLoggerFactory;
+import com.nsysmon.config.log.NSlf4JLoggerFactory;
 import com.nsysmon.config.log.NStdOutLoggerFactory;
 import com.nsysmon.config.log.NSysMonLogger;
 import com.nsysmon.config.log.NSysMonLoggerFactory;
@@ -107,8 +107,7 @@ public class ADefaultConfigFactory implements AConfigFactory {
             }
 
             return (NSysMonLoggerFactory) Class.forName(loggerClassName.trim()).newInstance();
-        }
-        catch (Exception exc) {
+        } catch (Exception exc) {
             final NSysMonLoggerFactory logger = defaultLogger();
             logger.getLogger(ADefaultConfigFactory.class).warn("exception creating logger based on config file entry '" + loggerClassName + "': " + exc);
             return logger;
@@ -117,9 +116,8 @@ public class ADefaultConfigFactory implements AConfigFactory {
 
     private static NSysMonLoggerFactory defaultLogger() {
         try {
-            return NLog4JLoggerFactory.INSTANCE;
-        }
-        catch (Throwable th) {
+            return NSlf4JLoggerFactory.INSTANCE;
+        } catch (Throwable th) {
             return NStdOutLoggerFactory.INSTANCE;
         }
     }
@@ -177,7 +175,7 @@ public class ADefaultConfigFactory implements AConfigFactory {
         builder.setMaxNumMeasurementsPerTimedScalar(props.get(KEY_MAX_NUM_MEASUREMENTS_PER_TIMED_SCALAR, Integer.TYPE));
         builder.setMaxNumMeasurementsForCockpit(props.get(KEY_MAX_NUM_MEASUREMENTS_RELEVANT_FOR_MONITORING, Integer.TYPE));
 
-        builder.setDataSinkTimeoutNanos (props.get (KEY_DATA_SINK_TIMEOUT_NANOS, Long.TYPE));
+        builder.setDataSinkTimeoutNanos(props.get(KEY_DATA_SINK_TIMEOUT_NANOS, Long.TYPE));
         builder.setMaxNumDataSinkTimeouts(props.get(KEY_MAX_NUM_DATA_SINK_TIMEOUTS, Integer.TYPE));
         builder.setPathDatafiles(props.get(KEY_DATAFILE_PATH, String.class));
 

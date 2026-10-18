@@ -5,6 +5,6 @@ package com.nsysmon.util.timer;
  */
 public class ASystemMillisTimer implements ATimer {
     @Override public long getCurrentNanos() {
-        return System.currentTimeMillis() * 1000*1000;
+        return System.currentTimeMillis() * 1000 * 1000;
     }
 }

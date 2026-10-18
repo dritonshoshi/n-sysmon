@@ -7,7 +7,7 @@ package com.nsysmon.datasink.log;
  * @author arno
  */
 public class AStdOutDataSink extends ALoggingDataSink {
-    public static AStdOutDataSink INSTANCE = new AStdOutDataSink();
+    public static final AStdOutDataSink INSTANCE = new AStdOutDataSink();
 
     @Override protected void log(String s) {
         System.out.println(s);

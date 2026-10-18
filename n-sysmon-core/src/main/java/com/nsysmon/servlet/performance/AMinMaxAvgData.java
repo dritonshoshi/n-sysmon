@@ -40,12 +40,12 @@ public class AMinMaxAvgData {
 
     public AMinMaxAvgData withDataPoint(boolean isSerial, long durationNanos) {
         if(isSerial != this.isSerial) {
-            log.error (new IllegalArgumentException("both parallel and serial measurements at the same level with the same identifier - ignoring measurement"));
+            log.error(new IllegalArgumentException("both parallel and serial measurements at the same level with the same identifier - ignoring measurement"));
             return this;
         }
 
         return new AMinMaxAvgData(isSerial,
-                totalNumInContext+1,
+                totalNumInContext + 1,
                 Math.min(minNanos, durationNanos),
                 Math.max(maxNanos, durationNanos),
                 (avgNanos * totalNumInContext + durationNanos) / (totalNumInContext + 1), // this should be safe against overflow

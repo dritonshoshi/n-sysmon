@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.github.dritonshoshi</groupId>
+        <artifactId>n-sysmon-parent</artifactId>
+        <version>1.6.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>n-sysmon-demo-liberty</artifactId>
+    <version>1.6.0-SNAPSHOT</version>
+    <packaging>war</packaging>
+
+    <name>${project.artifactId}-${project.version}</name>
+
+    <description>Runs the n-sysmon demo webapp (n-sysmon-demo-webapp) on Open Liberty instead of embedded
+        Jetty, on port 9292. The webapp content is not duplicated: the deployment descriptor is unpacked
+        from the shared module and the demo classes reach the application through WEB-INF/lib. The Liberty
+        runtime is downloaded on demand by the liberty-maven-plugin, not during the build.</description>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+        <!-- Pinned: a build must not silently move to another Liberty release. 26.0.0.10 is the
+             release this module was verified against; Jakarta EE 11 (servlet-6.1) arrived in 26.0.0.5. -->
+        <liberty.maven.plugin.version>3.12.4</liberty.maven.plugin.version>
+        <liberty.runtime.version>26.0.0.10</liberty.runtime.version>
+        <liberty.server.name>nsysmon-demo</liberty.server.name>
+
+        <!-- The HTTP port of the demo server. 9292 rather than Liberty's default 9080, which is a
+             popular port for other development servers. Override it on the command line, e.g.
+             `mvn -pl n-sysmon-demo-liberty liberty:run -Dliberty.http.port=9393`, if 9292 is taken. -->
+        <liberty.http.port>9292</liberty.http.port>
+    </properties>
+
+    <dependencies>
+        <!-- The demo webapp, shared with the embedded-Jetty runner n-sysmon-demo. -->
+        <dependency>
+            <groupId>com.github.dritonshoshi</groupId>
+            <artifactId>n-sysmon-demo-webapp</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <!-- A name without the version, because src/main/liberty/config/server.xml has to name the
+             deployed war and cannot read Maven properties. -->
+        <finalName>${project.artifactId}</finalName>
+
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>3.11.0</version>
+                <executions>
+                    <execution>
+                        <id>unpack-the-webapp-deployment-descriptor</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>unpack</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>com.github.dritonshoshi</groupId>
+                                    <artifactId>n-sysmon-demo-webapp</artifactId>
+                                    <version>${project.version}</version>
+                                    <type>jar</type>
+                                    <outputDirectory>${project.build.directory}/webapp</outputDirectory>
+                                    <!-- Comma separated: maven-dependency-plugin's artifactItem takes
+                                         the include list as a single string, not as child elements.
+                                         Only the files that belong at the root of the war: the
+                                         deployment descriptor and the demo's static page. The demo
+                                         classes, nsysmon.properties and logback.xml reach the
+                                         application through WEB-INF/lib/n-sysmon-demo-webapp.jar,
+                                         so they must not be copied around. -->
+                                    <includes>WEB-INF/web.xml,firstpage.png</includes>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <version>3.5.1</version>
+                <configuration>
+                    <!-- This war has no src/main/webapp: its webapp content is the deployment
+                         descriptor unpacked from n-sysmon-demo-webapp above. -->
+                    <warSourceDirectory>${project.build.directory}/webapp</warSourceDirectory>
+                </configuration>
+            </plugin>
+
+            <!-- No execution is bound to a lifecycle phase on purpose: `mvn verify` packages the war
+                 without downloading the ~150 MB Liberty runtime (CI stays offline-friendly). The
+                 runtime is fetched by the first `liberty:*` goal, i.e. when someone runs the demo.
+                 Install the two sibling modules first, then start the server - `-am` must not be
+                 combined with a direct `liberty:*` goal, because that would run the goal on every
+                 module in the reactor:
+                     mvn -pl n-sysmon-demo-liberty -am install -DskipTests
+                     mvn -pl n-sysmon-demo-liberty liberty:create liberty:install-feature liberty:deploy liberty:run
+                 `mvn -pl n-sysmon-demo-liberty liberty:dev` is the same with hot reload. -->
+            <plugin>
+                <groupId>io.openliberty.tools</groupId>
+                <artifactId>liberty-maven-plugin</artifactId>
+                <version>${liberty.maven.plugin.version}</version>
+                <configuration>
+                    <serverName>${liberty.server.name}</serverName>
+                    <!-- Deploy the packaged war, not a loose application assembled from the Maven
+                         jars: the war is what a real deployment gets, and a loose application would
+                         leave the unpacked WEB-INF/web.xml out. -->
+                    <looseApplication>false</looseApplication>
+                    <!-- The port reaches the server through bootstrap.properties, which is the only
+                         file the liberty-maven-plugin manages for config variables: it deletes and
+                         regenerates the server's bootstrap.properties on every run, so a value
+                         written into the generated file by hand would be lost, and server.env cannot
+                         carry dotted names (Liberty's launcher only exports plain shell
+                         identifiers). server.xml reads the variable and falls back to 9292. -->
+                    <bootstrapProperties>
+                        <default.http.port>${liberty.http.port}</default.http.port>
+                    </bootstrapProperties>
+                    <runtimeArtifact>
+                        <groupId>io.openliberty</groupId>
+                        <artifactId>openliberty-runtime</artifactId>
+                        <version>${liberty.runtime.version}</version>
+                        <type>zip</type>
+                    </runtimeArtifact>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>

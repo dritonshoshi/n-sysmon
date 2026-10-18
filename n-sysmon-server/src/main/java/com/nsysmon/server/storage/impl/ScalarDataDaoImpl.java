@@ -7,11 +7,16 @@ import com.nsysmon.server.storage.ScalarDataDao;
 import com.nsysmon.server.storage.ScalarMetaData;
 import com.nsysmon.server.storage.ScalarMetaDataDao;
 import com.nsysmon.server.storage.ScalarDataPoint;
-import com.mongodb.*;
-import org.apache.log4j.Logger;
+import com.mongodb.BasicDBObject;
+import com.mongodb.DB;
+import com.mongodb.DBCollection;
+import com.mongodb.DBObject;
+import com.mongodb.MongoException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -22,7 +27,7 @@ import java.util.List;
  */
 @Singleton
 public class ScalarDataDaoImpl implements ScalarDataDao {
-    private static final Logger log = Logger.getLogger(ScalarDataDaoImpl.class);
+    private static final Logger log = LoggerFactory.getLogger(ScalarDataDaoImpl.class);
 
     public static final String FIELD_NAME_INSTANCE = "instance";
     public static final String FIELD_NAME_TIMESTAMP = "timestamp";
@@ -119,8 +124,7 @@ public class ScalarDataDaoImpl implements ScalarDataDao {
                     idx.append("instance", 1);
                     coll.ensureIndex(idx, INDEX_NAME_SCALAR_INSTANCE_AND_TIME);
                     //TODO check if an update is necessary, and if so, log at info level
-                }
-                else {
+                } else {
                     //TODO coll.getIndexInfo() and warn
                 }
             }

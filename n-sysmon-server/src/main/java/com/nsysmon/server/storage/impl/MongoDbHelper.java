@@ -7,7 +7,12 @@ import com.mongodb.DBObject;
 /**
  * @author arno
  */
-public class MongoDbHelper {
+public final class MongoDbHelper {
+
+    private MongoDbHelper() {
+        // static utility class
+    }
+
 
     /**
      * A separator used by n-sysmon in collection and other Mongo DB names to separate several synthetic parts. This

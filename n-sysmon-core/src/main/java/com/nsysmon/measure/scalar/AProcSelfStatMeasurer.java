@@ -23,10 +23,10 @@ public class AProcSelfStatMeasurer implements AScalarMeasurer {
 
     @Override public void prepareMeasurements(Map<String, Object> mementos) throws Exception {
         //this measurement isn't working on windows
-        if (NSysMon.isWindows()){
+        if (NSysMon.isWindows()) {
             return;
         }
-        if (NSysMon.isMacOS()){
+        if (NSysMon.isMacOS()) {
             return;
         }
         mementos.put(KEY_MEMENTO, createSnapshot());
@@ -34,10 +34,10 @@ public class AProcSelfStatMeasurer implements AScalarMeasurer {
 
     @Override public void contributeMeasurements(Map<String, AScalarDataPoint> data, long timestamp, Map<String, Object> mementos) throws Exception {
         //this measurement isn't working on windows
-        if (NSysMon.isWindows()){
+        if (NSysMon.isWindows()) {
             return;
         }
-        if (NSysMon.isMacOS()){
+        if (NSysMon.isMacOS()) {
             return;
         }
         final Snapshot prev = (Snapshot) mementos.get(KEY_MEMENTO);
@@ -48,8 +48,8 @@ public class AProcSelfStatMeasurer implements AScalarMeasurer {
         final long userJiffies = current.userJiffies - prev.userJiffies;
         final long kernelJiffies = current.kernelJiffies - prev.kernelJiffies;
 
-        final long userPerMill = userJiffies * 10*1000 / diffTime;
-        final long kernelPerMill = kernelJiffies * 10*1000 / diffTime;
+        final long userPerMill = userJiffies * 10 * 1000 / diffTime;
+        final long kernelPerMill = kernelJiffies * 10 * 1000 / diffTime;
 
         data.put(KEY_SELF_USER, new AScalarDataPoint(timestamp, KEY_SELF_USER, userPerMill, 1));
         data.put(KEY_SELF_KERNEL, new AScalarDataPoint(timestamp, KEY_SELF_KERNEL, kernelPerMill, 1));

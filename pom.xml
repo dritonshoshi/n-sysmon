@@ -6,12 +6,12 @@
     <parent>
         <groupId>org.sonatype.oss</groupId>
         <artifactId>oss-parent</artifactId>
-        <version>7</version>
+        <version>9</version>
     </parent>
 
     <groupId>com.github.dritonshoshi</groupId>
     <artifactId>n-sysmon-parent</artifactId>
-    <version>1.5.2-SNAPSHOT</version>
+    <version>1.6.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>${project.artifactId}-${project.version}</name>
@@ -21,7 +21,9 @@
 
     <modules>
         <module>n-sysmon-core</module>
+        <module>n-sysmon-demo-webapp</module>
         <module>n-sysmon-demo</module>
+        <module>n-sysmon-demo-liberty</module>
         <module>n-sysmon-server</module>
         <module>n-sysmon-server-war</module>
     </modules>
@@ -63,18 +65,134 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <version.maven-compiler-plugin>3.5.1</version.maven-compiler-plugin>
-        <version.maven-source-plugin>2.2.1</version.maven-source-plugin>
-        <version.maven-javadoc-plugin>2.9.1</version.maven-javadoc-plugin>
-        <version.maven-gpg-plugin>1.5</version.maven-gpg-plugin>
-        <version.maven-release-plugin>2.5</version.maven-release-plugin>
+        <version.maven-compiler-plugin>3.16.0</version.maven-compiler-plugin>
+        <version.maven-surefire-plugin>3.6.0</version.maven-surefire-plugin>
+        <version.maven-source-plugin>3.4.0</version.maven-source-plugin>
+        <version.maven-javadoc-plugin>3.12.0</version.maven-javadoc-plugin>
+<!--        <version.maven-gpg-plugin>3.2.8</version.maven-gpg-plugin>-->
+        <version.maven-release-plugin>3.3.1</version.maven-release-plugin>
+
+        <!-- 2.0.19 is the SLF4J version logback-classic 1.6.5 is built and tested against. -->
+        <version.slf4j>2.0.20</version.slf4j>
+        <version.logback>1.6.5</version.logback>
+
+        <version.jacoco>0.8.15</version.jacoco>
+        <!-- Target line coverage. Kept in one place so CI and local runs agree; the check
+             is bound to the verify phase, so CI must run `mvn verify` for it to apply. -->
+        <coverage.line.minimum>0.80</coverage.line.minimum>
+
+        <version.junit>6.1.3</version.junit>
+        <version.mockito>5.24.0</version.mockito>
+
+        <!-- a-foundation's AUUID.toString() uses javax.xml.bind.DatatypeConverter, which was removed from
+             the JDK in Java 11. Without this, AUUID.toString() throws NoClassDefFoundError on Java 11+,
+            breaking the HTTP offloading data sink and the trace / longest-calls UI pages.
+             This is the javax.* JAXB API and coexists with jakarta.xml.bind-api 4.x (jakarta.* packages). -->
+        <version.jaxb-api>2.3.1</version.jaxb-api>
+
+        <!-- The build and the full test suite are verified on JDK 17 (the compile target) and
+             JDK 21; JDK 25 also builds clean. Anything older cannot build this project.
+             Note the upper bound is exclusive, hence 26 to include JDK 25. -->
+        <jdk.version.range>[17,26)</jdk.version.range>
+
+        <!-- Single source of truth for the Checkstyle ruleset; ${maven.multiModuleProjectDirectory}
+             resolves to the reactor root, so every module picks up the same file. -->
+        <checkstyle.config.location>${maven.multiModuleProjectDirectory}/config/checkstyle/checkstyle.xml</checkstyle.config.location>
     </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+                <version>${version.slf4j}</version>
+            </dependency>
+            <dependency>
+                <groupId>ch.qos.logback</groupId>
+                <artifactId>logback-classic</artifactId>
+                <version>${version.logback}</version>
+            </dependency>
+
+            <!-- Jersey 3.x (Jakarta RESTful Web Services 3.1) requires the Jackson 2.x databind. Managing the
+                 Jackson 2 stack from the parent keeps jackson-databind, jackson-core, jackson-annotations and the
+                 jackson-* modules on aligned versions across all modules instead of letting Jersey 3.1.x pin them. -->
+            <dependency>
+                <groupId>com.fasterxml.jackson</groupId>
+                <artifactId>jackson-bom</artifactId>
+                <version>2.22.3</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>org.junit.jupiter</groupId>
+                <artifactId>junit-jupiter</artifactId>
+                <version>${version.junit}</version>
+                <scope>test</scope>
+            </dependency>
+            <!-- Runs the pre-existing JUnit 4 tests alongside the JUnit 5 ones. Without this
+                 engine surefire would silently stop executing them. Remove once the last
+                 JUnit 4 test has been ported. -->
+            <dependency>
+                <groupId>org.junit.vintage</groupId>
+                <artifactId>junit-vintage-engine</artifactId>
+                <version>${version.junit}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.mockito</groupId>
+                <artifactId>mockito-core</artifactId>
+                <version>${version.mockito}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.mockito</groupId>
+                <artifactId>mockito-junit-jupiter</artifactId>
+                <version>${version.mockito}</version>
+                <scope>test</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>javax.xml.bind</groupId>
+                <artifactId>jaxb-api</artifactId>
+                <version>${version.jaxb-api}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <dependencies>
         <dependency>
             <groupId>com.ajjpj.a-foundation</groupId>
             <artifactId>a-foundation</artifactId>
             <version>1.0-pre13</version>
+        </dependency>
+
+        <!-- Required by a-foundation's AUUID.toString(); see version.jaxb-api above. -->
+        <dependency>
+            <groupId>javax.xml.bind</groupId>
+            <artifactId>jaxb-api</artifactId>
+        </dependency>
+
+        <!-- Test tooling shared by every module. -->
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.vintage</groupId>
+            <artifactId>junit-vintage-engine</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-junit-jupiter</artifactId>
+            <scope>test</scope>
         </dependency>
     </dependencies>
     <distributionManagement>
@@ -101,13 +219,29 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
             </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-gpg-plugin</artifactId>
-            </plugin>
+<!--            <plugin>-->
+<!--                <groupId>org.apache.maven.plugins</groupId>-->
+<!--                <artifactId>maven-gpg-plugin</artifactId>-->
+<!--            </plugin>-->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-release-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-enforcer-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
             </plugin>
         </plugins>
 
@@ -115,11 +249,17 @@
             <plugins>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <version>${version.maven-surefire-plugin}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
                     <version>${version.maven-compiler-plugin}</version>
                     <configuration>
-                        <source>17</source>
-                        <target>17</target>
+                        <!-- release rather than source/target: it also pins the platform API,
+                             so the build cannot accidentally bind to a newer JDK's methods -->
+                        <release>17</release>
                     </configuration>
                 </plugin>
                 <plugin>
@@ -148,20 +288,20 @@
                         </execution>
                     </executions>
                 </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-gpg-plugin</artifactId>
-                    <version>${version.maven-gpg-plugin}</version>
-                    <executions>
-                        <execution>
-                            <id>sign-artifacts</id>
-                            <phase>verify</phase>
-                            <goals>
-                                <goal>sign</goal>
-                            </goals>
-                        </execution>
-                    </executions>
-                </plugin>
+<!--                <plugin>-->
+<!--                    <groupId>org.apache.maven.plugins</groupId>-->
+<!--                    <artifactId>maven-gpg-plugin</artifactId>-->
+<!--                    <version>${version.maven-gpg-plugin}</version>-->
+<!--                    <executions>-->
+<!--                        <execution>-->
+<!--                            <id>sign-artifacts</id>-->
+<!--                            <phase>verify</phase>-->
+<!--                            <goals>-->
+<!--                                <goal>sign</goal>-->
+<!--                            </goals>-->
+<!--                        </execution>-->
+<!--                    </executions>-->
+<!--                </plugin>-->
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-release-plugin</artifactId>
@@ -172,6 +312,111 @@
                         <releaseProfiles>release</releaseProfiles>
                         <goals>deploy</goals>
                     </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.jacoco</groupId>
+                    <artifactId>jacoco-maven-plugin</artifactId>
+                    <version>${version.jacoco}</version>
+                    <configuration>
+                        <excludes>
+                            <!-- third-party code: not ours to cover -->
+                            <exclude>com/ajpj/afoundation/**</exclude>
+                            <!-- test-only helper classes, and the servlet/annotation glue that a
+                                 unit test cannot meaningfully exercise -->
+                            <exclude>com/nsysmon/testutil/**</exclude>
+                        </excludes>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <id>jacoco-prepare-agent</id>
+                            <goals>
+                                <goal>prepare-agent</goal>
+                            </goals>
+                        </execution>
+                        <execution>
+                            <id>jacoco-report</id>
+                            <phase>verify</phase>
+                            <goals>
+                                <goal>report</goal>
+                            </goals>
+                        </execution>
+                        <execution>
+                            <id>jacoco-check-line-coverage</id>
+                            <phase>verify</phase>
+                            <goals>
+                                <goal>check</goal>
+                            </goals>
+                            <configuration>
+                                <rules>
+                                    <rule>
+                                        <element>BUNDLE</element>
+                                        <limits>
+                                            <limit>
+                                                <counter>LINE</counter>
+                                                <value>COVEREDRATIO</value>
+                                                <minimum>${coverage.line.minimum}</minimum>
+                                            </limit>
+                                        </limits>
+                                    </rule>
+                                </rules>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-enforcer-plugin</artifactId>
+                    <version>3.6.3</version>
+                    <executions>
+                        <execution>
+                            <id>enforce-supported-jdk</id>
+                            <phase>validate</phase>
+                            <goals>
+                                <goal>enforce</goal>
+                            </goals>
+                            <configuration>
+                                <rules>
+                                    <requireJavaVersion>
+                                        <version>${jdk.version.range}</version>
+                                        <message>Please build with JDK 17 to 25. The build and the full test suite are verified on JDK 17 and JDK 21.</message>
+                                    </requireJavaVersion>
+                                </rules>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-checkstyle-plugin</artifactId>
+                    <version>3.6.0</version>
+                    <configuration>
+                        <configLocation>${checkstyle.config.location}</configLocation>
+                        <includeTestSourceDirectory>true</includeTestSourceDirectory>
+                        <consoleOutput>true</consoleOutput>
+                        <failOnViolation>true</failOnViolation>
+                        <violationSeverity>warning</violationSeverity>
+                        <logViolationsToConsole>true</logViolationsToConsole>
+                        <sourceDirectories>
+                            <sourceDirectory>${project.build.sourceDirectory}</sourceDirectory>
+                            <sourceDirectory>${project.build.testSourceDirectory}</sourceDirectory>
+                        </sourceDirectories>
+                    </configuration>
+                    <dependencies>
+                        <dependency>
+                            <groupId>com.puppycrawl.tools</groupId>
+                            <artifactId>checkstyle</artifactId>
+                            <version>12.1.2</version>
+                        </dependency>
+                    </dependencies>
+                    <executions>
+                        <execution>
+                            <id>checkstyle-check</id>
+                            <phase>verify</phase>
+                            <goals>
+                                <goal>check</goal>
+                            </goals>
+                        </execution>
+                    </executions>
                 </plugin>
             </plugins>
         </pluginManagement>

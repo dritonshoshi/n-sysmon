@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.github.dritonshoshi</groupId>
+        <artifactId>n-sysmon-parent</artifactId>
+        <version>1.6.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>n-sysmon-demo-webapp</artifactId>
+    <version>1.6.0-SNAPSHOT</version>
+    <packaging>jar</packaging>
+
+    <name>${project.artifactId}-${project.version}</name>
+
+    <description>The n-sysmon demo webapp: the demo servlet, the deployment descriptor, nsysmon.properties,
+        logback.xml and the artificial load the demo is about. Shared by the embedded-Jetty runner
+        (n-sysmon-demo), which serves it out of the source tree, and the Open Liberty runner
+        (n-sysmon-demo-liberty), which packages it into a war. It is a plain jar, not a war, so that the
+        Jetty runner gets the demo classes on its classpath without a build step in between.</description>
+
+    <dependencies>
+        <!-- Provided: the container supplies the Servlet API. The Jetty runner brings its own
+             compile-scoped copy for the classloader of the webapp it loads. -->
+        <dependency>
+            <groupId>jakarta.servlet</groupId>
+            <artifactId>jakarta.servlet-api</artifactId>
+            <version>6.1.0</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.github.dritonshoshi</groupId>
+            <artifactId>n-sysmon-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <!-- The demo servlet runs slow queries against an in-memory H2 database through the
+             measuring NSysMonDataSource. -->
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <version>2.5.252</version>
+        </dependency>
+
+        <!-- n-sysmon-core declares httpclient as optional, so a consumer that wants the HTTP
+             offloading data sink has to bring it. The demo's commented-out addDataSink call in
+             NsysmonDemoMain is that consumer. -->
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>4.5.14</version>
+        </dependency>
+
+        <!-- SLF4J binding: n-sysmon-core ships the facade only, so the war has to bring a binding
+             itself. Configured by src/main/resources/logback.xml. -->
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+    </dependencies>
+
+</project>

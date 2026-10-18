@@ -10,7 +10,12 @@ import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.lang.management.OperatingSystemMXBean;
 import java.nio.charset.Charset;
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 
 /**
@@ -18,7 +23,7 @@ import java.util.*;
  */
 public class ACpuUtilizationMeasurer implements AScalarMeasurer {
     public static final AFile PROC_STAT_FILE = new AFile("/proc/stat", Charset.defaultCharset());
-    public static final AFile PROC_STAT_FILE_MACOS_ = new AFile("sysctl -a hw", Charset.defaultCharset());
+    public static final AFile PROC_STAT_FILE_MACOS = new AFile("sysctl -a hw", Charset.defaultCharset());
 
     public static final AFile PROC_CPUINFO_FILE = new AFile("/proc/cpuinfo", Charset.defaultCharset());
 

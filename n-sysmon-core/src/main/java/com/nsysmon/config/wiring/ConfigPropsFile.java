@@ -48,8 +48,7 @@ public class ConfigPropsFile {
             final String trimmed = s.trim();
             if(trimmed.isEmpty()) {
                 log.warn("configuration error: empty list entry @ " + key + " - skipping");
-            }
-            else {
+            } else {
                 result.add(trimmed);
             }
         }

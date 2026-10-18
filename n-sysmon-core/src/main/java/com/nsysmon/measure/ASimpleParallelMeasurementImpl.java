@@ -39,7 +39,7 @@ class ASimpleParallelMeasurementImpl implements ASimpleMeasurement {
 
     public void finish() {
         if(isFinished) {
-            log.error (new IllegalStateException("a simple measurement can be finished only once."));
+            log.error(new IllegalStateException("a simple measurement can be finished only once."));
             return;
         }
 

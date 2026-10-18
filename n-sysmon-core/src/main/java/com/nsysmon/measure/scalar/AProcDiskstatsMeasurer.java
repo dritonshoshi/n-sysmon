@@ -37,15 +37,15 @@ public class AProcDiskstatsMeasurer implements AScalarMeasurer {
     private static final Pattern PATTERN = Pattern.compile("\\s+");
 
 
-    public AProcDiskstatsMeasurer(){
+    public AProcDiskstatsMeasurer() {
     }
 
     @Override public void prepareMeasurements(Map<String, Object> mementos) throws Exception {
         //this measurement isn't working on windows
-        if (NSysMon.isWindows()){
+        if (NSysMon.isWindows()) {
             return;
         }
-        if (NSysMon.isMacOS()){
+        if (NSysMon.isMacOS()) {
             return;
         }
         mementos.put(KEY_MEMENTO, createSnapshot());
@@ -53,11 +53,11 @@ public class AProcDiskstatsMeasurer implements AScalarMeasurer {
 
     @Override public void contributeMeasurements(Map<String, AScalarDataPoint> data, long timestamp, Map<String, Object> mementos) throws Exception {
         //this measurement isn't working on windows
-        if (NSysMon.isWindows()){
+        if (NSysMon.isWindows()) {
             contributeDiskSizeWindows(data, timestamp);
             return;
         }
-        if (NSysMon.isMacOS()){
+        if (NSysMon.isMacOS()) {
             contributeDiskSizeWindows(data, timestamp);
             return;
         }
@@ -90,8 +90,8 @@ public class AProcDiskstatsMeasurer implements AScalarMeasurer {
             final long sectorsReadRaw = current.sectorsRead.get(dev) - prev.sectorsRead.get(dev);
             final long sectorsWrittenRaw = current.sectorsWritten.get(dev) - prev.sectorsWritten.get(dev);
 
-            final long sectorsRead    = sectorsReadRaw    * 10*1000 / diffTime;
-            final long sectorsWritten = sectorsWrittenRaw * 10*1000 / diffTime;
+            final long sectorsRead    = sectorsReadRaw    * 10 * 1000 / diffTime;
+            final long sectorsWritten = sectorsWrittenRaw * 10 * 1000 / diffTime;
 
             final int blockSize = physicalBlockSize(dev);
             final long mBytesRead = sectorsReadRaw * blockSize * 100 * 1000 / diffTime / 1024 / 1024;
@@ -125,9 +125,9 @@ public class AProcDiskstatsMeasurer implements AScalarMeasurer {
             final long availableKb = Long.valueOf(split[3]);
 //            final String mountPoint = split[5];
 
-            add(data, timestamp, getSizeKey(dev), sizeKb * 100 / (1024*1024), 2);
-            add(data, timestamp, getUsedKey(dev), usedKb * 100 / (1024*1024), 2);
-            add(data, timestamp, getAvailableKey(dev), availableKb * 100 / (1024*1024), 2);
+            add(data, timestamp, getSizeKey(dev), sizeKb * 100 / (1024 * 1024), 2);
+            add(data, timestamp, getUsedKey(dev), usedKb * 100 / (1024 * 1024), 2);
+            add(data, timestamp, getAvailableKey(dev), availableKb * 100 / (1024 * 1024), 2);
         }
     }
 
@@ -149,9 +149,9 @@ public class AProcDiskstatsMeasurer implements AScalarMeasurer {
 
             final long usedKb = sizeKb - availableKb;
 
-            add(data, timestamp, getSizeKey(dev), sizeKb * 100 / (1024*1024), 2);
-            add(data, timestamp, getUsedKey(dev), usedKb * 100 / (1024*1024), 2);
-            add(data, timestamp, getAvailableKey(dev), availableKb * 100 / (1024*1024), 2);
+            add(data, timestamp, getSizeKey(dev), sizeKb * 100 / (1024 * 1024), 2);
+            add(data, timestamp, getUsedKey(dev), usedKb * 100 / (1024 * 1024), 2);
+            add(data, timestamp, getAvailableKey(dev), availableKb * 100 / (1024 * 1024), 2);
         }
     }
 
@@ -162,7 +162,7 @@ public class AProcDiskstatsMeasurer implements AScalarMeasurer {
             if(f.exists()) {
                 return Integer.valueOf(new AFile(f, Charset.defaultCharset()).lines().get(0));
             }
-            dev = dev.substring(0, dev.length()-1);
+            dev = dev.substring(0, dev.length() - 1);
         }
         return 512;
     }
@@ -218,9 +218,9 @@ public class AProcDiskstatsMeasurer implements AScalarMeasurer {
             final String[] split = PATTERN.split(line.trim());
 
             final String dev = split[2];
-            final long sectorsRead = Long.valueOf(split[2+3]);
-            final long sectorsWritten = Long.valueOf(split[2+7]);
-            final int iosInProgress = Integer.valueOf(split[2+9]);
+            final long sectorsRead = Long.valueOf(split[2 + 3]);
+            final long sectorsWritten = Long.valueOf(split[2 + 7]);
+            final int iosInProgress = Integer.valueOf(split[2 + 9]);
 
             result.sectorsRead.put(dev, sectorsRead);
             result.sectorsWritten.put(dev, sectorsWritten);

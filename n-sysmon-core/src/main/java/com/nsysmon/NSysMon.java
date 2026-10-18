@@ -20,23 +20,27 @@ import com.ajjpj.afoundation.util.AUnchecker;
  *
  * @author arno
  */
-public class NSysMon {
+public final class NSysMon {
+    private NSysMon() {
+        // static facade; use NSysMon.get() to obtain the instance
+    }
+
     public static NSysMonApi get() {
         // this class has the sole purpose of providing really lazy init of the singleton instance
         return NSysMonInstanceHolder.INSTANCE;
     }
 
-    public static boolean isWindows(){
+    public static boolean isWindows() {
         return System.getProperty("os.name").toLowerCase().contains("win");
     }
 
-    public static boolean isMacOS(){
+    public static boolean isMacOS() {
         return System.getProperty("os.name").toLowerCase().contains("mac");
     }
     /**
      * this class has the sole purpose of providing really lazy init of the singleton instance
      */
-    private static class NSysMonInstanceHolder {
+    private static final class NSysMonInstanceHolder {
         public static final NSysMonApi INSTANCE = new NSysMonImpl(getConfig());
 
         private static NSysMonConfig getConfig() {

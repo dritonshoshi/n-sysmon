@@ -4,3 +4,10 @@ target/
 tomcat.*
 mongo
 *.db
+.codegraph
+
+# python bytecode cache; docs/ui-baseline currently holds only __pycache__
+docs/ui-baseline/
+
+# written into the working directory by background daemons (e.g. voxtype)
+nohup.out

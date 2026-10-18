@@ -9,15 +9,16 @@ import com.nsysmon.server.data.json.EnvironmentNode;
 import com.nsysmon.server.data.json.ScalarNode;
 import com.nsysmon.server.data.json.TraceNode;
 import com.nsysmon.server.data.json.TraceRootNode;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 /**
  * @author arno
  */
 public class InputProcessorImpl implements InputProcessor {
-    private static final Logger log = Logger.getLogger(InputProcessorImpl.class);
+    private static final Logger log = LoggerFactory.getLogger(InputProcessorImpl.class);
 
     private final SystemClockCorrector systemClockCorrector;
     private final EventBus eventBus;

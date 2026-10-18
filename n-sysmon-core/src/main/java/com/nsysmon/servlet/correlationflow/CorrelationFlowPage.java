@@ -51,7 +51,7 @@ public class CorrelationFlowPage implements APresentationPageDefinition {
         if ("getData".equals(service)) {
             serveData(json);
             return true;
-        }else if ("doClear".equals(service)) {
+        } else if ("doClear".equals(service)) {
             clearData();
             serveData(json);
             return true;
@@ -100,7 +100,7 @@ public class CorrelationFlowPage implements APresentationPageDefinition {
     }
 
     private void writeChildren(AJsonSerHelperForNSysmon json, Set<ACorrelationId> children, Map<ACorrelationId, Set<ACorrelationId>> data) throws IOException {
-        if (children == null || children.isEmpty()){
+        if (children == null || children.isEmpty()) {
             //process only filled-elements
             return;
         }
@@ -125,11 +125,11 @@ public class CorrelationFlowPage implements APresentationPageDefinition {
         json.endArray();
     }
 
-	/**
+    /**
      * All children from all levels, not only the direct children.
      */
     private void addNumberOfChildren(AJsonSerHelperForNSysmon json, Set<ACorrelationId> children, Map<ACorrelationId, Set<ACorrelationId>> data) throws IOException {
-        if (children == null || children.isEmpty()){
+        if (children == null || children.isEmpty()) {
             return;
         }
         json.writeKey("tags");
@@ -148,7 +148,7 @@ public class CorrelationFlowPage implements APresentationPageDefinition {
     private int countChildren(ACorrelationId child, Map<ACorrelationId, Set<ACorrelationId>> data) {
         int cnt = 0;
         Set<ACorrelationId> children = data.get(child);
-        if (children != null){
+        if (children != null) {
             cnt += children.size();
             for (ACorrelationId subChild : children) {
                 cnt += countChildren(subChild, data);

@@ -7,7 +7,13 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.io.StringReader;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -40,14 +46,12 @@ public abstract class AbstractNSysMonServlet extends HttpServlet {
                         throw new IllegalArgumentException("unsupported REST call: " + uri);
                     }
                     return;
-                }
-                catch(Exception exc) {
+                } catch(Exception exc) {
                     try {
                         // special status code to indicate an exception that is reported as a JSON message
                         resp.setStatus(599);
                         writeExceptionToJson(new AJsonSerHelperForNSysmon(resp.getOutputStream()), exc);
-                    }
-                    catch(Exception e2) {
+                    } catch(Exception e2) {
                         // throw the original exception if there is a problem in the special handling code
                         throw new ServletException(exc);
                     }
@@ -68,8 +72,7 @@ public abstract class AbstractNSysMonServlet extends HttpServlet {
             }
 
             serveStaticResource(getDefaultHtmlName(), resp);
-        }
-        catch (RuntimeException | ServletException | IOException exc) {
+        } catch (RuntimeException | ServletException | IOException exc) {
             throw exc;
         } catch(Exception exc) {
             throw new ServletException(exc);

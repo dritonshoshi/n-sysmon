@@ -3,7 +3,7 @@ package com.nsysmon.server.storage.impl;
 import com.mongodb.DB;
 import com.mongodb.MongoClient;
 
-import javax.inject.Provider;
+import jakarta.inject.Provider;
 import java.net.UnknownHostException;
 
 /**

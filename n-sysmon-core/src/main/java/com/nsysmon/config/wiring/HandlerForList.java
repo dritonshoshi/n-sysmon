@@ -13,7 +13,7 @@ class HandlerForList implements ConfigTypeHandler {
     }
 
     @Override public Object handle(ConfigValueResolver r, String key, String value, Class<?> type, Class<?>[] paramTypes) throws Exception {
-        final List result = new ArrayList();
+        final List<Object> result = new ArrayList<>();
 
         if(value.isEmpty()) {
             return result;

@@ -6,7 +6,11 @@ import com.nsysmon.servlet.performance.AAbstractNsysmonPerformancePageDef;
 import com.nsysmon.servlet.performance.AMinMaxAvgData;
 
 import java.text.Collator;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author arno
@@ -23,7 +27,7 @@ public abstract class ABottomUpPageDefinition extends AAbstractNsysmonPerformanc
             new ColDef("max ms", false, 0, ColWidth.Medium, false)
     );
 
-    public static final int MILLION = 1000*1000;
+    public static final int MILLION = 1000 * 1000;
 
     protected abstract ABottomUpLeafFilter createLeafFilter();
 
@@ -88,7 +92,7 @@ public abstract class ABottomUpPageDefinition extends AAbstractNsysmonPerformanc
                 totalChildCalls += childData.getTotalNumInContext();
             }
             // TODO: Add Tooltip to Treenode. @See: ATracePageDefinition.class
-            result.add(new TreeNode(entry.getKey(), inputData.isSerial(), dataRaw, getDataRec(inputData.getChildren(), level+1, jdbcTimeHere, totalJdbcTime, totalChildCalls)));
+            result.add(new TreeNode(entry.getKey(), inputData.isSerial(), dataRaw, getDataRec(inputData.getChildren(), level + 1, jdbcTimeHere, totalJdbcTime, totalChildCalls)));
         }
 
         return result;

@@ -14,7 +14,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @author arno
  */
 @ABeanFactory
-public class AConnectionCounter implements AScalarMeasurer, AIConnectionCounter {
+public final class AConnectionCounter implements AScalarMeasurer, AIConnectionCounter {
     public static final AConnectionCounter INSTANCE = new AConnectionCounter(); //TODO make instance management configurable
 
     private static final String DEFAULT_POOL_IDENTIFIER = " @@##++ ";
@@ -96,8 +96,7 @@ public class AConnectionCounter implements AScalarMeasurer, AIConnectionCounter 
     @Override public String getDescriptionOfMeasurement(String measurement) {
         if (measurement != null && measurement.startsWith("JDBC: Open Connections")) {
             return "Open database connections.";
-        }
-        else if (measurement != null && measurement.startsWith("JDBC: Active Connections")) {
+        } else if (measurement != null && measurement.startsWith("JDBC: Active Connections")) {
             return "Active database connections.";
         }
         return null;

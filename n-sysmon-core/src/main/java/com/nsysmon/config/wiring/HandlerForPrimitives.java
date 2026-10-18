@@ -9,7 +9,7 @@ import java.util.Set;
  * @author arno
  */
 class HandlerForPrimitives implements ConfigTypeHandler {
-    private static final Set<Class<?>> types = new HashSet<>(Arrays.asList(
+    private static final Set<Class<?>> TYPES = new HashSet<>(Arrays.asList(
             Boolean.class,
             Byte.class, Short.class, Character.class, Integer.class, Long.class,
             Float.class, Double.class,
@@ -17,7 +17,7 @@ class HandlerForPrimitives implements ConfigTypeHandler {
     ));
 
     @Override public boolean canHandle(Class<?> type, Class<?>[] paramTypes, String value) {
-        return type.isPrimitive() || types.contains(type);
+        return type.isPrimitive() || TYPES.contains(type);
     }
 
     @Override public Object handle(ConfigValueResolver r, String key, String value, Class<?> type, Class<?>[] paramTypes) throws Exception {

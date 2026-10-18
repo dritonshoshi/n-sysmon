@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Replaces the former log4j.properties. Console appender with the same pattern
+  layout, so the log output format stays unchanged.
+
+  The former config also set org.elasticsearch to DEBUG; that dependency no
+  longer exists in this project, so the entry is dropped.
+-->
+<configuration>
+
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%-4r [%t] %-5level %logger{36} %X - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <logger name="com.nsysmon.server" level="DEBUG"/>
+
+    <root level="DEBUG">
+        <appender-ref ref="CONSOLE"/>
+    </root>
+
+</configuration>

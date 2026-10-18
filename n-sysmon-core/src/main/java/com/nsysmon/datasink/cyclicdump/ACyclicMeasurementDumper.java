@@ -14,7 +14,7 @@ import java.util.concurrent.TimeUnit;
 
 
 /**
- * This class cyclically dumps all environment measurements, e.g. to Log4J.<p>
+ * This class cyclically dumps all environment measurements, e.g. to SLF4J.<p>
  *
  * Calling the constructor takes care of registration with NSysMon. <p>
  *
@@ -39,8 +39,7 @@ public abstract class ACyclicMeasurementDumper implements ADataSink, NSysMonAwar
                 for(String key: m.keySet()) {
                     dump("Scalar Measurement: " + key + " = " + m.get(key).getFormattedValue());
                 }
-            }
-            catch(Exception exc) {
+            } catch(Exception exc) {
                 log.error(exc);
                 dump(exc.toString());
             }

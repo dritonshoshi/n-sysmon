@@ -153,7 +153,7 @@ public class NSysMonImpl implements AShutdownable, NSysMonApi {
         }
     }
 
-    @Override public <R, E extends Exception> R measure(String identifier, AMeasureCallback<R,E> callback) throws E {
+    @Override public <R, E extends Exception> R measure(String identifier, AMeasureCallback<R, E> callback) throws E {
         final ASimpleMeasurement m = start(identifier);
         try {
             return callback.call(m);
@@ -177,7 +177,7 @@ public class NSysMonImpl implements AShutdownable, NSysMonApi {
     public void startFlow(ACorrelationId flowId) {
         final AMeasurementHierarchy h = getMeasurementHierarchy(false);
         if(h == null) {
-            log.error (new IllegalStateException("flow handling only while a measurement is running"));
+            log.error(new IllegalStateException("flow handling only while a measurement is running"));
             return;
         }
         h.onStartFlow(flowId);
@@ -187,7 +187,7 @@ public class NSysMonImpl implements AShutdownable, NSysMonApi {
     public void joinFlow(ACorrelationId flowId) {
         final AMeasurementHierarchy h = getMeasurementHierarchy(false);
         if(h == null) {
-            log.error (new IllegalStateException("flow handling only while a measurement is running"));
+            log.error(new IllegalStateException("flow handling only while a measurement is running"));
             return;
         }
         h.onJoinFlow(flowId);

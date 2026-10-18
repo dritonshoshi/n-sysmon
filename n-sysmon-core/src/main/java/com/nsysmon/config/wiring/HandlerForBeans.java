@@ -37,7 +37,7 @@ public class HandlerForBeans implements ConfigTypeHandler {
         final InstanceCreator creator = getCreator(cls, numParams, expectedType, r);
 
         final Object[] params = new Object[numParams];
-        for(int i=0; i<numParams; i++) {
+        for(int i = 0; i < numParams; i++) {
             params[i] = r.child(creator.getParameterTypes()[i], new Class<?>[0], String.valueOf(i)).get(AOption.none());
         }
         return creator.create(params);
@@ -65,7 +65,7 @@ public class HandlerForBeans implements ConfigTypeHandler {
     }
 
     private int getNumParams(ConfigValueResolver r) {
-        for(int i=0; i<1000; i++) {
+        for(int i = 0; i < 1000; i++) {
             final ConfigValueResolver paramResolver = r.child(null, null, String.valueOf(i));
             final AOption<String> param = paramResolver.getRaw();
             if(param.isEmpty()) {
@@ -112,8 +112,7 @@ public class HandlerForBeans implements ConfigTypeHandler {
     private AOption<Class> classForName(String name) {
         try {
             return AOption.some((Class) Class.forName(name));
-        }
-        catch(Exception exc) {
+        } catch(Exception exc) {
             return AOption.none();
         }
     }
@@ -127,7 +126,7 @@ public class HandlerForBeans implements ConfigTypeHandler {
         Object create(Object... params) throws Exception;
     }
 
-    private class FactoryMethodInstanceCreator implements InstanceCreator {
+    private final class FactoryMethodInstanceCreator implements InstanceCreator {
         private final Method factoryMethod;
 
         private FactoryMethodInstanceCreator(Method factoryMethod) {
@@ -143,7 +142,7 @@ public class HandlerForBeans implements ConfigTypeHandler {
         }
     }
 
-    private class CtorInstanceCreator implements InstanceCreator {
+    private final class CtorInstanceCreator implements InstanceCreator {
         private final Constructor ctor;
 
         private CtorInstanceCreator(Constructor ctor) {

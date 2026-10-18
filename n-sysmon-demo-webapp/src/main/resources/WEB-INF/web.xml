@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app version="6.0" xmlns="https://jakarta.ee/xml/ns/jakartaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/web-app_6_0.xsd">
+
+    <listener>
+        <listener-class>com.nsysmon.AShutdownServletContextListener</listener-class>
+    </listener>
+
+    <!-- Fabricates the load the demo is about: a deadlock, a GC churn and an allocation churn.
+         Registered here rather than started from a main() so that any container gets it. -->
+    <listener>
+        <listener-class>com.nsysmon.demo.ArtificialLoadServletContextListener</listener-class>
+    </listener>
+
+    <servlet>
+        <servlet-name>nsysmon</servlet-name>
+        <servlet-class>com.nsysmon.servlet.NSysMonServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>nsysmon</servlet-name>
+        <url-pattern>/nsysmon/*</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>content</servlet-name>
+        <servlet-class>com.nsysmon.demo.AppServlet</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>content</servlet-name>
+        <url-pattern>/content/*</url-pattern>
+    </servlet-mapping>
+
+    <filter>
+        <filter-name>nsysmon-filter</filter-name>
+        <filter-class>com.nsysmon.measure.http.AHttpRequestMeasuringFilter</filter-class>
+        <init-param>
+            <param-name>nsysmon.http-analyzer</param-name>
+            <param-value>com.nsysmon.demo.NullHttpRequestAnalyzer</param-value>
+        </init-param>
+    </filter>
+
+    <filter-mapping>
+        <filter-name>nsysmon-filter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+</web-app>

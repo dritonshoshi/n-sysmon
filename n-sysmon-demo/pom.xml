@@ -4,19 +4,20 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>org.sonatype.oss</groupId>
-        <artifactId>oss-parent</artifactId>
-        <version>7</version>
+        <groupId>com.github.dritonshoshi</groupId>
+        <artifactId>n-sysmon-parent</artifactId>
+        <version>1.6.0-SNAPSHOT</version>
     </parent>
 
-    <groupId>com.github.dritonshoshi</groupId>
     <artifactId>n-sysmon-demo</artifactId>
-    <version>1.5.2-SNAPSHOT</version>
+    <version>1.6.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>${project.artifactId}-${project.version}</name>
 
-    <description>n-sysmon is a fork of a-sysmon -> a-sysmon is a toolset for monitoring and exploring performance aspects of Java enterprise applications</description>
+    <description>Runs the shared n-sysmon demo webapp (n-sysmon-demo-webapp) on embedded Jetty 12
+        (ee11, Servlet 6.1) on port 8181. The webapp content is not duplicated: this module only starts
+        a container around it.</description>
 
     <licenses>
         <license>
@@ -48,63 +49,75 @@
     </properties>
 
     <dependencies>
+        <!-- The demo webapp itself: the demo servlet, the deployment descriptor, nsysmon.properties,
+             logback.xml and the artificial load. It is shared with n-sysmon-demo-liberty, which
+             packages the very same content into a war for Open Liberty. The demo's runtime
+             dependencies (n-sysmon-core, H2, the httpclient of the offloading sink, an SLF4J
+             binding) come with it. -->
         <dependency>
             <groupId>com.github.dritonshoshi</groupId>
-            <artifactId>n-sysmon-core</artifactId>
+            <artifactId>n-sysmon-demo-webapp</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <!-- Jetty 12 "ee11" is the Servlet 6.1 (Jakarta EE 11) flavour, matching jakarta.servlet-api 6.1.0 below. -->
         <dependency>
-            <groupId>org.eclipse.jetty</groupId>
-            <artifactId>jetty-webapp</artifactId>
-            <version>11.0.26</version>
+            <groupId>org.eclipse.jetty.ee11</groupId>
+            <artifactId>jetty-ee11-webapp</artifactId>
+            <version>12.1.13</version>
         </dependency>
         <dependency>
-            <groupId>org.eclipse.jetty</groupId>
-            <artifactId>jetty-servlets</artifactId>
-            <version>11.0.26</version>
+            <groupId>org.eclipse.jetty.ee11</groupId>
+            <artifactId>jetty-ee11-servlets</artifactId>
+            <version>12.1.13</version>
         </dependency>
+        <!-- Response compression. GzipHandler (jetty-server) is deprecated since Jetty 12.1.1 and
+             marked for removal; its replacement lives in the separate compression modules, so the
+             demo needs jetty-compression-server (the handler + its configuration) and
+             jetty-compression-gzip (the gzip implementation). -->
+        <dependency>
+            <groupId>org.eclipse.jetty.compression</groupId>
+            <artifactId>jetty-compression-server</artifactId>
+            <version>12.1.13</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.jetty.compression</groupId>
+            <artifactId>jetty-compression-gzip</artifactId>
+            <version>12.1.13</version>
+        </dependency>
+        <!-- Compile scope, not provided: this module embeds Jetty and is launched via its own
+             main(), so there is no servlet container to supply the Servlet API at runtime.
+             A provided scope would keep the jar off the runtime classpath of the webapp that
+             Jetty loads, and the demo would fail with
+             NoClassDefFoundError: jakarta/servlet/ServletContext. -->
         <dependency>
             <groupId>jakarta.servlet</groupId>
             <artifactId>jakarta.servlet-api</artifactId>
-            <version>6.0.0</version>
-            <scope>provided</scope>
+            <version>6.1.0</version>
         </dependency>
+        <!-- SLF4J binding for the Jetty server itself; the webapp brings its own copy for its own
+             classloader, configured by the logback.xml in n-sysmon-demo-webapp. -->
         <dependency>
-            <groupId>org.apache.httpcomponents</groupId>
-            <artifactId>httpclient</artifactId>
-            <version>4.5.14</version>
-        </dependency>
-        <dependency>
-            <groupId>ch.qos.reload4j</groupId>
-            <artifactId>reload4j</artifactId>
-            <version>1.2.22</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.h2database</groupId>
-            <artifactId>h2</artifactId>
-            <version>2.4.240</version>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <scope>runtime</scope>
         </dependency>
     </dependencies>
 
     <build>
         <plugins>
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.1</version>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
                 <configuration>
-                    <source>17</source>
-                    <target>17</target>
+                    <!-- append, so the excludes inherited from n-sysmon-parent are kept -->
+                    <excludes combine.children="append">
+                        <!-- The run harness itself, not library logic: NsysmonDemoMain binds port 8181
+                             and then blocks in server.join() forever. It is a couple of lines around
+                             the classes that are tested (WebappResourceBase, DemoCompressionHandler).
+                             The artificial load is part of the webapp module and is tested there. -->
+                        <exclude>com/nsysmon/demo/NsysmonDemoMain*</exclude>
+                    </excludes>
                 </configuration>
-                <executions>
-                    <execution>
-                        <phase>compile</phase>
-                        <goals>
-                            <goal>compile</goal>
-                        </goals>
-                    </execution>
-                </executions>
             </plugin>
         </plugins>
     </build>

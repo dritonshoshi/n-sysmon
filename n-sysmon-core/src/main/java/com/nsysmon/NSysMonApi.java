@@ -25,7 +25,7 @@ public interface NSysMonApi {
     NSysMonConfig getConfig();
 
     <E extends Exception> void measure(String identifier, AMeasureCallbackVoid<E> callback) throws E;
-    <R, E extends Exception> R measure(String identifier, AMeasureCallback<R,E> callback) throws E;
+    <R, E extends Exception> R measure(String identifier, AMeasureCallback<R, E> callback) throws E;
 
     /**
      * This tells N-SysMon that the currently running measurement starts a new 'flow'. Other measurements (in this
@@ -63,8 +63,8 @@ public interface NSysMonApi {
     List<AEnvironmentData> getEnvironmentMeasurements() throws Exception;
 
     AList<RobustScalarMeasurerWrapper> getTimedScalarForDirectAccess();
-    Map<String,ARingBuffer<AScalarDataPoint>> getTimedScalarMeasurements();
-    Map<String,ARingBuffer<AScalarDataPoint>> getTimedScalarMeasurementsForMonitoring();
+    Map<String, ARingBuffer<AScalarDataPoint>> getTimedScalarMeasurements();
+    Map<String, ARingBuffer<AScalarDataPoint>> getTimedScalarMeasurementsForMonitoring();
 
     void addTimedScalarMeasurement(AScalarDataPoint... dataPoint);
     void addTimedScalarMeasurementInterceptor(AScalarMeasurementInterceptor interceptor);

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Open Liberty server for the n-sysmon demo.
+
+  The demo webapp is not Liberty specific: it is the same content that n-sysmon-demo serves on
+  embedded Jetty. Only the container differs.
+
+  Run it with (from the repository root; -am must not be combined with a direct liberty:* goal,
+  because that would run the goal on every module of the reactor):
+      mvn -pl n-sysmon-demo-liberty -am install -DskipTests
+      mvn -pl n-sysmon-demo-liberty liberty:create liberty:install-feature liberty:deploy liberty:run
+  or, with hot reload during development:
+      mvn -pl n-sysmon-demo-liberty liberty:dev
+
+  Then n-sysmon is at http://localhost:9292/nsysmon and the demo content at
+  http://localhost:9292/content/. The embedded Jetty demo keeps port 8181, so both can run at once.
+-->
+<server description="n-sysmon demo on Open Liberty">
+
+    <!-- The demo is a plain Servlet application. servlet-6.1 is the only feature it needs, and it is
+         the API version n-sysmon-core is compiled against. -->
+    <featureManager>
+        <feature>servlet-6.1</feature>
+    </featureManager>
+
+    <!-- The HTTP port is a config variable so that it can be changed without editing this file: the
+         pom passes it in through bootstrap.properties (see liberty.http.port), and 9292 is only the
+         fallback for a hand deployed server. 9292 is used instead of Liberty's default 9080 because
+         9080 is commonly taken by other development servers. Note that server.env is NOT an option
+         for a dotted name such as this one - the Liberty launcher only exports plain shell
+         identifiers from server.env and silently drops the rest. -->
+    <variable name="default.http.port" defaultValue="9292"/>
+
+    <!-- Liberty's default HTTP port. No https port: the demo does not need TLS. -->
+    <httpEndpoint id="defaultHttpEndpoint" host="*" httpPort="${default.http.port}"/>
+
+    <!-- The war name is fixed by <finalName> in the pom. contextRoot "/" serves n-sysmon under
+         http://localhost:9292/nsysmon, exactly like the embedded Jetty demo does on 8181. -->
+    <webApplication id="n-sysmon-demo-liberty" location="n-sysmon-demo-liberty.war" contextRoot="/"/>
+
+</server>

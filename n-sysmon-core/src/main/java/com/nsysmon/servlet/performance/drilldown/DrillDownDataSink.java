@@ -60,8 +60,7 @@ class DrillDownDataSink implements ADataSink {
             final AMinMaxAvgData newData = new AMinMaxAvgData(data.isSerial(), data.getDurationNanos());
             childMap = newData.getChildren();
             parentMap.put(data.getIdentifier(), newData);
-        }
-        else {
+        } else {
             childMap = prev.getChildren();
             parentMap.put(data.getIdentifier(), prev.withDataPoint(data.isSerial(), data.getDurationNanos()));
         }

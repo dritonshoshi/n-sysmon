@@ -29,10 +29,10 @@ public class AProcNetDevMeasurer implements AScalarMeasurer {
 
     @Override public void prepareMeasurements(Map<String, Object> mementos) throws Exception {
         //this measurement isn't working on windows
-        if (NSysMon.isWindows()){
+        if (NSysMon.isWindows()) {
             return;
         }
-        if (NSysMon.isMacOS()){
+        if (NSysMon.isMacOS()) {
             return;
         }
         mementos.put(KEY_MEMENTO, createSnapshot());
@@ -40,10 +40,10 @@ public class AProcNetDevMeasurer implements AScalarMeasurer {
 
     @Override public void contributeMeasurements(Map<String, AScalarDataPoint> data, long timestamp, Map<String, Object> mementos) throws Exception {
         //this measurement isn't working on windows
-        if (NSysMon.isWindows()){
+        if (NSysMon.isWindows()) {
             return;
         }
-        if (NSysMon.isMacOS()){
+        if (NSysMon.isMacOS()) {
             return;
         }
         final Snapshot prev = (Snapshot) mementos.get(KEY_MEMENTO);
@@ -58,26 +58,16 @@ public class AProcNetDevMeasurer implements AScalarMeasurer {
             final long sentPackets     = cur.packetsSent.    get(iface) - prev.packetsSent.    get(iface);
             final long collisions      = cur.collisions.     get(iface) - prev.collisions.     get(iface);
 
-            {
-                final String key = getKeyReceivedBytes(iface);
-                data.put(key, new AScalarDataPoint(timestamp, key, receivedBytes * 10*1000 / diffTime, 1));
-            }
-            {
-                final String key = getKeyReceivedPackets(iface);
-                data.put(key, new AScalarDataPoint(timestamp, key, receivedPackets * 10*1000 / diffTime, 1));
-            }
-            {
-                final String key = getKeySentBytes(iface);
-                data.put(key, new AScalarDataPoint(timestamp, key, sentBytes * 10*1000 / diffTime, 1));
-            }
-            {
-                final String key = getKeySentPackets(iface);
-                data.put(key, new AScalarDataPoint(timestamp, key, sentPackets * 10*1000 / diffTime, 1));
-            }
-            {
-                final String key = getKeyCollisions(iface);
-                data.put(key, new AScalarDataPoint(timestamp, key, collisions * 10*1000 / diffTime, 1));
-            }
+            final String keyReceivedBytes = getKeyReceivedBytes(iface);
+            data.put(keyReceivedBytes, new AScalarDataPoint(timestamp, keyReceivedBytes, receivedBytes * 10 * 1000 / diffTime, 1));
+            final String keyReceivedPackets = getKeyReceivedPackets(iface);
+            data.put(keyReceivedPackets, new AScalarDataPoint(timestamp, keyReceivedPackets, receivedPackets * 10 * 1000 / diffTime, 1));
+            final String keySentBytes = getKeySentBytes(iface);
+            data.put(keySentBytes, new AScalarDataPoint(timestamp, keySentBytes, sentBytes * 10 * 1000 / diffTime, 1));
+            final String keySentPackets = getKeySentPackets(iface);
+            data.put(keySentPackets, new AScalarDataPoint(timestamp, keySentPackets, sentPackets * 10 * 1000 / diffTime, 1));
+            final String keyCollisions = getKeyCollisions(iface);
+            data.put(keyCollisions, new AScalarDataPoint(timestamp, keyCollisions, collisions * 10 * 1000 / diffTime, 1));
         }
     }
 

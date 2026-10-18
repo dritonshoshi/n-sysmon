@@ -10,8 +10,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import static com.nsysmon.measure.scalar.ACpuUtilizationMeasurer.KEY_ALL_USED;
-
 public class ThreadingMeasurer implements AScalarMeasurer {
 
     private static final String THREAD_COUNT = "Current Thread Count";
@@ -20,7 +18,7 @@ public class ThreadingMeasurer implements AScalarMeasurer {
 
     private long formerTotalStartedThreadCount = 0;
 
-    public ThreadingMeasurer(){
+    public ThreadingMeasurer() {
     }
 
     @Override public void prepareMeasurements(Map<String, Object> mementos) throws IOException {

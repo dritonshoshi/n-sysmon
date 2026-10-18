@@ -10,8 +10,8 @@ import java.text.NumberFormat;
  * @author arno
  */
 public class AScalarDataPoint {
-    private static final double[] pow = new double[] {1.0, 10.0, 100.0, 1000.0, 10*1000.0, 100*1000.0, 1000*1000.0, 10*1000*1000.0, 100*1000*1000.0, 1000*1000*1000.0};
-    private static final String[] patterns = new String[] {"#,##0",
+    private static final double[] POW = new double[] {1.0, 10.0, 100.0, 1000.0, 10 * 1000.0, 100 * 1000.0, 1000 * 1000.0, 10 * 1000 * 1000.0, 100 * 1000 * 1000.0, 1000 * 1000 * 1000.0};
+    private static final String[] PATTERNS = new String[] {"#,##0",
             "#,##0.0",       "#,##0.00",       "#,##0.000",
             "#,##0.0000",    "#,##0.00000",    "#,##0.000000",
             "#,##0.0000000", "#,##0.00000000", "#,##0.000000000",
@@ -46,7 +46,7 @@ public class AScalarDataPoint {
         return value;
     }
     public double getValue() {
-        return value / pow[numFracDigits];
+        return value / POW[numFracDigits];
     }
 
     public int getNumFracDigits() {
@@ -56,9 +56,8 @@ public class AScalarDataPoint {
     public String getFormattedValue() {
         if(numFracDigits == 0) {
             return NumberFormat.getIntegerInstance().format(value);
-        }
-        else {
-            return new DecimalFormat (patterns[numFracDigits]).format(value);
+        } else {
+            return new DecimalFormat(PATTERNS[numFracDigits]).format(value);
         }
     }
 

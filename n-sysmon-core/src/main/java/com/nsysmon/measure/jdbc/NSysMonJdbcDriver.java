@@ -6,7 +6,12 @@ import com.nsysmon.NSysMonApi;
 import com.nsysmon.config.log.NSysMonLogger;
 import com.nsysmon.measure.NSysMonSource;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.Driver;
+import java.sql.DriverManager;
+import java.sql.DriverPropertyInfo;
+import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -43,13 +48,13 @@ public class NSysMonJdbcDriver implements Driver {
             return null;
         }
 
-        final String withoutPrefix = url.substring (URL_PREFIX.length ());
+        final String withoutPrefix = url.substring(URL_PREFIX.length());
         final int idxColon = withoutPrefix.indexOf(':');
         if(idxColon == -1) {
             return null;
         }
 
-        final String innerUrl = withoutPrefix.substring(idxColon+1);
+        final String innerUrl = withoutPrefix.substring(idxColon + 1);
         final Connection inner = DriverManager.getConnection(innerUrl, info);
 
         try {
@@ -62,9 +67,8 @@ public class NSysMonJdbcDriver implements Driver {
             }
 
             return new NSysMonConnection(inner, sysMon, getPoolIdentifier(params), AConnectionCounter.INSTANCE); //TODO make instance management configurable
-        }
-        catch (SQLException e) {
-            log.error (e);
+        } catch (SQLException e) {
+            log.error(e);
             return inner;
         }
     }

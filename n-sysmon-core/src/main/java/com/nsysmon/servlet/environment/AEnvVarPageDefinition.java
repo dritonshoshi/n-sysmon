@@ -7,7 +7,11 @@ import com.nsysmon.config.presentation.APresentationPageDefinition;
 import com.nsysmon.measure.environment.AEnvironmentData;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 
 /**
@@ -97,8 +101,7 @@ public class AEnvVarPageDefinition implements APresentationPageDefinition {
     private void mergeIntoExisting(Collection<EnvData> existing, AList<String> key, String value, AList<String> keyPrefix) {
         if(key.tail().isEmpty()) {
             findOrCreateMatch(existing, key.head(), keyPrefix).value = value;
-        }
-        else {
+        } else {
             mergeIntoExisting(findOrCreateMatch(existing, key.head(), keyPrefix).children, key.tail(), value, keyPrefix.cons(key.head()));
         }
     }
@@ -130,7 +133,7 @@ public class AEnvVarPageDefinition implements APresentationPageDefinition {
         this.sysMon = sysMon;
     }
 
-    private static class EnvData implements Comparable<EnvData> {
+    private static final class EnvData implements Comparable<EnvData> {
         public final String segment;
         public String value; // may be null
         public final Collection<EnvData> children;
