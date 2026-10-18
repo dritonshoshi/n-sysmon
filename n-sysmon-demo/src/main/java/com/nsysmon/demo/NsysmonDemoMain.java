@@ -1,7 +1,11 @@
 package com.nsysmon.demo;
 
 
+import org.eclipse.jetty.compression.gzip.GzipCompression;
+import org.eclipse.jetty.compression.server.CompressionConfig;
+import org.eclipse.jetty.compression.server.CompressionHandler;
 import org.eclipse.jetty.ee11.webapp.WebAppContext;
+import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
 
 import java.util.ArrayList;
@@ -31,15 +35,8 @@ public final class NsysmonDemoMain {
         final WebAppContext webapp = new WebAppContext();
         webapp.setContextPath("/");
         webapp.setWar("n-sysmon-demo/src/main/resources");
-        server.setHandler(webapp);
 
-
-//        GzipHandler gzipHandler = new GzipHandler();
-//        gzipHandler.setIncludedMimeTypes("text/html", "text/plain", "text/xml", "text/css",
-//                "application/javascript", "application/json", "image/svg+xml");
-//        gzipHandler.setMinGzipSize(256);
-//        gzipHandler.setHandler(webapp);
-//        server.setHandler(gzipHandler);
+        server.setHandler(createCompressionHandler(webapp));
 
         generateArtificialGcs();
 
@@ -50,6 +47,43 @@ public final class NsysmonDemoMain {
 
         server.start();
         server.join();
+    }
+
+    /**
+     * Wraps {@code handler} with Jetty's compression, replacing the deprecated
+     * {@code org.eclipse.jetty.server.handler.gzip.GzipHandler} (deprecated since Jetty 12.1.1,
+     * marked for removal).
+     * <p>
+     * The gzip implementation is registered explicitly rather than left to the
+     * {@code ServiceLoader} discovery in {@link CompressionHandler#doStart()}: the webapp runs in
+     * its own classloader, so a discovery based on the thread context classloader may not see
+     * {@code org.eclipse.jetty.compression:jetty-compression-gzip} and compression would silently
+     * be skipped.
+     */
+    private static CompressionHandler createCompressionHandler(Handler handler) {
+        final GzipCompression gzip = new GzipCompression();
+        gzip.setMinCompressSize(256);
+
+        final CompressionHandler compressionHandler = new CompressionHandler(handler);
+        compressionHandler.putCompression(gzip);
+        compressionHandler.putConfiguration("/", CompressionConfig.builder()
+                // Jetty's defaults: compress GET and POST responses, never compress content that is
+                // already compressed (zip, gzip, ...) and decompress gzipped POST request bodies.
+                .defaults()
+                // ... plus the response mime types this demo used to configure on GzipHandler.
+                // The include list is exhaustive: anything not listed here is not compressed.
+                .compressIncludeMimeType("text/html")
+                .compressIncludeMimeType("text/plain")
+                .compressIncludeMimeType("text/xml")
+                .compressIncludeMimeType("text/css")
+                .compressIncludeMimeType("application/javascript")
+                .compressIncludeMimeType("application/json")
+                // image/svg+xml is not listed although the old GzipHandler config did: defaults()
+                // excludes it (and the *.svgz paths) on purpose, and an exclusion always beats an
+                // inclusion, so listing it here would be a no-op.
+                .build());
+
+        return compressionHandler;
     }
 
     private static void generateArtificialGcs() {
