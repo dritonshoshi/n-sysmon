@@ -21,10 +21,4 @@ public class ASysPropEnvironmentMeasurer implements AEnvironmentMeasurer {
     public void shutdown() throws Exception {
     }
 
-    private boolean isAllowedInCleartext(String envName) {
-        return !envName.toLowerCase().contains("secure")
-                && !envName.toLowerCase().contains("password")
-                && !envName.toLowerCase().contains("truststore")
-                && !envName.toLowerCase().contains("keystore");
-    }
 }
