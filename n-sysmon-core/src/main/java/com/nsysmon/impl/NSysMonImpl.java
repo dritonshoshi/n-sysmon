@@ -112,6 +112,18 @@ public class NSysMonImpl implements AShutdownable, NSysMonApi {
         handlers = handlers.cons(new RobustDataSinkWrapper(handler, config.dataSinkTimeoutNanos, config.maxNumDataSinkTimeouts));
     }
 
+    /**
+     * Returns a snapshot of all currently registered data sinks, including sinks that page definitions register during
+     *  their initialization. This is intended for diagnostics, not for changing the sink configuration.
+     */
+    public List<ADataSink> getDataSinksForDirectAccess() {
+        final List<ADataSink> result = new ArrayList<>();
+        for (RobustDataSinkWrapper wrapper : handlers) {
+            result.add(wrapper.getInner());
+        }
+        return result;
+    }
+
     private ADataSink getCompositeDataSink() {
         return new ADataSink() {
             @Override public void onStartedHierarchicalMeasurement(String identifier) {

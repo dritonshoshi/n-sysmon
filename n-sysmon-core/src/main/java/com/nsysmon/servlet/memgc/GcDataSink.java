@@ -4,6 +4,8 @@ import com.ajjpj.afoundation.collection.mutable.ARingBuffer;
 import com.nsysmon.data.AHierarchicalData;
 import com.nsysmon.data.AHierarchicalDataRoot;
 import com.nsysmon.datasink.ADataSink;
+import com.nsysmon.datasink.ADataSinkMemoryInfo;
+import com.nsysmon.datasink.MemoryUsageKind;
 import com.nsysmon.measure.scalar.AJmxGcMeasurer;
 
 import java.util.Collection;
@@ -17,7 +19,7 @@ import java.util.Set;
  *
  * @author arno
  */
-class GcDataSink implements ADataSink {
+class GcDataSink implements ADataSink, ADataSinkMemoryInfo {
     private final ARingBuffer<GcDetails> dataBuffer;
 
     GcDataSink(int maxNumDetails) {
@@ -74,6 +76,18 @@ class GcDataSink implements ADataSink {
 
     public Iterable<GcDetails> getData() {
         return dataBuffer;
+    }
+
+    @Override public Iterable<?> getStoredMeasurementData() {
+        return dataBuffer;
+    }
+
+    @Override public String getMemoryUsageName() {
+        return "gc details";
+    }
+
+    @Override public MemoryUsageKind getMemoryUsageKind() {
+        return MemoryUsageKind.DERIVED;
     }
 
     @Override public void shutdown() throws Exception {

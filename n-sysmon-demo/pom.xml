@@ -63,12 +63,12 @@
         <dependency>
             <groupId>org.eclipse.jetty.ee11</groupId>
             <artifactId>jetty-ee11-webapp</artifactId>
-            <version>12.1.13</version>
+            <version>12.1.14</version>
         </dependency>
         <dependency>
             <groupId>org.eclipse.jetty.ee11</groupId>
             <artifactId>jetty-ee11-servlets</artifactId>
-            <version>12.1.13</version>
+            <version>12.1.14</version>
         </dependency>
         <!-- Response compression. GzipHandler (jetty-server) is deprecated since Jetty 12.1.1 and
              marked for removal; its replacement lives in the separate compression modules, so the
@@ -77,12 +77,12 @@
         <dependency>
             <groupId>org.eclipse.jetty.compression</groupId>
             <artifactId>jetty-compression-server</artifactId>
-            <version>12.1.13</version>
+            <version>12.1.14</version>
         </dependency>
         <dependency>
             <groupId>org.eclipse.jetty.compression</groupId>
             <artifactId>jetty-compression-gzip</artifactId>
-            <version>12.1.13</version>
+            <version>12.1.14</version>
         </dependency>
         <!-- Compile scope, not provided: this module embeds Jetty and is launched via its own
              main(), so there is no servlet container to supply the Servlet API at runtime.

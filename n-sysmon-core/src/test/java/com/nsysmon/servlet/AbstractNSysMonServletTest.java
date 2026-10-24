@@ -78,8 +78,17 @@ class AbstractNSysMonServletTest {
         servlet.service(request, response);
 
         verify(response).setContentType("text/html");
-        verify(response).addHeader("Cache-Control", "max-age=36000");
+        verify(response).addHeader("Cache-Control", "no-cache");
         assertTrue(responseBody.content().contains("<html"), responseBody.content());
+    }
+
+    @Test void cachesStaticResourcesOtherThanHtml() throws Exception {
+        givenUri("/nsysmon" + AbstractNSysMonServlet.NSYSMON_MARKER_STATIC + "js/nsysmon-app.js");
+
+        servlet.service(request, response);
+
+        verify(response).setContentType("text/javascript");
+        verify(response).addHeader("Cache-Control", "max-age=36000");
     }
 
     @Test void respondsWith404ForUnknownStaticResources() throws Exception {

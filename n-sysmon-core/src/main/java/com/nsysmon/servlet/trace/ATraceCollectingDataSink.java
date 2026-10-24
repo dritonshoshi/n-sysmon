@@ -3,12 +3,14 @@ package com.nsysmon.servlet.trace;
 import com.ajjpj.afoundation.collection.mutable.ARingBuffer;
 import com.nsysmon.data.AHierarchicalDataRoot;
 import com.nsysmon.datasink.ADataSink;
+import com.nsysmon.datasink.ADataSinkMemoryInfo;
+import com.nsysmon.datasink.MemoryUsageKind;
 
 
 /**
  * @author arno
  */
-class ATraceCollectingDataSink implements ADataSink {
+class ATraceCollectingDataSink implements ADataSink, ADataSinkMemoryInfo {
     public boolean isStarted = true;
     private final ATraceFilter traceFilter;
     private final ARingBuffer<AHierarchicalDataRoot> data;
@@ -36,5 +38,17 @@ class ATraceCollectingDataSink implements ADataSink {
 
     public Iterable<AHierarchicalDataRoot> getData() {
         return data;
+    }
+
+    @Override public Iterable<?> getStoredMeasurementData() {
+        return data;
+    }
+
+    @Override public String getMemoryUsageName() {
+        return "trace " + traceFilter.getId();
+    }
+
+    @Override public MemoryUsageKind getMemoryUsageKind() {
+        return MemoryUsageKind.RAW_HIERARCHY;
     }
 }

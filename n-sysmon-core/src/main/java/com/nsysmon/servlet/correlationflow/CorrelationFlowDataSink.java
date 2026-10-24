@@ -6,6 +6,8 @@ import com.nsysmon.config.log.NSysMonLogger;
 import com.nsysmon.data.ACorrelationId;
 import com.nsysmon.data.AHierarchicalDataRoot;
 import com.nsysmon.datasink.ADataSink;
+import com.nsysmon.datasink.ADataSinkMemoryInfo;
+import com.nsysmon.datasink.MemoryUsageKind;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -14,7 +16,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-public class CorrelationFlowDataSink implements ADataSink {
+public class CorrelationFlowDataSink implements ADataSink, ADataSinkMemoryInfo {
     private static final NSysMonLogger LOG = NSysMonLogger.get(CorrelationFlowDataSink.class);
     private final ARingBuffer<CorrelationFlowDetails> dataBuffer;
 
@@ -115,5 +117,17 @@ public class CorrelationFlowDataSink implements ADataSink {
 
     public void clearData() {
         dataBuffer.clear();
+    }
+
+    @Override public Iterable<?> getStoredMeasurementData() {
+        return dataBuffer;
+    }
+
+    @Override public String getMemoryUsageName() {
+        return "correlation flows";
+    }
+
+    @Override public MemoryUsageKind getMemoryUsageKind() {
+        return MemoryUsageKind.DERIVED;
     }
 }

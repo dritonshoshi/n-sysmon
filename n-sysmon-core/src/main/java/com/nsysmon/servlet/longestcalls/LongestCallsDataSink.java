@@ -3,6 +3,8 @@ package com.nsysmon.servlet.longestcalls;
 import com.nsysmon.data.AHierarchicalData;
 import com.nsysmon.data.AHierarchicalDataRoot;
 import com.nsysmon.datasink.ADataSink;
+import com.nsysmon.datasink.ADataSinkMemoryInfo;
+import com.nsysmon.datasink.MemoryUsageKind;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,7 +14,7 @@ import java.util.TreeSet;
 import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.regex.Pattern;
 
-public class LongestCallsDataSink implements ADataSink {
+public class LongestCallsDataSink implements ADataSink, ADataSinkMemoryInfo {
 
     boolean isStarted = false;
     private final SortedSet<AHierarchicalDataRoot> data;
@@ -108,6 +110,18 @@ public class LongestCallsDataSink implements ADataSink {
 
     public Iterable<AHierarchicalDataRoot> getData() {
         return new TreeSet<>(data);
+    }
+
+    @Override public Iterable<?> getStoredMeasurementData() {
+        return data;
+    }
+
+    @Override public String getMemoryUsageName() {
+        return "longest calls";
+    }
+
+    @Override public MemoryUsageKind getMemoryUsageKind() {
+        return MemoryUsageKind.RAW_HIERARCHY;
     }
 
     @Override
