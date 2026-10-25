@@ -1,6 +1,9 @@
 package com.nsysmon.servlet;
 
 import com.ajjpj.afoundation.io.AJsonSerHelperForNSysmon;
+import com.nsysmon.config.log.NSysMonLogger;
+import com.nsysmon.servlet.auth.AAllowAllWebAuthorizer;
+import com.nsysmon.servlet.auth.AWebAuthorizer;
 import org.apache.http.entity.ContentType;
 
 import jakarta.servlet.ServletException;
@@ -29,7 +32,16 @@ public abstract class AbstractNSysMonServlet extends HttpServlet {
     public static final String NSYSMON_MARKER_STATIC = NSYSMON_MARKER_SEGMENT + "static/";
     public static final String NSYSMON_MARKER_REST = NSYSMON_MARKER_SEGMENT + "rest/";
 
+    private static final NSysMonLogger log = NSysMonLogger.get(AbstractNSysMonServlet.class);
+
     @Override protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        final AWebAuthorizer authorizer = getWebAuthorizer();
+        if(!isAuthorized(authorizer, req)) {
+            log.warn("rejected unauthorized request from " + req.getRemoteAddr() + " for " + req.getRequestURI());
+            authorizer.onUnauthorized(req, resp);
+            return;
+        }
+
         try {
             final String uri = req.getRequestURI();
 
@@ -79,6 +91,19 @@ public abstract class AbstractNSysMonServlet extends HttpServlet {
         }
     }
 
+    /**
+     * Keeps the gate fail-closed: an authorizer that throws must not turn into a 500 page, which may
+     *  disclose a stack trace and is not a decision the authorizer made.
+     */
+    private static boolean isAuthorized(AWebAuthorizer authorizer, HttpServletRequest req) {
+        try {
+            return authorizer.isAuthorized(req);
+        } catch(RuntimeException exc) {
+            log.warn("web authorizer failed, denying access to " + req.getRequestURI(), exc);
+            return false;
+        }
+    }
+
     private void writeExceptionToJson(AJsonSerHelperForNSysmon json, Exception exc) throws IOException {
         json.startObject();
 
@@ -107,6 +132,15 @@ public abstract class AbstractNSysMonServlet extends HttpServlet {
     }
 
     protected abstract String getDefaultHtmlName();
+
+    /**
+     * The authorizer guarding this servlet. The default lets every request through; NSysMonServlet
+     *  returns the authorizer configured for the N-SysMon web front.
+     */
+    protected AWebAuthorizer getWebAuthorizer() {
+        return AAllowAllWebAuthorizer.INSTANCE;
+    }
+
     protected abstract boolean handleRestCall(List<String> pathSegments, HttpServletResponse resp) throws Exception;
     protected boolean handleDynamic(List<String> pathSegments, HttpServletResponse resp) throws IOException {
         return false;

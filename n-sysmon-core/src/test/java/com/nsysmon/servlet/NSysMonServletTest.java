@@ -8,7 +8,10 @@ import com.nsysmon.config.NSysMonConfigBuilder;
 import com.nsysmon.testutil.RecordingServletOutputStream;
 import com.nsysmon.testutil.StubPageDefinition;
 import com.nsysmon.testutil.TestSysMons;
+import com.nsysmon.servlet.auth.AAllowAllWebAuthorizer;
+import com.nsysmon.servlet.auth.AWebAuthorizer;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -20,9 +23,12 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class NSysMonServletTest {
@@ -33,23 +39,28 @@ class NSysMonServletTest {
 
     @BeforeEach void setUp() throws IOException, ServletException {
         pageDefinition = new RecordingPageDefinition("somePage");
-        final NSysMonConfigBuilder configBuilder = TestSysMons.configBuilder();
-        configBuilder.addPresentationMenuEntry("aMenu", List.of(pageDefinition, new StubPageDefinition("otherPage")));
-        final NSysMonConfig config = configBuilder.build();
-
-        final NSysMonApi sysMon = mock(NSysMonApi.class);
-        when(sysMon.getConfig()).thenReturn(config);
 
         responseBody = new RecordingServletOutputStream();
         response = mock(HttpServletResponse.class);
         when(response.getOutputStream()).thenReturn(responseBody);
 
-        servlet = new NSysMonServlet() {
+        servlet = servletWith(AAllowAllWebAuthorizer.INSTANCE);
+    }
+
+    private NSysMonServlet servletWith(AWebAuthorizer webAuthorizer) throws ServletException {
+        final NSysMonConfigBuilder configBuilder = TestSysMons.configBuilder();
+        configBuilder.setWebAuthorizer(webAuthorizer);
+        configBuilder.addPresentationMenuEntry("aMenu", List.of(pageDefinition, new StubPageDefinition("otherPage")));
+        final NSysMonApi sysMon = mock(NSysMonApi.class);
+        when(sysMon.getConfig()).thenReturn(configBuilder.build());
+
+        final NSysMonServlet result = new NSysMonServlet() {
             @Override protected NSysMonApi getSysMon() {
                 return sysMon;
             }
         };
-        servlet.init();
+        result.init();
+        return result;
     }
 
     @Test void getSysMonDefaultsToTheSingleton() {
@@ -63,6 +74,25 @@ class NSysMonServletTest {
 
     @Test void servesNsysMonHtmlAsItsDefaultPage() {
         assertEquals("nsysmon.html", servlet.getDefaultHtmlName());
+    }
+
+    @Test void usesTheConfiguredWebAuthorizer() {
+        assertSame(AAllowAllWebAuthorizer.INSTANCE, servlet.getWebAuthorizer());
+    }
+
+    @Test void rejectsRequestsThatTheConfiguredAuthorizerDenies() throws Exception {
+        final AWebAuthorizer denying = mock(AWebAuthorizer.class);
+        final NSysMonServlet deniedServlet = servletWith(denying);
+
+        final HttpServletRequest deniedRequest = mock(HttpServletRequest.class);
+        when(deniedRequest.getRequestURI()).thenReturn(
+                "/nsysmon" + AbstractNSysMonServlet.NSYSMON_MARKER_SEGMENT + NSysMonServlet.CONFIG_JS);
+        final HttpServletResponse deniedResponse = mock(HttpServletResponse.class);
+
+        deniedServlet.service(deniedRequest, deniedResponse);
+
+        verify(denying).onUnauthorized(deniedRequest, deniedResponse);
+        verify(deniedResponse, never()).getOutputStream();
     }
 
     @Test void routesRestCallsToThePageDefinitionWithTheGivenId() throws Exception {
