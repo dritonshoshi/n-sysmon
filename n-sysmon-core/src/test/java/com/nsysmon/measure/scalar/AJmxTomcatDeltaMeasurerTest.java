@@ -4,6 +4,7 @@ import com.nsysmon.NSysMonApi;
 import com.nsysmon.config.ADefaultConfigFactory;
 import com.nsysmon.config.NSysMonConfig;
 import com.nsysmon.data.AScalarDataPoint;
+import com.nsysmon.servlet.auth.AAllowAllWebAuthorizer;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -65,6 +66,7 @@ public class AJmxTomcatDeltaMeasurerTest {
         additionalConfig.put(ADefaultConfigFactory.KEY_TOMCAT_GLOBAL_REQUEST_PROCESSOR, TomcatStubMBean.NAME_GLOBAL_REQUEST_PROCESSOR);
         additionalConfig.put(ADefaultConfigFactory.KEY_TOMCAT_THREAD_POOL, TomcatStubMBean.NAME_THREAD_POOL);
         when(sysMon.getConfig()).thenReturn(new NSysMonConfig(null, 0, 0, 0, 0, 0, 0, 0L, 0, 0L, 0, null, null,
+                AAllowAllWebAuthorizer.INSTANCE,
                 Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), Collections.emptyList(),
                 "", Collections.emptyList(), additionalConfig, Boolean.TRUE, true, null, new HashMap<>(), false));
         measurer.setNSysMon(sysMon);

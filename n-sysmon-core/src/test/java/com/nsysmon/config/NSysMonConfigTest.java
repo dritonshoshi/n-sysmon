@@ -1,6 +1,7 @@
 package com.nsysmon.config;
 
 import com.nsysmon.config.appinfo.AApplicationInfoProvider;
+import com.nsysmon.servlet.auth.AAllowAllWebAuthorizer;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -48,7 +49,7 @@ class NSysMonConfigTest {
 
     private static NSysMonConfig configWithFlags(boolean sqlParameters, boolean tooltips) {
         return new NSysMonConfig(APP_INFO, 1, 2, 3, 4, 5, 6, 7L, 8, 9L, 10,
-                null, null,
+                null, null, AAllowAllWebAuthorizer.INSTANCE,
                 List.of(), List.of(), List.of(), List.of(),
                 "page", List.of(), Map.of(), sqlParameters, tooltips,
                 "/data", Map.of("k", (Object) "v"), false);

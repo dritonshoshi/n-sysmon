@@ -6,6 +6,7 @@ import com.nsysmon.datasink.ADataSink;
 import com.nsysmon.measure.environment.AEnvironmentMeasurer;
 import com.nsysmon.measure.http.AHttpRequestAnalyzer;
 import com.nsysmon.measure.scalar.AScalarMeasurer;
+import com.nsysmon.servlet.auth.AWebAuthorizer;
 import com.nsysmon.util.timer.ATimer;
 
 import java.util.Collections;
@@ -37,6 +38,11 @@ public class NSysMonConfig {
     public final ATimer timer;
     public final AHttpRequestAnalyzer httpRequestAnalyzer;
 
+    /**
+     * Guards the web front. Defaults to an authorizer that lets every request through.
+     */
+    public final AWebAuthorizer webAuthorizer;
+
     public final List<AEnvironmentMeasurer> initialEnvironmentMeasurers;
     public final List<AScalarMeasurer> initialScalarMeasurers;
     public final List<AScalarMeasurer> initialTimedScalarMeasurers;
@@ -58,7 +64,7 @@ public class NSysMonConfig {
     public final String pathDatafiles;
 
     public NSysMonConfig(AApplicationInfoProvider appInfo, int averagingDelayForScalarsMillis, int durationOfOneTimedScalar, int maxNestedMeasurements, int maxNumMeasurementsPerHierarchy, int maxNumMeasurementsPerTimedScalar,
-                         int maxNumMeasurementsForMonitoring, long measurementTimeoutNanos, int maxNumMeasurementTimeouts, long dataSinkTimeoutNanos, int maxNumDataSinkTimeouts, ATimer timer, AHttpRequestAnalyzer httpRequestAnalyzer,
+                         int maxNumMeasurementsForMonitoring, long measurementTimeoutNanos, int maxNumMeasurementTimeouts, long dataSinkTimeoutNanos, int maxNumDataSinkTimeouts, ATimer timer, AHttpRequestAnalyzer httpRequestAnalyzer, AWebAuthorizer webAuthorizer,
                          List<AEnvironmentMeasurer> environmentMeasurers, List<AScalarMeasurer> initialScalarMeasurers, List<AScalarMeasurer> initialTimedScalarMeasurers, List<ADataSink> initialDataSinks,
                          String defaultPage,
                          List<APresentationMenuEntry> presentationMenuEntries, Map<String, String> additionalConfigurationParameters, Boolean collectSqlParameters, boolean collectTooltips,
@@ -76,6 +82,7 @@ public class NSysMonConfig {
         this.maxNumDataSinkTimeouts = maxNumDataSinkTimeouts;
         this.timer = timer;
         this.httpRequestAnalyzer = httpRequestAnalyzer;
+        this.webAuthorizer = webAuthorizer;
         this.initialEnvironmentMeasurers = Collections.unmodifiableList(environmentMeasurers);
         this.initialScalarMeasurers = Collections.unmodifiableList(initialScalarMeasurers);
         this.initialTimedScalarMeasurers = Collections.unmodifiableList(initialTimedScalarMeasurers);

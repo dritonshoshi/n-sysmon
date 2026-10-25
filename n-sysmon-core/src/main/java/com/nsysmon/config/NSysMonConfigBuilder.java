@@ -8,6 +8,8 @@ import com.nsysmon.measure.environment.AEnvironmentMeasurer;
 import com.nsysmon.measure.http.AHttpRequestAnalyzer;
 import com.nsysmon.measure.http.ASimpleHttpRequestAnalyzer;
 import com.nsysmon.measure.scalar.AScalarMeasurer;
+import com.nsysmon.servlet.auth.AAllowAllWebAuthorizer;
+import com.nsysmon.servlet.auth.AWebAuthorizer;
 import com.nsysmon.util.timer.ASystemNanoTimer;
 import com.nsysmon.util.timer.ATimer;
 
@@ -45,6 +47,7 @@ public class NSysMonConfigBuilder {
 
     private ATimer timer = new ASystemNanoTimer();
     private AHttpRequestAnalyzer httpRequestAnalyzer = new ASimpleHttpRequestAnalyzer();
+    private AWebAuthorizer webAuthorizer = AAllowAllWebAuthorizer.INSTANCE;
 
     private final List<AEnvironmentMeasurer> environmentMeasurers = new ArrayList<>();
     private final List<AScalarMeasurer> scalarMeasurers = new ArrayList<>();
@@ -130,6 +133,11 @@ public class NSysMonConfigBuilder {
         return this;
     }
 
+    public NSysMonConfigBuilder setWebAuthorizer(AWebAuthorizer webAuthorizer) {
+        this.webAuthorizer = webAuthorizer;
+        return this;
+    }
+
     public NSysMonConfigBuilder setMaxNumMeasurementTimeouts(int maxNumMeasurementTimeouts) {
         this.maxNumMeasurementTimeouts = maxNumMeasurementTimeouts;
         return this;
@@ -196,6 +204,7 @@ public class NSysMonConfigBuilder {
                 maxNumMeasurementsForCockpit, measurementTimeoutNanos, maxNumMeasurementTimeouts,
                 dataSinkTimeoutNanos, maxNumDataSinkTimeouts,
                 timer, httpRequestAnalyzer,
+                webAuthorizer,
                 environmentMeasurers, scalarMeasurers, scalarTimedMeasurers, dataSinks,
                 defaultPage, presentationMenuEntries, additionalConfigurationParameters,
                 collectSqlParameters, collectTooltips, pathDatafiles, timedScalarMonitoringParameters, correlationFlowDisabled
