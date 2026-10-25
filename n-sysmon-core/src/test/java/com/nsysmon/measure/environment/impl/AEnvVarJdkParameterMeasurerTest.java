@@ -30,7 +30,7 @@ public class AEnvVarJdkParameterMeasurerTest {
     }
 
     private static boolean isAllowedInCleartext(String envName) throws Exception {
-        final Method method = AEnvVarJdkParameterMeasurer.class.getDeclaredMethod("isAllowedInCleartext", String.class);
+        final Method method = AEnvironmentMeasurer.class.getDeclaredMethod("isAllowedInCleartext", String.class);
         method.setAccessible(true);
         return (boolean) method.invoke(new AEnvVarJdkParameterMeasurer(), envName);
     }
