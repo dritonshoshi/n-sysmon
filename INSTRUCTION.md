@@ -134,6 +134,10 @@ env-measurers = com.nsysmon.measure.environment.impl.AEnvVarEnvironmentMeasurer,
 # because it keeps per-identifier statistics for every distinct identifier.
 drilldown-measurement-initially-started = true
 
+# --- optional: protect the web front -------------------------------------
+# Without this property /nsysmon/* is open. See §11 for writing an authorizer.
+# web-authorizer = com.example.MyWebAuthorizer
+
 # --- limits and safety ---------------------------------------------------
 max-nested-measurements          = 100
 max-measurements-per-hierarchy   = 100000
@@ -551,6 +555,43 @@ quietly:
 
   Every measurement call then returns a no-op object. Note this one property is
   *not* prefixed with `nsysmon.`
+
+### Authorizing the web front
+
+The web front under `/nsysmon/*` is guarded by an `AWebAuthorizer`. **Without a
+configuration entry it is open, exactly as in previous releases.** Data ingestion is
+never affected: the server's upload endpoint and all measurers and data sinks keep
+working regardless.
+
+```properties
+web-authorizer = com.example.MyWebAuthorizer
+```
+
+The simplest way to get HTTP Basic authentication is to extend
+`AAbstractBasicWebAuthorizer`, which parses the `Authorization` header and sends the
+login challenge; you only decide whether the credentials are accepted:
+
+```java
+public class MyWebAuthorizer extends AAbstractBasicWebAuthorizer {
+    @Override protected boolean checkCredentials(String user, String password) {
+        return "admin".equals(user) && "admin".equals(password);
+    }
+}
+```
+
+For a session, token or SSO based scheme implement `AWebAuthorizer` directly and
+override `onUnauthorized`, for example to redirect to a login page. A single instance is
+shared by all requests, so an implementation must be thread-safe.
+
+Rejected requests are logged at `WARN` with the remote address and the URI (never with
+the credentials) and receive an empty response: 401 with a Basic challenge for
+`AAbstractBasicWebAuthorizer`, 403 otherwise. An authorizer that throws is treated as a
+denial, so a broken backend fails closed rather than turning into a 500 page.
+
+The demo (`n-sysmon-demo`, `n-sysmon-demo-liberty`) ships
+`com.nsysmon.demo.DemoWebAuthorizer` with the fixed credentials **admin / admin**. It is
+a demo only. HTTP Basic transmits the credentials in clear text, so put the web front
+behind TLS, or use an authorizer that does not send reusable credentials.
 
 Watch your overhead: the agent is cheap when you instrument a handful of call sites and
 use the JDBC wrapper, but a scalar measurement reads live system state and the
