@@ -17,13 +17,6 @@ public class AEnvVarJdkParameterMeasurer implements AEnvironmentMeasurer {
         }
     }
 
-    private boolean isAllowedInCleartext(String envName) {
-        return !envName.toLowerCase().contains("secure")
-                && !envName.toLowerCase().contains("password")
-                && !envName.toLowerCase().contains("truststore")
-                && !envName.toLowerCase().contains("keystore");
-    }
-
     @Override
     public void shutdown() throws Exception {
     }

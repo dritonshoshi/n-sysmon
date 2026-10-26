@@ -1,6 +1,8 @@
 package com.nsysmon.servlet;
 
 import com.nsysmon.testutil.RecordingServletOutputStream;
+import com.nsysmon.servlet.auth.AAllowAllWebAuthorizer;
+import com.nsysmon.servlet.auth.AWebAuthorizer;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -19,7 +21,9 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -117,6 +121,52 @@ class AbstractNSysMonServletTest {
         verify(response).sendRedirect("/nsysmon/");
     }
 
+    @Test void rejectsUnauthorizedRestCallsBeforeTheyReachThePageDefinition() throws Exception {
+        final AWebAuthorizer denying = mock(AWebAuthorizer.class);
+        servlet.authorizer = denying;
+        givenUri(REST + "somePage/getData");
+
+        servlet.service(request, response);
+
+        verify(denying).onUnauthorized(request, response);
+        assertTrue(servlet.lastRestSegments.isEmpty());
+        verify(response, never()).getOutputStream();
+    }
+
+    @Test void rejectsUnauthorizedStaticResourcesWithoutWritingABody() throws Exception {
+        final AWebAuthorizer denying = mock(AWebAuthorizer.class);
+        servlet.authorizer = denying;
+        givenUri("/nsysmon" + AbstractNSysMonServlet.NSYSMON_MARKER_STATIC + "nsysmon.html");
+
+        servlet.service(request, response);
+
+        verify(denying).onUnauthorized(request, response);
+        verify(response, never()).getOutputStream();
+        assertEquals("", responseBody.content());
+    }
+
+    @Test void doesNotRedirectUnauthorizedRequests() throws Exception {
+        final AWebAuthorizer denying = mock(AWebAuthorizer.class);
+        servlet.authorizer = denying;
+        givenUri("/nsysmon");
+
+        servlet.service(request, response);
+
+        verify(response, never()).sendRedirect(anyString());
+    }
+
+    @Test void deniesAccessWhenTheAuthorizerFails() throws Exception {
+        final AWebAuthorizer failing = mock(AWebAuthorizer.class);
+        when(failing.isAuthorized(request)).thenThrow(new IllegalStateException("authorizer backend down"));
+        servlet.authorizer = failing;
+        givenUri(REST + "somePage/getData");
+
+        servlet.service(request, response);
+
+        verify(failing).onUnauthorized(request, response);
+        assertTrue(servlet.lastRestSegments.isEmpty());
+    }
+
     @Test void dispatchesRestCallsWithAllPathSegments() throws Exception {
         givenUri(REST + "somePage/getData/param1/param2");
 
@@ -187,6 +237,15 @@ class AbstractNSysMonServletTest {
         assertFalse(new MinimalServlet().handleDynamic(List.of("whatever"), response));
     }
 
+    @Test void allowsRequestsThroughByDefault() throws Exception {
+        givenUri("/nsysmon/");
+
+        new MinimalServlet().service(request, response);
+
+        verify(response, never()).setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        assertTrue(responseBody.content().contains("<html"), responseBody.content());
+    }
+
     /** A servlet that relies on the defaults of the abstract base class. */
     private static final class MinimalServlet extends AbstractNSysMonServlet {
         @Override protected String getDefaultHtmlName() {
@@ -205,9 +264,14 @@ class AbstractNSysMonServletTest {
         private boolean restResult = true;
         private boolean dynamicResult = false;
         private Exception restException;
+        private AWebAuthorizer authorizer = AAllowAllWebAuthorizer.INSTANCE;
 
         @Override protected String getDefaultHtmlName() {
             return "nsysmon.html";
+        }
+
+        @Override protected AWebAuthorizer getWebAuthorizer() {
+            return authorizer;
         }
 
         @Override protected boolean handleRestCall(List<String> pathSegments, HttpServletResponse resp) throws Exception {

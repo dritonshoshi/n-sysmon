@@ -14,6 +14,8 @@ import com.nsysmon.datasink.ADataSink;
 import com.nsysmon.measure.environment.AEnvironmentMeasurer;
 import com.nsysmon.measure.http.AHttpRequestAnalyzer;
 import com.nsysmon.measure.scalar.AScalarMeasurer;
+import com.nsysmon.servlet.auth.AAllowAllWebAuthorizer;
+import com.nsysmon.servlet.auth.AWebAuthorizer;
 import com.nsysmon.util.timer.ATimer;
 
 import java.io.InputStream;
@@ -37,6 +39,7 @@ public class ADefaultConfigFactory implements AConfigFactory {
     public static final String KEY_LOGGER = "logger";
     public static final String KEY_TIMER = "timer";
     public static final String KEY_HTTP_REQUEST_ANALYZER = "http-request-analyzer";
+    public static final String KEY_WEB_AUTHORIZER = "web-authorizer";
 
     public static final String KEY_DEFAULT_PAGE = "default-page";
 
@@ -156,6 +159,7 @@ public class ADefaultConfigFactory implements AConfigFactory {
         final NSysMonConfigBuilder builder = new NSysMonConfigBuilder(appInfo);
         builder.setTimer(props.get(KEY_TIMER, ATimer.class));
         builder.setHttpRequestAnalyzer(props.get(KEY_HTTP_REQUEST_ANALYZER, AHttpRequestAnalyzer.class));
+        builder.setWebAuthorizer(props.get(KEY_WEB_AUTHORIZER, AOption.some(AAllowAllWebAuthorizer.INSTANCE), AWebAuthorizer.class));
 
         builder.setDefaultPage(props.get(KEY_DEFAULT_PAGE, String.class));
 

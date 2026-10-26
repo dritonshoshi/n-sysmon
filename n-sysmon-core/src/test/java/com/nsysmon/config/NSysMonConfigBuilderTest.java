@@ -6,6 +6,8 @@ import com.nsysmon.measure.environment.AEnvironmentMeasurer;
 import com.nsysmon.measure.http.AHttpRequestAnalyzer;
 import com.nsysmon.measure.http.ASimpleHttpRequestAnalyzer;
 import com.nsysmon.measure.scalar.AScalarMeasurer;
+import com.nsysmon.servlet.auth.AAllowAllWebAuthorizer;
+import com.nsysmon.servlet.auth.AWebAuthorizer;
 import com.nsysmon.testutil.CountingDataSink;
 import com.nsysmon.testutil.ExplicitTimer;
 import com.nsysmon.util.timer.ASystemNanoTimer;
@@ -160,6 +162,19 @@ class NSysMonConfigBuilderTest {
         builder.setHttpRequestAnalyzer(analyzer);
 
         assertSame(analyzer, builder.build().httpRequestAnalyzer);
+    }
+
+    @Test
+    void webAuthorizerDefaultsToAllowAll() {
+        assertSame(AAllowAllWebAuthorizer.INSTANCE, builder.build().webAuthorizer);
+    }
+
+    @Test
+    void webAuthorizerCanBeReplaced() {
+        final AWebAuthorizer authorizer = mock(AWebAuthorizer.class);
+        builder.setWebAuthorizer(authorizer);
+
+        assertSame(authorizer, builder.build().webAuthorizer);
     }
 
     @Test

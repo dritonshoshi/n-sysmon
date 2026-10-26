@@ -31,7 +31,7 @@ public class AEnvVarEnvironmentMeasurerTest {
     }
 
     private static boolean isAllowedInCleartext(String envName) throws Exception {
-        final Method method = AEnvVarEnvironmentMeasurer.class.getDeclaredMethod("isAllowedInCleartext", String.class);
+        final Method method = AEnvironmentMeasurer.class.getDeclaredMethod("isAllowedInCleartext", String.class);
         method.setAccessible(true);
         return (boolean) method.invoke(new AEnvVarEnvironmentMeasurer(), envName);
     }
@@ -66,6 +66,18 @@ public class AEnvVarEnvironmentMeasurerTest {
 
         assertTrue(collected.stream().allMatch(d ->
                 AEnvVarEnvironmentMeasurer.KEY_ENV_VAR.equals(d.getName().asJavaUtilList().get(0))));
+    }
+
+    @Test
+    public void tokensAreMasked() throws Exception {
+        assertFalse(isAllowedInCleartext("MY_TOKEN"));
+        assertFalse(isAllowedInCleartext("jira.token"));
+    }
+
+    @Test
+    public void privateVariablesAreMasked() throws Exception {
+        assertFalse(isAllowedInCleartext("MY_PRIVATE_VARIABLE"));
+        assertFalse(isAllowedInCleartext("db.private.value"));
     }
 
     @Test

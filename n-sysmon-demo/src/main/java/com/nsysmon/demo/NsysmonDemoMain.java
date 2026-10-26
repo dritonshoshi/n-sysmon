@@ -43,7 +43,7 @@ public final class NsysmonDemoMain {
     }
 
     private static void printAccessInstructions() {
-        System.out.println("access http://localhost:" + PORT + "/nsysmon for n-sysmon");
+        System.out.println("access http://localhost:" + PORT + "/nsysmon for n-sysmon (user 'admin', password 'admin')");
         System.out.println("access any url starting with http://localhost:" + PORT + "/content/ to simulate 'regular' system access");
         System.out.println("access any url starting with http://localhost:" + PORT + "/content/small/ to simulate 'small' system access");
         System.out.println();

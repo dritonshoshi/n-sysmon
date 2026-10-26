@@ -69,6 +69,7 @@ Driving forces:
 | `org.mongodb:mongo-java-driver:2.11.3` — the **legacy** 2.x driver | The server code is written against `MongoClient`/`DB`/`DBCollection`/`DBCursor`. See 11.2 |
 | Jersey 3.1.x needs the Jackson **2.x** databind | The previous Jackson 1.9 dependency came in transitively via Jersey 2.4.1 and had to be replaced |
 | SLF4J facade only in libraries; binding only in deployables | `n-sysmon-core` ships `slf4j-api` and must not force a binding on its users |
+| Web front behind a configurable `AWebAuthorizer` | `/nsysmon/*` is guarded by a plug-in loaded from `web-authorizer`; without that property it is open, as in previous releases. Data ingestion is explicitly out of scope |
 | No container image | The project ships plain Maven artifacts (jars + war); both CI pipelines build only |
 
 ### 2.2 Organizational Constraints
@@ -169,11 +170,14 @@ flowchart TB
         MEAS["measure.*<br/><i>scalar, timed-scalar, environment,<br/>HTTP, JDBC</i>"]
         SINK["datasink.*<br/><i>logging, cyclic dump, HTTP offloading</i>"]
         UI["servlet.*<br/><i>NSysMonServlet + page definitions</i>"]
+        AUTH["servlet.auth<br/><i>AWebAuthorizer guards /nsysmon/*</i>"]
         CFG["config.*<br/><i>properties → object graph</i>"]
         API --> MEAS
         API --> SINK
         UI --> API
+        UI -->|"asks before dispatch"| AUTH
         CFG -.->|"instantiates"| API
+        CFG -.->|"instantiates"| AUTH
     end
 
     subgraph server["n-sysmon-server (jar) → n-sysmon-server-war"]
@@ -196,7 +200,7 @@ flowchart TB
 
 | Module | Packaging | Responsibility | Depends on |
 |--------|-----------|----------------|-------------|
-| `n-sysmon-core` | jar | The agent: measurement engine, measurers, data sinks, in-application UI, configuration | a-foundation, jaxb-api, slf4j-api, `jakarta.servlet-api` (provided), httpclient (optional) |
+| `n-sysmon-core` | jar | The agent: measurement engine, measurers, data sinks, in-application UI with its web-front authorization, configuration | a-foundation, jaxb-api, slf4j-api, `jakarta.servlet-api` (provided), httpclient (optional) |
 | `n-sysmon-server` | jar | Ingestion, clock correction, buffering, MongoDB persistence, admin REST API | `n-sysmon-core`, jackson-databind, mongo-java-driver 2.11.3, Guice 7, Jersey 3.1 |
 | `n-sysmon-server-war` | war | Deployable packaging of the server; `WEB-INF/web.xml` wires the listener and both servlets | `n-sysmon-server`, logback-classic (runtime), jetty-ee10-webapp (optional) |
 | `n-sysmon-demo-webapp` | jar | The demo application itself, container independent: demo servlet, `web.xml`, `nsysmon.properties`, an H2 in-memory database, and the artificial load (GC churn, allocation churn, a deliberate deadlock) started by a `ServletContextListener` | `n-sysmon-core`, H2, httpclient, logback-classic (runtime), `jakarta.servlet-api` (provided) |
@@ -307,10 +311,16 @@ scalar-measurers     = com.nsysmon.measure.jdbc.AConnectionCounter, \
 timedscalar-measurers = com.nsysmon.measure.scalar.ACpuUtilizationMeasurer
 data-sinks.slf4j     = com.nsysmon.datasink.log.ASlf4JDataSink
 logger               = com.nsysmon.config.log.NSlf4JLoggerFactory   # commented; SLF4J is the default
+web-authorizer       = com.example.MyWebAuthorizer                  # commented; the web front is open without it
 ```
 
 Aliases let a constructor argument be bound to a named property, e.g.
 `data-sinks.cyclic-dump-stdout.0.alias = cyclic-dump-interval-seconds`.
+
+`web-authorizer` uses the same mechanism and is instantiated at start-up. The servlet asks
+it before dispatching **any** request under `/nsysmon/*` - HTML, JS/CSS, `config.js` or a REST
+call. A rejected request is logged at `WARN` (remote address and URI only) and answered with
+an empty 401 (Basic challenge) or 403.
 
 ---
 
@@ -582,7 +592,10 @@ Both end up at SLF4J/Logback in the deployable artifacts. Libraries declare
 
 Everything is a properties file plus fully qualified class names — there are no Spring
 annotations and no build-time wiring. Secrets are not involved on the agent side. The
-server currently has **no** externalised configuration: the MongoDB host/port/database
+web front is guarded by the `web-authorizer` plug-in, instantiated the same way; without
+the property the front stays open, so existing deployments keep working. Where a Basic
+authorizer gets its credentials from is up to the implementation, not to N-SysMon.
+The server currently has **no** externalised configuration: the MongoDB host/port/database
 and the queue sizes and worker counts are hard-coded.
 
 ---
@@ -604,6 +617,7 @@ on the `updates` branch and are recorded here; each should become an ADR
 | D7 | Retain the legacy MongoDB 2.11.3 driver for now | Accepted, under review | The DAO code is written against the 2.x API. The `mongodb-driver-bom:5.5.1` import in the war pom is ineffective because the dependency pins its own version |
 | D8 | No container image; plain Maven artifacts | Accepted | The project is published to Maven Central as jars + war |
 | D9 | Coverage and Checkstyle gates bound to `verify`; CI runs `verify` | Accepted | A gate not executed is not a gate. An earlier revision ran `package` in CI and silently skipped both gates |
+| D10 | Guard the web front with a config-loaded `AWebAuthorizer`, defaulting to allow-all | Accepted | Mirrors the measurer/data-sink plug-in mechanism, keeps existing deployments open, and confines the gate to `/nsysmon/*` so ingestion endpoints are unaffected |
 
 **Key decisions not yet documented** — see 11.2 for the reasoning behind each.
 
@@ -652,6 +666,7 @@ Quality
 | Risk | Probability | Impact | Mitigation |
 |------|-------------|--------|------------|
 | **No authentication on the server.** `POST /upload` accepts arbitrary JSON from any client, `GET /rest/admin/allApps` is open | High if the server is ever network-exposed | High — data injection and disclosure | Bind the war to a private network or front it with an authenticating reverse proxy. A user/permission model is still listed as an open item in `todo.txt` |
+| **The agent web front is open unless `web-authorizer` is configured**, and the demo ships Basic with fixed `admin`/`admin` | Certain | Medium — anyone who can reach the application reads all measurements; Basic sends credentials in clear text | Configure an authorizer in production and use TLS. The demo authorizer is demo-only. Ingestion stays open by design |
 | **MongoDB is unconfigurable and required at start-up.** Host, port and database are hard-coded; the provider is an eager Guice singleton | Certain | High — the server will not start against a non-default MongoDB, and it cannot be configured in a container | Read connection settings from configuration/environment; make the provider lazy |
 | **Legacy MongoDB 2.11.3 driver** (2014, unmaintained, predates the modern driver and TLS defaults) | Certain | Medium | Migrate to `mongodb-driver-sync` 5.x; the DAO surface is small |
 | **Agent overhead on the customer's JVM** | Medium | Medium | Every plug-in is wrapped and timed; a global kill switch exists; measure before enabling expensive sinks |
@@ -696,6 +711,7 @@ Quality
 | **Offloading** | Sending measurement data from the agent to the central server |
 | **Instance / application id** | The two-level identity in every upload: `sender` (application) and `senderInstance` |
 | **ADefaultConfigFactory** | Builds the object graph from the properties files by instantiating configured classes reflectively |
+| **Web authorizer** | An `AWebAuthorizer` loaded from the `web-authorizer` property; decides whether a request may access the web front under `/nsysmon/*`. `AAbstractBasicWebAuthorizer` implements HTTP Basic |
 | **NSysMonLogger** | The agent's own logging facade, with pluggable backends, in front of SLF4J |
 | **arc42** | The template this document follows: <https://arc42.org/> |
 | **ADR** | Architecture Decision Record — a short document capturing one decision and its rationale |

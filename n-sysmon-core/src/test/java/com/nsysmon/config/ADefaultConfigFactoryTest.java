@@ -4,6 +4,7 @@ import com.nsysmon.config.appinfo.ADefaultApplicationInfoProvider;
 import com.nsysmon.config.log.NSlf4JLoggerFactory;
 import com.nsysmon.config.log.NStdOutLoggerFactory;
 import com.nsysmon.measure.scalar.ACpuUtilizationMeasurer;
+import com.nsysmon.servlet.auth.AAllowAllWebAuthorizer;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -14,17 +15,20 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ADefaultConfigFactoryTest {
 
     private static final String LOGGER_SYSPROP = ADefaultConfigFactory.SYSPROP_PREFIX + ADefaultConfigFactory.KEY_LOGGER;
+    private static final String WEB_AUTHORIZER_SYSPROP = ADefaultConfigFactory.SYSPROP_PREFIX + ADefaultConfigFactory.KEY_WEB_AUTHORIZER;
 
     @BeforeEach
     @AfterEach
     void resetGlobalState() {
         System.clearProperty(LOGGER_SYSPROP);
+        System.clearProperty(WEB_AUTHORIZER_SYSPROP);
         System.clearProperty(NSysMonConfig.PROPNAME_GLOBALLY_DISABLED);
         ADefaultConfigFactory.setConfiguredLogger(null);
     }
@@ -124,6 +128,21 @@ class ADefaultConfigFactoryTest {
         assertNotNull(config.httpRequestAnalyzer);
         assertEquals("/tmp", config.pathDatafiles);
         assertEquals("scalars", config.defaultPage);
+    }
+
+    @Test
+    void getConfigUsesAllowAllWebAuthorizerByDefault() {
+        assertSame(AAllowAllWebAuthorizer.INSTANCE, new ADefaultConfigFactory().getConfig().webAuthorizer);
+    }
+
+    @Test
+    void getConfigReadsTheWebAuthorizerFromTheSystemProperties() {
+        System.setProperty(WEB_AUTHORIZER_SYSPROP, AAllowAllWebAuthorizer.class.getName());
+
+        final NSysMonConfig config = new ADefaultConfigFactory().getConfig();
+
+        assertInstanceOf(AAllowAllWebAuthorizer.class, config.webAuthorizer);
+        assertNotSame(AAllowAllWebAuthorizer.INSTANCE, config.webAuthorizer);
     }
 
     @Test

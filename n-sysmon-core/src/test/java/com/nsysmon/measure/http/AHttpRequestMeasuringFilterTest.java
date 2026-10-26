@@ -5,6 +5,7 @@ import com.nsysmon.NSysMonApi;
 import com.nsysmon.config.NSysMonConfig;
 import com.nsysmon.measure.AMeasureCallbackVoid;
 import com.nsysmon.measure.AWithParameters;
+import com.nsysmon.servlet.auth.AAllowAllWebAuthorizer;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.FilterConfig;
 import jakarta.servlet.ServletException;
@@ -66,6 +67,7 @@ public class AHttpRequestMeasuringFilterTest {
 
     static NSysMonConfig configWith(AHttpRequestAnalyzer analyzer) {
         return new NSysMonConfig(null, 0, 0, 0, 0, 0, 0, 0L, 0, 0L, 0, null, analyzer,
+                AAllowAllWebAuthorizer.INSTANCE,
                 Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), Collections.emptyList(),
                 "", Collections.emptyList(), new HashMap<>(), Boolean.TRUE, true, null, new HashMap<>(), false);
     }

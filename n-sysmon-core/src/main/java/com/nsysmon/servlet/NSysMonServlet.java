@@ -6,6 +6,7 @@ import com.nsysmon.NSysMonApi;
 import com.nsysmon.config.NSysMonConfig;
 import com.nsysmon.config.presentation.APresentationMenuEntry;
 import com.nsysmon.config.presentation.APresentationPageDefinition;
+import com.nsysmon.servlet.auth.AWebAuthorizer;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletOutputStream;
@@ -39,6 +40,10 @@ public class NSysMonServlet extends AbstractNSysMonServlet {
 
     @Override protected String getDefaultHtmlName() {
         return "nsysmon.html";
+    }
+
+    @Override protected AWebAuthorizer getWebAuthorizer() {
+        return getSysMon().getConfig().webAuthorizer;
     }
 
     @Override protected boolean handleRestCall(List<String> restParams, HttpServletResponse resp) throws Exception {
